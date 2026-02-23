@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /cms
+
+Sitemap: https://neobase.co/sitemap.xml
