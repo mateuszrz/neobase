@@ -87,4 +87,5 @@ W logach builda zobaczysz coś takiego:
 
 ### Weryfikacja po deploymencie
 
-Wejdź na np. `neobase.co/bank/revolut/` i sprawdź źródło strony (Ctrl+U). Powinnaś zobaczyć `<title>Revolut Review 2026...` w HTMLu — bez potrzeby odpalania JavaScript.
+
+Wejdź na np. `neobase.co/bank/revolut/` i sprawdź źródło strony (Ctrl+U). Powinnaś zobaczyć `<title>Revolut Review 2026...` w HTMLu — bez potrzeby odpalania JavaScript. 
