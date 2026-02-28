@@ -1,0 +1,90 @@
+## Co i gdzie dodać
+
+### Krok 1 — Dodaj pliki do repo na GitHubie
+
+Twój repo ma teraz: `index.html`, `app.js`, `robots.txt`, `sitemap.xml`, `.htaccess`
+
+Musisz dodać **2 nowe pliki**:
+
+---
+
+**Plik 1: `generate.js`** — ten co właśnie wygenerowałem, wrzuć go do głównego folderu repo (obok `index.html`).
+
+---
+
+**Plik 2: `package.json`** — utwórz nowy plik o tej nazwie z zawartością:
+
+```json
+{
+  "name": "neobase",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node generate.js"
+  }
+}
+```
+
+To wszystko na GitHubie. Nie trzeba nic więcej.
+
+---
+
+### Krok 2 — Skonfiguruj Vercel
+
+Wejdź na **vercel.com → Twój projekt → Settings → General**
+
+Znajdź sekcję **"Build & Development Settings"** i ustaw:
+
+| Pole | Wartość |
+|---|---|
+| Framework Preset | `Other` |
+| Build Command | `node generate.js` |
+| Output Directory | `.` (kropka — folder główny) |
+| Install Command | *(zostaw puste)* |
+
+Kliknij **Save**.
+
+---
+
+### Krok 3 — Dodaj vercel.json do repo
+
+Utwórz plik `vercel.json` obok `index.html`:
+
+```json
+{
+  "buildCommand": "node generate.js",
+  "outputDirectory": ".",
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "headers": [
+    {
+      "source": "/bank/(.*)/",
+      "headers": [{ "key": "Cache-Control", "value": "s-maxage=3600" }]
+    },
+    {
+      "source": "/exchange/(.*)/",
+      "headers": [{ "key": "Cache-Control", "value": "s-maxage=3600" }]
+    }
+  ]
+}
+```
+
+---
+
+### Krok 4 — Deploy
+
+Po dodaniu plików do GitHuba, Vercel automatycznie odpali nowy build. Możesz też ręcznie kliknąć **Redeploy** w panelu Vercel.
+
+W logach builda zobaczysz coś takiego:
+```
+✓ API: banks (47 records)
+✓ /bank/revolut/
+✓ /bank/n26/
+...
+✅ Wygenerowano 183 stron HTML
+```
+
+---
+
+### Weryfikacja po deploymencie
+
+Wejdź na np. `neobase.co/bank/revolut/` i sprawdź źródło strony (Ctrl+U). Powinnaś zobaczyć `<title>Revolut Review 2026...` w HTMLu — bez potrzeby odpalania JavaScript.
