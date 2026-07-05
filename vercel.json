@@ -1,6 +1,21 @@
 {
-  "buildCommand": "node generate.js",
-  "outputDirectory": ".",
-  "cleanUrls": true,
-  "trailingSlash": true
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    { "path": "/api/cron/daily-kickoff", "schedule": "0 3 * * *" },
+    { "path": "/api/cron/drain-queue", "schedule": "* * * * *" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "functions": {
+    "app/api/cron/drain-queue/route.ts": { "maxDuration": 60 },
+    "app/api/webhooks/apify/route.ts": { "maxDuration": 30 }
+  }
 }
