@@ -86,9 +86,45 @@ export function Stat({ num, label }: { num: string; label: string }) {
 
 export function fmt(n: number | null | undefined): string {
   if (n == null) return "—";
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}K`;
+  const s = n < 0 ? "-" : "";
+  const a = Math.abs(n);
+  if (a >= 1_000_000) return `${s}${(a / 1_000_000).toFixed(1)}M`;
+  if (a >= 1_000) return `${s}${(a / 1_000).toFixed(a >= 10_000 ? 0 : 1)}K`;
   return String(n);
+}
+
+export function fmtMoney(usd: number | null | undefined): string {
+  if (usd == null) return "—";
+  if (usd >= 1e9) return `$${(usd / 1e9).toFixed(usd >= 1e10 ? 0 : 1)}B`;
+  if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
+  return `$${usd.toLocaleString()}`;
+}
+
+/** Directional change chip: ▲ green-ish / ▼ warn / — flat, with an optional context label. */
+export function Delta({
+  value,
+  suffix = "",
+  since,
+  good = "up",
+}: {
+  value: number | null;
+  suffix?: string;
+  since?: string;
+  good?: "up" | "down";
+}) {
+  if (value == null) return <span className="muted">—</span>;
+  const up = value > 0;
+  const flat = value === 0;
+  const positive = flat ? null : (good === "up" ? up : !up);
+  const color = positive == null ? "var(--ash-gray)" : positive ? "var(--cyan-edge)" : "var(--neg)";
+  const arrow = flat ? "→" : up ? "▲" : "▼";
+  const val = `${up ? "+" : ""}${value % 1 === 0 ? value : value.toFixed(2)}${suffix}`;
+  return (
+    <span style={{ color, fontSize: 13, fontWeight: 500 }}>
+      {arrow} {val}
+      {since && <span className="muted" style={{ fontWeight: 400 }}> vs {since}</span>}
+    </span>
+  );
 }
 
 export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?: "neobank" | "exchange" }) {
@@ -182,6 +218,41 @@ export function SeriesChart({
       <text x={PAD.l + 96} y={14} fontSize={11} fill="var(--warm-gray)">
         ┄ Review count
       </text>
+    </svg>
+  );
+}
+
+/** Positive-sentiment share over time (0–100%). */
+export function SentimentChart({ points }: { points: { date: string; pos: number | null }[] }) {
+  const W = 820;
+  const H = 200;
+  const PAD = { t: 20, r: 16, b: 24, l: 16 };
+  const withData = points.filter((p) => p.pos != null);
+  if (withData.length < 2) return <p className="muted">Sentiment history accrues daily.</p>;
+
+  const n = points.length;
+  const x = (i: number) => PAD.l + (i / (n - 1)) * (W - PAD.l - PAD.r);
+  const y = (v: number) => PAD.t + (1 - v / 100) * (H - PAD.t - PAD.b);
+
+  const line = points
+    .map((p, i) => (p.pos == null ? null : `${i === 0 ? "M" : "L"}${x(i)},${y(p.pos)}`))
+    .filter(Boolean)
+    .join(" ");
+  const area = `${line} L${x(n - 1)},${H - PAD.b} L${x(0)},${H - PAD.b} Z`;
+  const last = points[n - 1];
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Positive sentiment over time">
+      {[0, 50, 100].map((v) => (
+        <g key={v}>
+          <line x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} stroke="var(--stone-border)" strokeWidth={1} />
+          <text x={W - PAD.r} y={y(v) - 3} textAnchor="end" fontSize={10} fill="var(--ash-gray)">{v}%</text>
+        </g>
+      ))}
+      <path d={area} fill="var(--sky-wash)" opacity={0.6} />
+      <path d={line} fill="none" stroke="var(--cyan-signal)" strokeWidth={2.5} />
+      {last.pos != null && <circle cx={x(n - 1)} cy={y(last.pos)} r={4} fill="var(--cyan-signal)" />}
+      <text x={PAD.l} y={13} fontSize={11} fill="var(--cyan-edge)">● Positive sentiment %</text>
     </svg>
   );
 }
