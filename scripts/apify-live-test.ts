@@ -15,7 +15,7 @@ import "dotenv/config";
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
 import { isApifyLive } from "../lib/env.ts";
-import { startTrustpilotRun, apify } from "../lib/apify/index.ts";
+import { startTrustpilotRun, apify, trustpilotDailyInput } from "../lib/apify/index.ts";
 import { processDatasetJob } from "../lib/ingest/process.ts";
 import { todayUtc } from "../lib/ingest/kickoff.ts";
 
@@ -43,7 +43,7 @@ console.log(`Starting live Trustpilot run for ${fintechId} (domain=${src.externa
 
 // startTrustpilotRun registers a webhook we won't receive locally — we poll instead.
 const { runId, datasetId } = await startTrustpilotRun(
-  { companyDomain: src.externalRef, maxResults: 200, includeCompanyInfo: true },
+  trustpilotDailyInput(src.externalRef),
   { runKey: `livetest|${src.id}|${day}`, sourceId: src.id, fintechId, snapshotDate: day },
 );
 console.log(`Run ${runId} started; waiting for completion…`);

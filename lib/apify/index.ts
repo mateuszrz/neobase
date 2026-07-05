@@ -10,6 +10,25 @@ export function apify(): ApifyClient {
   return new ApifyClient({ token: env.APIFY_TOKEN });
 }
 
+/**
+ * Daily Trustpilot input: fetch ONLY the newest reviews (a small lookback window,
+ * recency-sorted), never the full history — reviews already stored dedupe on
+ * upsert, and re-scraping ~400k lifetime reviews per fintech daily would be
+ * wasteful. `includeCompanyInfo` still rides along so we get the current
+ * TrustScore + lifetime review count for the daily metric_snapshots point.
+ */
+export function trustpilotDailyInput(domain: string, lookbackDays = 3): Record<string, unknown> {
+  return {
+    companyDomain: domain,
+    mode: "reviews",
+    sort: "recency",
+    lookbackDays,
+    maxResults: 500, // safety cap; a lookback window rarely exceeds this
+    includeCompanyInfo: true,
+    skipReposts: true,
+  };
+}
+
 /** Start a Trustpilot actor run, registering a completion webhook. */
 export async function startTrustpilotRun(
   input: Record<string, unknown>,

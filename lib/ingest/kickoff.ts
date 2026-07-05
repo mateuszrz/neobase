@@ -12,7 +12,7 @@ import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { isApifyLive, env } from "@/lib/env";
 import { enqueue } from "@/lib/queue";
-import { startTrustpilotRun } from "@/lib/apify";
+import { startTrustpilotRun, trustpilotDailyInput } from "@/lib/apify";
 
 const { sources, ingestRuns } = schema;
 
@@ -71,7 +71,7 @@ export async function runDailyKickoff(day = todayUtc()): Promise<{ enqueued: num
       // One run per source keeps dataset→source mapping trivial (batching is a
       // later optimisation). The webhook enqueues the process job on completion.
       const { runId, datasetId } = await startTrustpilotRun(
-        { companyDomain: s.externalRef, maxResults: 200, includeCompanyInfo: true },
+        trustpilotDailyInput(s.externalRef),
         { runKey, sourceId: s.id, fintechId: s.fintechId, snapshotDate: day },
       );
       await db
