@@ -10,6 +10,7 @@ import { db, schema } from "@/lib/db";
 import { isApifyLive } from "@/lib/env";
 import { listDatasetPage } from "@/lib/apify";
 import {
+  extractCompanyExtras,
   extractLiveAggregate,
   isReviewItem,
   mockTrustpilotDay,
@@ -99,6 +100,7 @@ async function writeSnapshot(row: typeof metricSnapshots.$inferInsert): Promise<
         reviewCountDelta: row.reviewCountDelta ?? null,
         sentimentPos: row.sentimentPos ?? null,
         sentimentNeg: row.sentimentNeg ?? null,
+        raw: row.raw ?? null,
       },
     });
 }
@@ -116,6 +118,7 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
 
   let dayReviews: NormalizedReview[] = [];
   let aggregate: SourceAggregate = { rating: null, reviewCount: null };
+  let rawItems: Record<string, any>[] = [];
   let done = true;
   let nextOffset: number | undefined;
 
@@ -127,6 +130,7 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
   } else {
     if (!p.datasetId) throw new Error("live mode requires datasetId");
     const items = await listDatasetPage(p.datasetId, offset, PAGE_SIZE);
+    rawItems = items;
     dayReviews = items.filter(isReviewItem).map(normalizeLiveItem);
     if (offset === 0) aggregate = extractLiveAggregate(items);
     if (items.length === PAGE_SIZE) {
@@ -142,6 +146,22 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
   if (offset === 0) {
     const baseline = await baselineAggregate(p.sourceId, p.snapshotDate);
     const s = sentimentShare(dayReviews);
+
+    // Company-level extras (live only): rating distribution, responsiveness,
+    // verified ratio and complaint/praise topics — stored in the ZZ raw column.
+    let raw: Record<string, unknown> | null = null;
+    if (!useMock && rawItems.length) {
+      const extras = extractCompanyExtras(rawItems);
+      const verified = dayReviews.filter((r) => r.verified).length;
+      const tally = new Map<string, number>();
+      for (const r of dayReviews) for (const t of r.topics) tally.set(t, (tally.get(t) ?? 0) + 1);
+      raw = {
+        ...extras,
+        verifiedRatio: dayReviews.length ? Math.round((verified / dayReviews.length) * 100) : null,
+        topics: [...tally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t, c]) => ({ t, c })),
+      };
+    }
+
     await writeSnapshot({
       sourceId: p.sourceId,
       fintechId: p.fintechId,
@@ -156,6 +176,7 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
           : null,
       sentimentPos: s.pos != null ? String(s.pos) : null,
       sentimentNeg: s.neg != null ? String(s.neg) : null,
+      raw,
     });
     snapshotsWritten++;
 

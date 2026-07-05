@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getFintech, getSeries, getCountryBreakdown } from "@/lib/queries";
+import { getFintech, getSeries, getCountryBreakdown, getProfileExtras } from "@/lib/queries";
 import {
   TrustScore,
   SeriesChart,
   SentimentChart,
-  SentimentMeter,
   Delta,
+  RatingDistribution,
+  MiniStat,
   flagEmoji,
   fmt,
   fmtMoney,
@@ -26,7 +27,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, countries] = await Promise.all([getSeries(slug), getCountryBreakdown(slug)]);
+  const [series, countries, extras] = await Promise.all([
+    getSeries(slug),
+    getCountryBreakdown(slug),
+    getProfileExtras(slug),
+  ]);
 
   const latest = series[series.length - 1];
   const prev = series[series.length - 2];
@@ -113,6 +118,43 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           <h2 className="subheading" style={{ marginBottom: 16 }}>Sentiment over time</h2>
           <SentimentChart points={series.map((p) => ({ date: p.date, pos: p.pos }))} />
         </div>
+
+        {/* Rating distribution + responsiveness (live Trustpilot extras) */}
+        {(extras?.dist || extras?.responseRate != null || extras?.verifiedRatio != null) && (
+          <div className="grid grid-2" style={{ marginTop: 20, alignItems: "start" }}>
+            {extras?.dist && (
+              <div className="card">
+                <h2 className="subheading" style={{ marginBottom: 14 }}>Rating distribution</h2>
+                <RatingDistribution dist={extras.dist} />
+              </div>
+            )}
+            {(extras?.responseRate != null || extras?.responseTime != null || extras?.verifiedRatio != null) && (
+              <div className="card">
+                <h2 className="subheading" style={{ marginBottom: 16 }}>Company responsiveness</h2>
+                <div className="row" style={{ gap: 40 }}>
+                  {extras?.responseRate != null && <MiniStat label="Replies to reviews" value={`${Math.round(extras.responseRate)}%`} />}
+                  {extras?.responseTime != null && <MiniStat label="Typical reply time" value={String(extras.responseTime)} />}
+                  {extras?.verifiedRatio != null && <MiniStat label="Verified (recent)" value={`${extras.verifiedRatio}%`} />}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Sentiment drivers */}
+        {(extras?.aiSummary || (extras?.topics?.length ?? 0) > 0) && (
+          <div className="card" style={{ marginTop: 20 }}>
+            <h2 className="subheading" style={{ marginBottom: 12 }}>What&apos;s driving sentiment</h2>
+            {extras?.aiSummary && <p className="muted" style={{ marginTop: 0, lineHeight: 1.7 }}>{extras.aiSummary}</p>}
+            {(extras?.topics?.length ?? 0) > 0 && (
+              <div className="row" style={{ gap: 6, marginTop: 12 }}>
+                {extras!.topics.slice(0, 10).map((t) => (
+                  <span key={t.t} className="badge">{t.t} <span className="muted">· {t.c}</span></span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Two columns: facts + country sentiment */}
         <div className="grid grid-2" style={{ marginTop: 28, alignItems: "start" }}>

@@ -46,6 +46,16 @@ export interface NormalizedReview {
   body: string | null;
   country: string; // ISO2 reviewer origin, "ZZ" if unknown
   postedAt: Date | null;
+  verified: boolean;
+  topics: string[];
+}
+
+/** Company-level extras stored in metric_snapshots.raw (from the actor's company info). */
+export interface CompanyExtras {
+  dist: { s1: number; s2: number; s3: number; s4: number; s5: number } | null;
+  responseRate: number | null;
+  responseTime: string | number | null;
+  aiSummary: string | null;
 }
 
 export interface SourceAggregate {
@@ -75,6 +85,32 @@ export function normalizeLiveItem(item: Record<string, any>): NormalizedReview {
     body: item.text ?? null,
     country: iso2(item.reviewerCountry ?? item.countryCode),
     postedAt: rawDate ? new Date(rawDate) : null,
+    verified: Boolean(item.isVerified),
+    topics: Array.isArray(item.topics) ? item.topics.filter((t: unknown): t is string => typeof t === "string") : [],
+  };
+}
+
+/** Company-level extras (lifetime rating distribution, responsiveness, AI summary). */
+export function extractCompanyExtras(items: Record<string, any>[]): CompanyExtras {
+  const c = items.find(
+    (i) => i.companyRating5Star != null || i.companyResponseRate != null || i.aiSummary != null,
+  );
+  const num = (v: unknown): number | null => (typeof v === "number" ? v : null);
+  if (!c) return { dist: null, responseRate: null, responseTime: null, aiSummary: null };
+  const hasDist = c.companyRating1Star != null || c.companyRating5Star != null;
+  return {
+    dist: hasDist
+      ? {
+          s1: num(c.companyRating1Star) ?? 0,
+          s2: num(c.companyRating2Star) ?? 0,
+          s3: num(c.companyRating3Star) ?? 0,
+          s4: num(c.companyRating4Star) ?? 0,
+          s5: num(c.companyRating5Star) ?? 0,
+        }
+      : null,
+    responseRate: num(c.companyResponseRate),
+    responseTime: typeof c.companyResponseTime === "string" || typeof c.companyResponseTime === "number" ? c.companyResponseTime : null,
+    aiSummary: typeof c.aiSummary === "string" && c.aiSummary.trim() ? c.aiSummary : null,
   };
 }
 
@@ -153,6 +189,8 @@ export function mockTrustpilotDay(
       body: positive ? r.pick(SNIPPETS_POS) : r.pick(SNIPPETS_NEG),
       country: r.pick(countryPool),
       postedAt: new Date(`${snapshotDate}T12:00:00Z`),
+      verified: r.next() > 0.4,
+      topics: [],
     });
   }
 

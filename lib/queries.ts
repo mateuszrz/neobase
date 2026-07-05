@@ -99,6 +99,35 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
   }));
 }
 
+export interface ProfileExtras {
+  dist: { s1: number; s2: number; s3: number; s4: number; s5: number } | null;
+  responseRate: number | null;
+  responseTime: string | number | null;
+  aiSummary: string | null;
+  verifiedRatio: number | null;
+  topics: { t: string; c: number }[];
+}
+
+/** Company-level extras from the latest global Trustpilot snapshot's raw column. */
+export async function getProfileExtras(fintechId: string): Promise<ProfileExtras | null> {
+  const rows = await db.execute(sql`
+    SELECT raw FROM metric_snapshots
+    WHERE fintech_id = ${fintechId} AND kind = 'trustpilot' AND country = 'ZZ' AND raw IS NOT NULL
+    ORDER BY snapshot_date DESC
+    LIMIT 1
+  `);
+  const raw = (rows.rows as any[])[0]?.raw;
+  if (!raw) return null;
+  return {
+    dist: raw.dist ?? null,
+    responseRate: raw.responseRate ?? null,
+    responseTime: raw.responseTime ?? null,
+    aiSummary: raw.aiSummary ?? null,
+    verifiedRatio: raw.verifiedRatio ?? null,
+    topics: Array.isArray(raw.topics) ? raw.topics : [],
+  };
+}
+
 export async function getRecentReviews(fintechId: string, limit = 10) {
   return db
     .select({

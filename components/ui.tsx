@@ -222,6 +222,44 @@ export function SeriesChart({
   );
 }
 
+/** Lifetime 1–5★ rating distribution. */
+export function RatingDistribution({ dist }: { dist: { s1: number; s2: number; s3: number; s4: number; s5: number } }) {
+  const rows: [number, number][] = [
+    [5, dist.s5],
+    [4, dist.s4],
+    [3, dist.s3],
+    [2, dist.s2],
+    [1, dist.s1],
+  ];
+  const total = rows.reduce((a, [, v]) => a + (v || 0), 0) || 1;
+  return (
+    <div className="stack-8">
+      {rows.map(([star, v]) => {
+        const pct = Math.round(((v || 0) / total) * 100);
+        return (
+          <div key={star} className="row" style={{ gap: 10 }}>
+            <span style={{ width: 28, fontSize: 12, color: "var(--warm-gray)" }}>{star}★</span>
+            <div className="meter" style={{ flex: 1 }}>
+              <span style={{ width: `${pct}%`, background: star >= 4 ? "var(--cyan-signal)" : star === 3 ? "var(--ash-gray)" : "var(--neg)" }} />
+            </div>
+            <span style={{ width: 36, textAlign: "right", fontSize: 12, color: "var(--warm-gray)" }}>{pct}%</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Small labelled figure row for responsiveness stats. */
+export function MiniStat({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: "1.3rem" }}>{value}</div>
+      <div className="muted" style={{ fontSize: 12 }}>{label}</div>
+    </div>
+  );
+}
+
 /** Positive-sentiment share over time (0–100%). */
 export function SentimentChart({ points }: { points: { date: string; pos: number | null }[] }) {
   const W = 820;
