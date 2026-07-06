@@ -251,14 +251,20 @@ export function SentimentMeter({ pos }: { pos: number | null }) {
 
 /* ─── Time-series chart (Seline-styled inline SVG) ────────────────────────── */
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function fmtMonth(d: string): string {
+  const [y, m] = d.split("-");
+  return `${MONTHS[parseInt(m, 10) - 1] ?? m} '${(y ?? "").slice(2)}`;
+}
+
 export function SeriesChart({
   points,
 }: {
   points: { date: string; rating: number | null; count: number | null }[];
 }) {
   const W = 820;
-  const H = 260;
-  const PAD = { t: 24, r: 16, b: 28, l: 16 };
+  const H = 280;
+  const PAD = { t: 26, r: 20, b: 40, l: 16 };
   const rated = points.filter((p) => p.rating != null);
   if (rated.length < 2) {
     return <p className="muted">Not enough history yet — data accrues daily.</p>;
@@ -281,26 +287,60 @@ export function SeriesChart({
   const areaFill = `${countLine} L${x(n - 1)},${H - PAD.b} L${x(0)},${H - PAD.b} Z`;
 
   const last = points[n - 1];
+  const ticks = [...new Set([0, Math.floor((n - 1) / 3), Math.floor((2 * (n - 1)) / 3), n - 1])];
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Trustpilot rating and review count over time">
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="TrustScore and review volume over time">
+      <defs>
+        <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--sky-wash)" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="var(--sky-wash)" stopOpacity="0.04" />
+        </linearGradient>
+      </defs>
+
+      {/* rating gridlines (1–5★) */}
       {[1, 2, 3, 4, 5].map((r) => (
         <g key={r}>
           <line x1={PAD.l} x2={W - PAD.r} y1={yRating(r)} y2={yRating(r)} stroke="var(--stone-border)" strokeWidth={1} />
-          <text x={W - PAD.r} y={yRating(r) - 3} textAnchor="end" fontSize={10} fill="var(--ash-gray)">
+          <text x={W - PAD.r} y={yRating(r) - 4} textAnchor="end" fontSize={10} fill="var(--ash-gray)">
             {r}★
           </text>
         </g>
       ))}
-      <path d={areaFill} fill="var(--sky-wash)" opacity={0.5} />
-      <path d={countLine} fill="none" stroke="var(--ash-gray)" strokeWidth={1.5} strokeDasharray="3 3" />
-      <path d={ratingLine} fill="none" stroke="var(--cyan-signal)" strokeWidth={2.5} />
-      {last.rating != null && <circle cx={x(n - 1)} cy={yRating(last.rating)} r={4} fill="var(--cyan-signal)" />}
-      <text x={PAD.l} y={14} fontSize={11} fill="var(--cyan-edge)">
-        ● TrustScore
-      </text>
-      <text x={PAD.l + 96} y={14} fontSize={11} fill="var(--warm-gray)">
-        ┄ Review count
+
+      {/* review-volume area + edge */}
+      <path d={areaFill} fill="url(#volFill)" />
+      <path d={countLine} fill="none" stroke="var(--stone-muted)" strokeWidth={1.5} strokeLinejoin="round" />
+
+      {/* TrustScore line + endpoint callout */}
+      <path d={ratingLine} fill="none" stroke="var(--cyan-signal)" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+      {last.rating != null && (
+        <>
+          <circle cx={x(n - 1)} cy={yRating(last.rating)} r={4} fill="var(--cyan-signal)" stroke="#fff" strokeWidth={1.5} />
+          <text x={x(n - 1) - 8} y={yRating(last.rating) - 9} textAnchor="end" fontSize={12} fontWeight={600} fill="var(--cyan-edge)">
+            {last.rating.toFixed(1)}★
+          </text>
+        </>
+      )}
+
+      {/* x-axis date labels */}
+      {ticks.map((i) => (
+        <text
+          key={i}
+          x={x(i)}
+          y={H - 14}
+          textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
+          fontSize={10}
+          fill="var(--ash-gray)"
+        >
+          {fmtMonth(points[i].date)}
+        </text>
+      ))}
+
+      {/* legend */}
+      <text x={PAD.l} y={14} fontSize={11} fill="var(--cyan-edge)">● TrustScore</text>
+      <text x={PAD.l + 92} y={14} fontSize={11} fill="var(--warm-gray)">
+        ▬ Review volume{last.count != null ? ` · ${fmt(last.count)}` : ""}
       </text>
     </svg>
   );
