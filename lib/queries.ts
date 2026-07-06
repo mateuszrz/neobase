@@ -105,6 +105,34 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
   }));
 }
 
+export interface PlatformSeries {
+  kind: string;
+  points: { date: string; pos: number }[];
+}
+
+/**
+ * Live positive-sentiment series per platform (Trustpilot / Google Play / App
+ * Store), for the per-platform sentiment trend. Live snapshots only.
+ */
+export async function getPlatformSentimentSeries(fintechId: string): Promise<PlatformSeries[]> {
+  const rows = await db.execute(sql`
+    SELECT kind, snapshot_date::text AS date, sentiment_pos AS pos
+    FROM metric_snapshots
+    WHERE fintech_id = ${fintechId} AND country = 'ZZ'
+      AND kind IN ('trustpilot', 'google_play', 'app_store')
+      AND raw IS NOT NULL AND sentiment_pos IS NOT NULL
+    ORDER BY kind, snapshot_date
+  `);
+  const order = ["trustpilot", "google_play", "app_store"];
+  const byKind = new Map<string, { date: string; pos: number }[]>();
+  for (const r of rows.rows as any[]) {
+    const arr = byKind.get(r.kind) ?? [];
+    arr.push({ date: String(r.date).slice(0, 10), pos: Number(r.pos) });
+    byKind.set(r.kind, arr);
+  }
+  return order.filter((k) => byKind.has(k)).map((k) => ({ kind: k, points: byKind.get(k)! }));
+}
+
 export interface ProfileExtras {
   dist: { s1: number; s2: number; s3: number; s4: number; s5: number } | null;
   responseRate: number | null;

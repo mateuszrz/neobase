@@ -474,3 +474,82 @@ export function SentimentChart({ points }: { points: { date: string; pos: number
     </svg>
   );
 }
+
+/** Positive-sentiment trend per platform (multi-line, auto-scaled). */
+export function PlatformSentimentChart({
+  series,
+}: {
+  series: { kind: string; points: { date: string; pos: number }[] }[];
+}) {
+  const allDates = [...new Set(series.flatMap((s) => s.points.map((p) => p.date)))].sort();
+  if (allDates.length < 2) return <p className="muted">Sentiment history accrues daily.</p>;
+  const idx = new Map(allDates.map((d, i) => [d, i]));
+  const n = allDates.length;
+
+  const vals = series.flatMap((s) => s.points.map((p) => p.pos));
+  const lo = Math.max(0, Math.floor(Math.min(...vals) - 2));
+  let hi = Math.min(100, Math.ceil(Math.max(...vals) + 2));
+  if (hi - lo < 4) hi = Math.min(100, lo + 4);
+
+  const W = 820;
+  const H = 240;
+  const PAD = { t: 16, r: 20, b: 36, l: 16 };
+  const x = (i: number) => PAD.l + (i / (n - 1)) * (W - PAD.l - PAD.r);
+  const y = (v: number) => PAD.t + (1 - (v - lo) / (hi - lo)) * (H - PAD.t - PAD.b);
+  const ticks = [...new Set([0, Math.floor((n - 1) / 3), Math.floor((2 * (n - 1)) / 3), n - 1])];
+  const gridVals = [...new Set([hi, Math.round((lo + hi) / 2), lo])];
+
+  return (
+    <>
+      <div className="row" style={{ gap: 16, marginBottom: 12 }}>
+        {series.map((s) => {
+          const m = PLATFORM_META[s.kind] ?? { label: s.kind, accent: "var(--ash-gray)" };
+          const last = s.points[s.points.length - 1];
+          return (
+            <span key={s.kind} className="row" style={{ gap: 6 }}>
+              <span style={{ width: 9, height: 9, borderRadius: 999, background: m.accent, flex: "0 0 auto" }} />
+              <span className="muted" style={{ fontSize: 12 }}>
+                {m.label}
+                {last ? ` · ${last.pos.toFixed(0)}%` : ""}
+              </span>
+            </span>
+          );
+        })}
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Positive sentiment per platform over time">
+        {gridVals.map((v) => (
+          <g key={v}>
+            <line x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} stroke="var(--stone-border)" strokeWidth={1} />
+            <text x={W - PAD.r} y={y(v) - 4} textAnchor="end" fontSize={10} fill="var(--ash-gray)">{v}%</text>
+          </g>
+        ))}
+        {series.map((s) => {
+          const m = PLATFORM_META[s.kind] ?? { label: s.kind, accent: "var(--ash-gray)" };
+          const pts = s.points.filter((p) => idx.has(p.date));
+          if (!pts.length) return null;
+          const line = pts.map((p, i) => `${i === 0 ? "M" : "L"}${x(idx.get(p.date)!)},${y(p.pos)}`).join(" ");
+          const last = pts[pts.length - 1];
+          return (
+            <g key={s.kind}>
+              <path d={line} fill="none" stroke={m.accent} strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+              {pts.length === 1 && <circle cx={x(idx.get(pts[0].date)!)} cy={y(pts[0].pos)} r={3} fill={m.accent} />}
+              <circle cx={x(idx.get(last.date)!)} cy={y(last.pos)} r={3.5} fill={m.accent} stroke="#fff" strokeWidth={1.5} />
+            </g>
+          );
+        })}
+        {ticks.map((i) => (
+          <text
+            key={i}
+            x={x(i)}
+            y={H - 12}
+            textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
+            fontSize={10}
+            fill="var(--ash-gray)"
+          >
+            {fmtMonth(allDates[i])}
+          </text>
+        ))}
+      </svg>
+    </>
+  );
+}
