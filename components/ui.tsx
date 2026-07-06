@@ -100,6 +100,27 @@ export function fmtMoney(usd: number | null | undefined): string {
   return `$${usd.toLocaleString()}`;
 }
 
+/**
+ * Human-friendly reply time. The Trustpilot actor returns values like "0.77 days"
+ * or a bare number of days; render sub-day spans in hours ("~18h") instead.
+ */
+export function fmtReplyTime(v: string | number | null | undefined): string {
+  if (v == null || v === "") return "—";
+  const s = String(v).trim();
+  const m = s.match(/^([\d.]+)\s*(minute|min|hour|hr|day|week|month)s?\b/i);
+  const n = m ? parseFloat(m[1]) : typeof v === "number" ? v : NaN;
+  if (!Number.isFinite(n)) return s; // unrecognised format — show as-is
+  const unit = (m?.[2] ?? "day").toLowerCase();
+  const hoursPer: Record<string, number> = { minute: 1 / 60, min: 1 / 60, hour: 1, hr: 1, day: 24, week: 168, month: 720 };
+  const hours = n * (hoursPer[unit] ?? 24);
+  if (hours < 1) return "< 1h";
+  if (hours < 24) return `~${Math.round(hours)}h`;
+  const days = hours / 24;
+  if (days < 7) return `~${Math.round(days)} day${Math.round(days) === 1 ? "" : "s"}`;
+  const weeks = days / 7;
+  return `~${Math.round(weeks)} week${Math.round(weeks) === 1 ? "" : "s"}`;
+}
+
 /** Directional change chip: ▲ green-ish / ▼ warn / — flat, with an optional context label. */
 export function Delta({
   value,

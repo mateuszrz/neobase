@@ -11,6 +11,7 @@ import {
   flagEmoji,
   fmt,
   fmtMoney,
+  fmtReplyTime,
 } from "@/components/ui";
 
 function FactRow({ label, value }: { label: string; value: ReactNode }) {
@@ -133,7 +134,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                 <h2 className="subheading" style={{ marginBottom: 16 }}>Company responsiveness</h2>
                 <div className="row" style={{ gap: 40 }}>
                   {extras?.responseRate != null && <MiniStat label="Replies to reviews" value={`${Math.round(extras.responseRate)}%`} />}
-                  {extras?.responseTime != null && <MiniStat label="Typical reply time" value={String(extras.responseTime)} />}
+                  {extras?.responseTime != null && <MiniStat label="Typical reply time" value={fmtReplyTime(extras.responseTime)} />}
                   {extras?.verifiedRatio != null && <MiniStat label="Verified (recent)" value={`${extras.verifiedRatio}%`} />}
                 </div>
               </div>
