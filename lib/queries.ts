@@ -72,6 +72,7 @@ export interface SeriesPoint {
   rating: number | null;
   count: number | null;
   pos: number | null;
+  live: boolean; // from the live pipeline (has raw) vs seeded monthly history
 }
 
 export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
@@ -81,6 +82,8 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
       rating: metricSnapshots.rating,
       count: metricSnapshots.reviewCount,
       pos: metricSnapshots.sentimentPos,
+      // Live pipeline snapshots carry a raw payload; seeded history does not.
+      live: sql<boolean>`${metricSnapshots.raw} IS NOT NULL`,
     })
     .from(metricSnapshots)
     .where(
@@ -96,6 +99,7 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
     rating: r.rating == null ? null : Number(r.rating),
     count: r.count == null ? null : Number(r.count),
     pos: r.pos == null ? null : Number(r.pos),
+    live: Boolean(r.live),
   }));
 }
 
