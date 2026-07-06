@@ -19,6 +19,7 @@
     "apify:test": "tsx scripts/apify-live-test.ts",
     "apify:ids": "tsx scripts/set-app-ids.ts",
     "apify:appids": "tsx scripts/collect-app-ids.ts",
+    "apify:crypto": "tsx scripts/ingest-crypto.ts",
     "apify:backfill": "tsx scripts/backfill.ts"
   },
   "dependencies": {
