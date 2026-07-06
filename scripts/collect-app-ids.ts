@@ -40,7 +40,7 @@ function regDomain(url: string | null | undefined): string | null {
 
 /** Fintechs whose mobile sources aren't live yet (no active google_play/app_store). */
 const targets = await db
-  .select({ id: fintechs.id, name: fintechs.name, website: fintechs.website })
+  .select({ id: fintechs.id, name: fintechs.name, website: fintechs.website, country: fintechs.country })
   .from(fintechs)
   .where(
     sql`NOT EXISTS (SELECT 1 FROM ${sources} s WHERE s.fintech_id = ${fintechs.id}
@@ -65,14 +65,17 @@ interface Match {
   as: { id: string; developer: string; via: string } | null;
 }
 
-async function resolve(ft: { id: string; name: string; website: string | null }): Promise<Match> {
+async function resolve(ft: { id: string; name: string; website: string | null; country: string | null }): Promise<Match> {
   const dom = regDomain(ft.website);
   const token = (dom?.split(".")[0] ?? ft.id).toLowerCase();
   const hit = (s: unknown) => typeof s === "string" && token.length >= 3 && s.toLowerCase().includes(token);
+  // Search the fintech's home-country storefront — regional apps (illimity/it,
+  // imagin/es) don't surface in the US store, and Binance-global isn't there.
+  const country = (ft.country ?? "us").toLowerCase();
 
   const [gpRes, asRes] = await Promise.all([
-    search(env.APIFY_GOOGLE_PLAY_ACTOR, { mode: "search", searchTerms: [ft.name], maxResults: 6, country: "us", language: "en" }).catch(() => []),
-    search(env.APIFY_APPSTORE_ACTOR, { mode: "search", query: ft.name, maxResults: 6, country: "us" }).catch(() => []),
+    search(env.APIFY_GOOGLE_PLAY_ACTOR, { mode: "search", searchTerms: [ft.name], maxResults: 6, country, language: "en" }).catch(() => []),
+    search(env.APIFY_APPSTORE_ACTOR, { mode: "search", query: ft.name, maxResults: 6, country }).catch(() => []),
   ]);
 
   // Google Play: prefer exact developer-domain match, else brand-token match.
