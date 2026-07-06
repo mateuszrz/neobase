@@ -1,84 +1,83 @@
 # NeoBase — Session handoff (resume here)
 
-_Last worked: 2026-07-05/06. Branch: `feat/saas-mvp` (not pushed, not merged to main)._
+_Last worked: 2026-07-06. Branch `feat/saas-mvp` — **merged to `main` and DEPLOYED to Vercel production (green).**_
 
 ## What NeoBase is now
 
 Rebuilding the old static `neobase.co` SPA into a **fintech competitive-intelligence SaaS**:
-1. **Public directory** (free, SEO) — neobanks + crypto exchanges, ratings/sentiment/trends.
+1. **Public directory** (free, SEO) — neobanks + crypto exchanges, ratings/sentiment/trends. **LIVE in production.**
 2. **Paid monitoring panel** (later) — buy a country + competitors, daily data + Claude AI digests, billed via Paddle.
 
 Full plan: `C:\Users\PC\.claude\plans\merry-cuddling-hollerith.md`.
 
-## Stack (decided + live)
+## Stack
 
-- **Next.js 16 (App Router)** on Vercel · **Neon Postgres** via Drizzle (HTTP driver) · **Claude API** (AI, later) · **Paddle** (billing, later).
-- **Apify** for scraping. Trustpilot actor: `blackfalcondata/trustpilot-reviews-scraper` (LIVE, paid, working).
-- Orchestration: **Vercel Cron + webhooks + Postgres `job_queue`** (no Inngest).
-- Design system: **`DESIGN.md`** ("Seline" — warm paper, cyan accent, Inter/Inter Tight). Frontend follows it.
+- **Next.js 16 (App Router)** on Vercel (production) · **Neon Postgres** via Drizzle (HTTP driver, shared between local + prod) · Claude API (later) · Paddle (later).
+- **Apify** scraping — **histogram-only, anonymized** (see below). Orchestration: Vercel Cron + Apify webhooks + Postgres `job_queue`.
+- Design system **"Seline"** (`DESIGN.md`) — warm paper, one cyan accent, hairline cards, editorial rhythm.
 
-## Done this session
+## ⚠️ DO FIRST — set `APP_BASE_URL` on Vercel (blocks the daily pipeline)
 
-- **Phase 1 — data pipeline (complete, verified):** repo restructured to Next.js (old files in `_legacy/`); Drizzle schema + migration; seed from `_legacy/app.js` (128 fintechs + monthly snapshot history); cron→queue→process pipeline, idempotent; **live Trustpilot ingestion working** (real reviews, TrustScore, lifetime count, per-country segmentation).
-- **Only newest reviews:** daily scrape uses `sort=recency` + `lookbackDays=3` + `maxResults=500` (see `trustpilotDailyInput()`), never full history.
-- **Phase 2 — public frontend (Seline):** home, `/neobanks` (country filter), `/exchanges`, profile pages (SSG, 128 pre-rendered), `/about`, `/monitoring` (Paddle pricing teaser).
-- **Analytical neobank profile (per product direction):**
-  - **No individual review text shown** (reviews scraped for sentiment only).
-  - Ratings + review-volume chart, **sentiment-over-time** chart, change tiles (Δ).
-  - Company facts panel; per-country sentiment.
-  - **Rating distribution (1–5★)** + **company responsiveness** (reply rate/time, verified %) from `metric_snapshots.raw` — populated live for Revolut.
-  - `aiSummary` + `topics` wired but the actor returned them empty this run (section auto-hides).
+The daily cron starts Apify runs but `startActorRun` only registers the completion **webhook** when `APP_BASE_URL` is an https non-localhost URL. Until it's set in **Vercel → Settings → Environment Variables** (Production **and** Preview), completed runs never enqueue processing → **no new daily data → trends don't grow.** Set it to the prod URL (no trailing slash), then Redeploy. This is a dashboard action (no Vercel token/access from here).
 
-## Data currently in Neon
+## Ingestion — HISTOGRAM-ONLY, ANONYMIZED (no reviews, no PII)
 
-- `fintechs` 128 · `sources` 512 · `metric_snapshots` ~4.6k (seeded monthly history + live Revolut) · `reviews` ~580 (Revolut live only) · `ingest_runs`/`job_queue` clean.
-- **Ingestion is now HISTOGRAM-ONLY (2026-07-06): no individual reviews, no PII, ~$0.018/fintech.** Every source returns only the anonymized aggregate (rating + total count + 1–5★ histogram); sentiment derived from the histogram (lifetime, stable). Trustpilot `companyInfo`, Google Play `details`, App Store `logiover/app-store-data-api` `ratings`. See [[review-source-costs]]. Trade-off: no per-country segmentation going forward (existing per-country rows are stale history).
-- **Coverage (backfilled 2026-07-06): 110/128 fintechs have ≥1 live source** (was 6). Trustpilot 90, Google Play 78, App Store 70; **49 fintechs fully cross-platform**. App ids discovered via `npm run apify:appids` (search mode in the fintech's home-country storefront, domain-verified auto-activate only). Backfill via `npm run apify:backfill -- <kind> <batch> [missing]`. Cross-platform insight: mobile ratings run higher than Trustpilot (Chime TP 3.5 vs GP 4.73 / AS 4.82).
-- **~18 fintechs still no source** = genuine long tail: crypto exchanges (binance, bybit, gate, htx, bitvavo — main apps not on Google Play; would need manual known App Store ids) + generic-name fintechs (center, charlie, chip, cogni, imagin, varo_bank…). Manually set app ids if any are priorities.
-- **Data note:** seed has duplicate fintechs (illimity+illimity_bank, judobank+judo_bank, atombank+atom_bank) — same entity, two slugs. Worth de-duping.
-- **6 neobanks have live Trustpilot data** (backfilled 2026-07-06): Revolut, Monzo, N26, Wise, Chime, Bunq. ZZ TrustScores: Revolut 4.7, Wise 4.30, N26 4.10, Bunq 4.10, Monzo 4.60, Chime 3.50; lifetime counts 13k–294k; rich per-country breakdowns (Wise 39 countries, N26 12). Backfill cost: 4 new runs = **$0.30** total (Wise $0.22 — 39 countries = more compute). **All 6 have `raw` extras** (rating distribution + responsiveness) — `includeCompanyInfo:true` populates them on every daily run, so all 6 profiles show the analytical sections, not just Revolut. Other ~122 fintechs have seeded monthly history only.
+Every source fetches only the aggregate (rating + total count + 1–5★ histogram); sentiment is derived from the histogram (lifetime). ~**$0.018/fintech** all-in. See [[review-source-costs]].
+- **Trustpilot** `blackfalcondata/trustpilot-reviews-scraper` mode `companyInfo` — $0.010/run.
+- **Google Play** `automation-lab/google-play-scraper` mode `details` (score, ratings, histogram, `installs`) — $0.007/run.
+- **App Store** `logiover/app-store-data-api` mode `ratings` (count + histogram; avg computed) — $0.001/run.
+- Handlers: `lib/ingest/{types,handlers,trustpilot,googleplay,appstore}.ts` (KindHandler registry). Shared `Dist`/`distSentiment`/`distAverage` in `types.ts`.
+- **Historical `reviews` table PURGED** (anonymization) — it stays empty; handlers store no reviews.
 
-## How to run (do this first in the morning)
+## Data in Neon
 
-Open your own PowerShell (server dies when Claude's turn ends):
+- **121 fintechs** (de-duped from 128 — removed 7 underscore duplicates; seed has a `DUP_SKIP` guard). `reviews` EMPTY. `metric_snapshots` = seeded monthly history + live points.
+- **Coverage: 110/121 fintechs have ≥1 live source.** Trustpilot 90, Google Play 78, App Store 76; ~49 fully cross-platform. Insight surfaced: mobile ratings run higher than Trustpilot (Chime TP 3.5 vs GP 4.73 / AS 4.82).
+- **~11 fintechs no live source** = long tail: generic-name neobanks (center, chip, cogni, imagin, varo_bank…) + HTX (no confident app match). Crypto exchanges (binance/bybit/gate/bitvavo/swissborg/bitcoin_suisse) were added manually via `scripts/ingest-crypto.ts`.
+- Only ~2 days of live points so far (2026-07-05 review-era + 07-06 histogram). **Trends grow as the daily cron runs** — needs `APP_BASE_URL` (above).
+
+## Profile page (redesigned + polished 2026-07-06)
+
+`components/Profile.tsx` + `components/ui.tsx`. Structure: header (eyebrow category·country) → **cross-platform hero** (platform glyphs, rating, sentiment meter, Google Play installs, consensus line) → rating distribution (best source, TP→GP→AS fallback, per-star counts) + Trustpilot responsiveness → **live-only** volume chart (dates, gradient, endpoint callout; ≥2 live days) → **per-platform sentiment trend** (multi-line, auto-scaled) → company facts → about/FAQ. Dead sections removed (per-country, momentum tiles). Charts show **live data only** (`raw IS NOT NULL`), never seeded history.
+
+## How to run (your own PowerShell — server dies when Claude's turn ends)
+
 ```powershell
 cd C:\Users\PC\Documents\GitHub\neobase
-npm run start          # serves the production build at http://localhost:3000
-# or: npm run dev      # hot-reload
+npm run dev            # hot-reload at http://localhost:3000
 ```
-Pages: `/`, `/neobanks/`, `/fintech/revolut/`, `/exchange/binance/`, `/monitoring/`.
+Key pages: `/`, `/neobanks/`, `/fintech/revolut/`, `/exchange/binance/`, `/monitoring/`, `/sitemap.xml`, `/robots.txt`.
 
-Other commands:
+Pipeline / data commands:
 ```powershell
-npm run seed                 # reseed fintechs from _legacy/app.js (idempotent)
-npm run db:studio            # browse Neon tables
-npm run apify:test -- revolut   # full live Trustpilot ingest for one fintech (paid Apify)
-npm run apify:probe -- revolut.com   # inspect actor output shape
-npm run pipeline:kickoff / :drain    # run the mock/live daily pipeline locally
-npm run db:migrate           # apply Drizzle migrations
+npm run apify:test -- <slug> [trustpilot|google_play|app_store]  # one live ingest (paid)
+npm run apify:backfill -- <kind> <batch> [missing]               # bulk backfill (missing = only sources lacking today's snapshot)
+npm run apify:appids [dry N]     # discover app ids via search (home-country storefront, domain-verified)
+npm run apify:crypto             # manual crypto-exchange app ids + ingest
+npm run apify:ids                # set the 6 original neobanks' store ids
+npm run seed                     # reseed from _legacy/app.js (idempotent; skips DUP_SKIP)
+npm run db:studio                # browse Neon
 ```
 
-## Secrets / env (`.env`, gitignored — NOT in repo)
+## Env (`.env`, gitignored)
 
-`DATABASE_URL` (Neon), `APIFY_TOKEN` + `APIFY_TRUSTPILOT_ACTOR` + `APIFY_GOOGLE_PLAY_ACTOR` + `APIFY_APPSTORE_ACTOR` (all set), `CRON_SECRET`, `APIFY_WEBHOOK_SECRET`. `ANTHROPIC_API_KEY` (Claude — paid, not yet filled), Paddle keys (not yet). ⚠️ The Neon + Apify secrets were pasted in chat earlier — consider rotating.
+`DATABASE_URL`, `APIFY_TOKEN`, `APIFY_TRUSTPILOT_ACTOR=blackfalcondata/trustpilot-reviews-scraper`, `APIFY_GOOGLE_PLAY_ACTOR=automation-lab/google-play-scraper`, `APIFY_APPSTORE_ACTOR=logiover/app-store-data-api`, `CRON_SECRET`, `APIFY_WEBHOOK_SECRET` — all set locally. `APP_BASE_URL` local=localhost. `ANTHROPIC_API_KEY`, Paddle — not filled. **On Vercel: same vars must be set for Production + Preview** (esp. `DATABASE_URL` + `APP_BASE_URL`). ⚠️ Neon+Apify secrets pasted in chat earlier — consider rotating.
 
-## Product decisions to remember
+## Product decisions
 
-- **Only scrape newest reviews** (cost + relevance).
-- **Never display individual review text** — aggregate ratings/sentiment/trends only.
-- Scraping the full 128 daily = cost; later gate live scraping to **paid monitors only** (Paddle entitlements).
+- **Anonymized aggregates only** — no individual reviews fetched or stored, ever (cost + PII). Sentiment from histograms. See [[no-review-text-on-site]].
+- **Auto push+merge to `main` after each verified change** (no per-change confirmation) — see [[auto-push-merge]]. `main` is the Vercel prod branch. Merge via GitHub API `POST /repos/mateuszrz/neobase/merges` (no `gh` CLI; token from `git credential fill`).
+- Later: gate live scraping to paid monitors (Paddle entitlements); scraping all 121 daily is the cost driver.
 
-## Open threads / next steps (pick up here)
+## Open threads / next steps
 
-1. **Finish visual review of the profile** — confirm rating-distribution + responsiveness render nicely at `/fintech/revolut/` (build passed; last live render-check was inconclusive due to server timing — just open it).
-2. **Sentiment drivers/topics — DIAGNOSED, DEFERRED.** Root cause: the actor does **not** emit per-review `topics` (the `topics` *input* is a category *filter*, not output), and `aiSummary` only appears "when available" (absent for Revolut). So `normalizeLiveItem`'s `item.topics` maps a non-existent field → tally always empty → section auto-hides. To ship this we must derive themes ourselves from review text (aggregate only, no raw text shown). Reviews are **multilingual** (PL/IT/EN…), so an English keyword lexicon is weak — the real fix is **Claude-based extraction at ingest** (needs `ANTHROPIC_API_KEY`, ~pennies/fintech), aligning with the paid-tier "AI digests" vision. **Deferred by product decision** (2026-07-06) until the Claude tier is built. Dead `topics` mapping left in place (harmless — always empty).
-3. **Backfill live data — top 6 neobanks DONE** (Revolut, Monzo, N26, Wise, Chime, Bunq; $0.30 for the 4 new runs; all 6 have full `raw` extras). Next: extend to more fintechs/markets (crypto exchanges are still all seeded), or decide priority markets.
-4. **Additional sources:**
-   - **Google Play + App Store — BUILT & LIVE (2026-07-06).** Pipeline generalized to a `KindHandler` registry (`lib/ingest/{types,handlers,googleplay,appstore}.ts`); `automation-lab/google-play-scraper` + `automation-lab/apple-app-store-scraper` in `details` mode (GP $0.007/run, AS ~$0.05/run). `npm run apify:test -- <slug> google_play|app_store`; `npm run apify:ids` sets store app ids. Only the 6 live neobanks activated — extend by adding app ids to `scripts/set-app-ids.ts`. See [[review-source-costs]].
-   - **News (Google News, brand queries per market) via DataForSEO** — planned separate provider (not Apify); ~$0.0006/request (standard queue), $50 min deposit. NOT built. See [[news-source-dataforseo]].
-   - Trustpilot dominates the bill (~$1.29/1k, ~13× mobile). All sources: aggregate only, never show raw text.
-5. Later phases: dynamic `sitemap.ts`/`robots.ts` + hreflang; Auth.js; Paddle; Claude AI digests; deploy (Vercel preview → neobase.co).
+1. ⚠️ **Set `APP_BASE_URL` on Vercel prod** (above) — unblocks the daily cron so trends accrue. Highest priority.
+2. **DataForSEO news source** — Google News for brand queries per market; ~$0.0006/request, $50 min deposit. Planned, NOT built. See [[news-source-dataforseo]].
+3. **Long-tail coverage** — manually set app ids for any priority fintechs among the ~11 with no source (HTX, imagin, varo_bank, chip…).
+4. **Sentiment drivers/topics — SHELVED.** No review text now (anonymized), so themes-from-text would reintroduce PII. Would need a separate source. See [[trustpilot-actor-no-topics]].
+5. **Paid tier (later):** Auth.js, Paddle billing, Claude AI digests, per-org monitors.
+6. **SEO polish:** hreflang (sitemap/robots done).
 
-## Git
+## Git / deploy
 
-Branch `feat/saas-mvp`. Commits: MVP pipeline → newest-reviews → Seline frontend → analytical profile → rating-distribution/responsiveness. Nothing pushed. `.env` and `_legacy/` design file handled; no secrets committed.
+On `main`, deployed to Vercel production (green). This session's arc: histogram-only anonymized ingestion → dedupe → deploy fixes + re-import → sitemap/robots → full profile redesign + polish (cross-platform hero, live-only charts, per-platform sentiment trend). Auto push+merge active. `.env`/`_legacy` handled; no secrets committed.
