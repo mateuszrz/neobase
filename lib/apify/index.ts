@@ -11,50 +11,36 @@ export function apify(): ApifyClient {
 }
 
 // ─── Per-kind actor inputs ───────────────────────────────────────────────────
-// Every builder targets ONLY the newest data (a small window), never full
-// history: reviews dedupe on upsert and re-scraping lifetime volume daily is
-// wasteful. Each run also carries the store/company aggregate (rating + total
-// count) so the daily metric_snapshots point is self-contained.
+// Every source fetches ONLY the anonymised aggregate (rating + total count +
+// 1–5★ histogram) — never individual reviews. Sentiment is derived from the
+// histogram, so a run carries no personal data and costs a fraction of a
+// review scrape.
 
 /**
- * Daily Trustpilot input: newest reviews (recency-sorted lookback) +
- * `includeCompanyInfo` for the current TrustScore + lifetime review count.
+ * Trustpilot: `companyInfo` mode returns the company aggregate — TrustScore,
+ * lifetime review count, 1–5★ distribution, response rate/time — with no
+ * reviews. Sentiment comes from the distribution.
  */
 export function trustpilotDailyInput(domain: string, _storeCountry?: string): Record<string, unknown> {
-  return {
-    companyDomain: domain,
-    mode: "reviews",
-    sort: "recency",
-    lookbackDays: 3,
-    maxResults: 500, // safety cap; a lookback window rarely exceeds this
-    includeCompanyInfo: true,
-    skipReposts: true,
-  };
+  return { mode: "companyInfo", companyDomain: domain };
 }
 
 /**
  * Google Play: `details` mode returns the app aggregate (score, total ratings,
- * 1–5★ histogram) in a single item — rating, volume AND sentiment all come from
- * the store listing, so we never scrape individual reviews here.
+ * 1–5★ histogram) in a single item — rating, volume AND sentiment all from the
+ * store listing, no reviews.
  */
 export function googlePlayDailyInput(appId: string, storeCountry = "us"): Record<string, unknown> {
   return { mode: "details", appIds: [appId], country: storeCountry.toLowerCase(), language: "en" };
 }
 
 /**
- * App Store: `details` gives the app aggregate (rating, ratingCount) but no
- * histogram, so we ride newest reviews along (`includeReviews`) to derive recent
- * sentiment. Small sample — enough for a sentiment share, cheap.
+ * App Store: `ratings` mode returns the all-time rating count + 1–5★ histogram
+ * (Apple exposes no average, so we compute it from the histogram). No reviews.
+ * `externalRef` is the numeric App Store id.
  */
 export function appStoreDailyInput(appId: string, storeCountry = "us"): Record<string, unknown> {
-  return {
-    mode: "details",
-    appIds: [appId],
-    country: storeCountry.toLowerCase(),
-    includeReviews: true,
-    maxItems: 50,
-    reviewSort: "mostRecent",
-  };
+  return { mode: "ratings", id: Number(appId), country: storeCountry.toLowerCase() };
 }
 
 /** kind → { actor env resolver, daily input builder } — drives the generic kickoff. */

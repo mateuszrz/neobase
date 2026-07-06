@@ -7,8 +7,8 @@
  * verification checks (a 3rd run must add nothing new).
  */
 
-import type { KindHandler, NormalizedReview, SourceAggregate, DaySummary } from "./types";
-import { iso2, sentimentShare } from "./types";
+import type { KindHandler, NormalizedReview, SourceAggregate, DaySummary, Dist } from "./types";
+import { distSentiment } from "./types";
 
 export type { NormalizedReview, SourceAggregate } from "./types";
 
@@ -42,104 +42,53 @@ function rng(seed: string) {
   };
 }
 
-// ─── Company extras ─────────────────────────────────────────────────────────
+// ─── Company aggregate handler (companyInfo mode — no reviews, no PII) ───────
 
-/** Company-level extras stored in metric_snapshots.raw (from the actor's company info). */
-export interface CompanyExtras {
-  dist: { s1: number; s2: number; s3: number; s4: number; s5: number } | null;
-  responseRate: number | null;
-  responseTime: string | number | null;
-  aiSummary: string | null;
-}
+const num = (v: unknown): number | null => {
+  if (v == null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+};
 
-// ─── Live normaliser (best-effort mapping of the Apify actor's output) ───────
-
-/** True for dataset items that are individual reviews (the actor also emits transparency reports). */
-export function isReviewItem(item: Record<string, any>): boolean {
-  return item.type ? item.type === "review" : Boolean(item.reviewId);
-}
-
-/** Map a blackfalcondata/trustpilot-reviews-scraper review item. */
-export function normalizeLiveItem(item: Record<string, any>): NormalizedReview {
-  const externalId = String(item.reviewId ?? item.reviewUrl ?? item.contentHash);
-  const rawDate = item.publishedDate ?? item.experiencedDate ?? item.updatedDate ?? null;
+/** 1–5★ distribution from a companyInfo item (rating1Star … rating5Star). */
+function companyDist(c: Record<string, any>): Dist | null {
+  const s1 = num(c.rating1Star);
+  const s5 = num(c.rating5Star);
+  if (s1 == null && s5 == null) return null;
   return {
-    externalId,
-    rating: typeof item.rating === "number" ? item.rating : null,
-    title: item.title ?? null,
-    body: item.text ?? null,
-    country: iso2(item.reviewerCountry ?? item.countryCode),
-    postedAt: rawDate ? new Date(rawDate) : null,
-    verified: Boolean(item.isVerified),
-    topics: Array.isArray(item.topics) ? item.topics.filter((t: unknown): t is string => typeof t === "string") : [],
-  };
-}
-
-/** Company-level extras (lifetime rating distribution, responsiveness, AI summary). */
-export function extractCompanyExtras(items: Record<string, any>[]): CompanyExtras {
-  const c = items.find(
-    (i) => i.companyRating5Star != null || i.companyResponseRate != null || i.aiSummary != null,
-  );
-  const num = (v: unknown): number | null => (typeof v === "number" ? v : null);
-  if (!c) return { dist: null, responseRate: null, responseTime: null, aiSummary: null };
-  const hasDist = c.companyRating1Star != null || c.companyRating5Star != null;
-  return {
-    dist: hasDist
-      ? {
-          s1: num(c.companyRating1Star) ?? 0,
-          s2: num(c.companyRating2Star) ?? 0,
-          s3: num(c.companyRating3Star) ?? 0,
-          s4: num(c.companyRating4Star) ?? 0,
-          s5: num(c.companyRating5Star) ?? 0,
-        }
-      : null,
-    responseRate: num(c.companyResponseRate),
-    responseTime: typeof c.companyResponseTime === "string" || typeof c.companyResponseTime === "number" ? c.companyResponseTime : null,
-    aiSummary: typeof c.aiSummary === "string" && c.aiSummary.trim() ? c.aiSummary : null,
+    s1: s1 ?? 0,
+    s2: num(c.rating2Star) ?? 0,
+    s3: num(c.rating3Star) ?? 0,
+    s4: num(c.rating4Star) ?? 0,
+    s5: s5 ?? 0,
   };
 }
 
 /**
- * Overall business rating + total lifetime review count. This actor embeds the
- * company aggregate on every review item (companyTrustScore is the 1–5 TrustScore
- * shown on Trustpilot; companyTotalReviews is the lifetime count).
+ * Trustpilot handler. `companyInfo` mode yields the company aggregate only —
+ * TrustScore, lifetime review count, star distribution, response rate/time —
+ * with no individual reviews. Sentiment is derived from the distribution.
  */
-export function extractLiveAggregate(items: Record<string, any>[]): SourceAggregate {
-  const withCompany = items.find(
-    (i) => i.companyTrustScore != null || i.trustScore != null || i.companyTotalReviews != null,
-  );
-  if (withCompany) {
-    return {
-      rating: withCompany.companyTrustScore ?? withCompany.trustScore ?? withCompany.companyStars ?? null,
-      reviewCount: withCompany.companyTotalReviews ?? withCompany.totalReviews ?? null,
-    };
-  }
-  const ratings = items.map((i) => i.rating).filter((r) => typeof r === "number");
-  if (!ratings.length) return { rating: null, reviewCount: null };
-  const avg = Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 100) / 100;
-  return { rating: avg, reviewCount: null };
-}
-
-/** Trustpilot source handler: TrustScore + lifetime count, sentiment from the day's reviews. */
 export const trustpilotHandler: KindHandler = {
-  isReviewItem,
-  normalizeReview: normalizeLiveItem,
-  summarize(items, dayReviews): DaySummary {
-    const agg = extractLiveAggregate(items);
-    const s = sentimentShare(dayReviews);
-    const extras = extractCompanyExtras(items);
-    const verified = dayReviews.filter((r) => r.verified).length;
-    const tally = new Map<string, number>();
-    for (const r of dayReviews) for (const t of r.topics) tally.set(t, (tally.get(t) ?? 0) + 1);
+  isReviewItem: () => false, // companyInfo mode returns no review items
+  normalizeReview: () => {
+    throw new Error("trustpilot companyInfo mode returns no reviews");
+  },
+  summarize(items): DaySummary {
+    const c = items.find((i) => i.type === "companyInfo" || i.trustScore != null) ?? {};
+    const dist = companyDist(c);
+    const s = dist ? distSentiment(dist) : { pos: null, neg: null };
     return {
-      rating: agg.rating,
-      reviewCount: agg.reviewCount,
+      rating: num(c.trustScore) ?? num(c.stars),
+      reviewCount: num(c.totalReviews),
       pos: s.pos,
       neg: s.neg,
       raw: {
-        ...extras,
-        verifiedRatio: dayReviews.length ? Math.round((verified / dayReviews.length) * 100) : null,
-        topics: [...tally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t, c]) => ({ t, c })),
+        dist,
+        responseRate: num(c.responseRate),
+        responseTime:
+          typeof c.responseTime === "string" || typeof c.responseTime === "number" ? c.responseTime : null,
+        aiSummary: typeof c.aiSummary === "string" && c.aiSummary.trim() ? c.aiSummary : null,
       },
     };
   },

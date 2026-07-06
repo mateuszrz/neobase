@@ -2,13 +2,12 @@
  * Google Play source handler. We scrape the actor's `details` mode, which returns
  * a single app-info item carrying the store aggregate: `score` (rating),
  * `ratings` (lifetime rating count) and the 1–5★ `histogramNstar` breakdown — so
- * rating, volume AND sentiment all come from the store listing, no individual
- * reviews needed. If a `reviews`-mode dataset is ever passed in, the review
- * mapping below still applies.
+ * rating, volume AND sentiment all come from the store listing, with no
+ * individual reviews and no PII.
  */
 
-import type { KindHandler, NormalizedReview, DaySummary } from "./types";
-import { iso2, sentimentShare } from "./types";
+import type { KindHandler, NormalizedReview, DaySummary, Dist } from "./types";
+import { distSentiment } from "./types";
 
 const num = (v: unknown): number | null => {
   if (v == null) return null;
@@ -16,27 +15,8 @@ const num = (v: unknown): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-/** App-info items carry a total ratings count; review items carry per-user text. */
-export function isReviewItem(item: Record<string, any>): boolean {
-  return item.ratings == null && (item.reviewId != null || item.userName != null || item.text != null);
-}
-
-export function normalizeReview(item: Record<string, any>): NormalizedReview {
-  const raw = item.date ?? item.at ?? null;
-  return {
-    externalId: String(item.reviewId ?? item.id ?? item.url),
-    rating: num(item.score),
-    title: item.title ?? null,
-    body: item.text ?? null,
-    country: iso2(item.country),
-    postedAt: raw ? new Date(raw) : null,
-    verified: false,
-    topics: [],
-  };
-}
-
-/** Star histogram → {s1..s5} distribution, or null when absent. */
-function histogram(app: Record<string, any>): { s1: number; s2: number; s3: number; s4: number; s5: number } | null {
+/** 1–5★ distribution from the app-info item's histogramNstar fields. */
+function histogram(app: Record<string, any>): Dist | null {
   const s1 = num(app.histogram1star);
   const s5 = num(app.histogram5star);
   if (s1 == null && s5 == null) return null;
@@ -50,31 +30,19 @@ function histogram(app: Record<string, any>): { s1: number; s2: number; s3: numb
 }
 
 export const googlePlayHandler: KindHandler = {
-  isReviewItem,
-  normalizeReview,
-  summarize(items, dayReviews): DaySummary {
+  isReviewItem: () => false, // details mode returns only the app-info item
+  normalizeReview: (): NormalizedReview => {
+    throw new Error("google play details mode returns no reviews");
+  },
+  summarize(items): DaySummary {
     const app = items.find((i) => i.ratings != null || i.score != null) ?? {};
     const dist = histogram(app);
-
-    // Prefer the store histogram for sentiment (lifetime, robust); fall back to
-    // the day's review sample if a details item wasn't returned.
-    let pos: number | null = null;
-    let neg: number | null = null;
-    if (dist) {
-      const total = dist.s1 + dist.s2 + dist.s3 + dist.s4 + dist.s5;
-      if (total > 0) {
-        pos = Math.round(((dist.s4 + dist.s5) / total) * 1000) / 10;
-        neg = Math.round((100 - pos) * 10) / 10;
-      }
-    } else {
-      ({ pos, neg } = sentimentShare(dayReviews));
-    }
-
+    const s = dist ? distSentiment(dist) : { pos: null, neg: null };
     return {
       rating: num(app.score),
       reviewCount: num(app.ratings) ?? num(app.reviews),
-      pos,
-      neg,
+      pos: s.pos,
+      neg: s.neg,
       raw: dist || app.version != null ? { dist, version: app.version ?? null, installs: app.installs ?? null } : null,
     };
   },

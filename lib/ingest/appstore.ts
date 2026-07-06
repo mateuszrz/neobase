@@ -1,13 +1,12 @@
 /**
- * App Store source handler. We scrape the actor's `details` mode with
- * `includeReviews`, so the dataset holds one app-info item (`rating`,
- * `ratingCount`) plus a small sample of newest reviews. Apple exposes no star
- * histogram, so sentiment is derived from the review sample. Apple's RSS reviews
- * carry no reviewer country, so mobile reviews stay global ("ZZ").
+ * App Store source handler. We scrape `logiover/app-store-data-api` in `ratings`
+ * mode, which returns the app's all-time rating count + 1–5★ histogram in one
+ * tiny item — no individual reviews, no PII. Apple exposes no average rating, so
+ * we compute it from the histogram; sentiment comes from the same distribution.
  */
 
-import type { KindHandler, NormalizedReview, DaySummary } from "./types";
-import { sentimentShare } from "./types";
+import type { KindHandler, NormalizedReview, DaySummary, Dist } from "./types";
+import { distAverage, distSentiment } from "./types";
 
 const num = (v: unknown): number | null => {
   if (v == null) return null;
@@ -15,37 +14,31 @@ const num = (v: unknown): number | null => {
   return Number.isFinite(n) ? n : null;
 };
 
-/** App-info items carry a total ratingCount; review items carry per-user content. */
-export function isReviewItem(item: Record<string, any>): boolean {
-  return item.ratingCount == null && (item.reviewId != null || item.content != null || item.author != null);
-}
-
-export function normalizeReview(item: Record<string, any>): NormalizedReview {
-  const raw = item.date ?? item.updated ?? null;
-  return {
-    externalId: String(item.reviewId ?? item.id),
-    rating: num(item.rating ?? item.score),
-    title: item.title ?? null,
-    body: item.content ?? item.text ?? null,
-    country: "ZZ", // Apple RSS reviews have no reviewer country
-    postedAt: raw ? new Date(raw) : null,
-    verified: false,
-    topics: [],
-  };
+/** 1–5★ distribution from the actor's `histogram` object ({ "1": n, … "5": n }). */
+function ratingsDist(item: Record<string, any>): Dist | null {
+  const h = item.histogram;
+  if (!h || typeof h !== "object") return null;
+  const s1 = num(h["1"]);
+  const s5 = num(h["5"]);
+  if (s1 == null && s5 == null) return null;
+  return { s1: s1 ?? 0, s2: num(h["2"]) ?? 0, s3: num(h["3"]) ?? 0, s4: num(h["4"]) ?? 0, s5: s5 ?? 0 };
 }
 
 export const appStoreHandler: KindHandler = {
-  isReviewItem,
-  normalizeReview,
-  summarize(items, dayReviews): DaySummary {
-    const app = items.find((i) => i.ratingCount != null || i.rating != null) ?? {};
-    const s = sentimentShare(dayReviews);
+  isReviewItem: () => false, // ratings mode returns no review items
+  normalizeReview: (): NormalizedReview => {
+    throw new Error("app store ratings mode returns no reviews");
+  },
+  summarize(items): DaySummary {
+    const app = items.find((i) => i.histogram != null || i.ratings != null) ?? {};
+    const dist = ratingsDist(app);
+    const s = dist ? distSentiment(dist) : { pos: null, neg: null };
     return {
-      rating: num(app.rating),
-      reviewCount: num(app.ratingCount),
+      rating: dist ? distAverage(dist) : num(app.rating),
+      reviewCount: num(app.ratings) ?? num(app.ratingCount),
       pos: s.pos,
       neg: s.neg,
-      raw: app.version != null ? { version: app.version, ratingCountCurrentVersion: num(app.ratingCountCurrentVersion) } : null,
+      raw: dist ? { dist } : null,
     };
   },
 };

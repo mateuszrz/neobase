@@ -177,10 +177,6 @@ const PLATFORM_META: Record<string, { label: string; accent: string }> = {
   app_store: { label: "App Store", accent: "var(--ink-black)" },
 };
 
-// Google Play sentiment is a lifetime figure (from the star histogram); everyone
-// else's is a recent-review sample, so we qualify it as such on the tile.
-const LIFETIME_SENTIMENT_KINDS = new Set(["google_play"]);
-
 /** A row of per-platform rating tiles (Trustpilot / Google Play / App Store). */
 export function PlatformRatings({ items }: { items: PlatformRating[] }) {
   const shown = items.filter((p) => p.rating != null);
@@ -201,8 +197,7 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
             </div>
             <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
               {p.count != null ? `${fmt(p.count)} ratings` : "—"}
-              {p.pos != null &&
-                ` · ${p.pos.toFixed(0)}% positive${LIFETIME_SENTIMENT_KINDS.has(p.kind) ? "" : " (recent)"}`}
+              {p.pos != null && ` · ${p.pos.toFixed(0)}% positive`}
             </div>
           </div>
         );
