@@ -7,6 +7,11 @@
  * verification checks (a 3rd run must add nothing new).
  */
 
+import type { KindHandler, NormalizedReview, SourceAggregate, DaySummary } from "./types";
+import { iso2, sentimentShare } from "./types";
+
+export type { NormalizedReview, SourceAggregate } from "./types";
+
 // ─── Deterministic PRNG ─────────────────────────────────────────────────────
 
 function hashSeed(str: string): number {
@@ -37,18 +42,7 @@ function rng(seed: string) {
   };
 }
 
-// ─── Shared review shape ────────────────────────────────────────────────────
-
-export interface NormalizedReview {
-  externalId: string;
-  rating: number | null;
-  title: string | null;
-  body: string | null;
-  country: string; // ISO2 reviewer origin, "ZZ" if unknown
-  postedAt: Date | null;
-  verified: boolean;
-  topics: string[];
-}
+// ─── Company extras ─────────────────────────────────────────────────────────
 
 /** Company-level extras stored in metric_snapshots.raw (from the actor's company info). */
 export interface CompanyExtras {
@@ -58,16 +52,7 @@ export interface CompanyExtras {
   aiSummary: string | null;
 }
 
-export interface SourceAggregate {
-  rating: number | null; // overall business rating
-  reviewCount: number | null; // total lifetime reviews
-}
-
 // ─── Live normaliser (best-effort mapping of the Apify actor's output) ───────
-
-function iso2(v: unknown): string {
-  return typeof v === "string" && v.length === 2 ? v.toUpperCase() : "ZZ";
-}
 
 /** True for dataset items that are individual reviews (the actor also emits transparency reports). */
 export function isReviewItem(item: Record<string, any>): boolean {
@@ -134,6 +119,31 @@ export function extractLiveAggregate(items: Record<string, any>[]): SourceAggreg
   const avg = Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 100) / 100;
   return { rating: avg, reviewCount: null };
 }
+
+/** Trustpilot source handler: TrustScore + lifetime count, sentiment from the day's reviews. */
+export const trustpilotHandler: KindHandler = {
+  isReviewItem,
+  normalizeReview: normalizeLiveItem,
+  summarize(items, dayReviews): DaySummary {
+    const agg = extractLiveAggregate(items);
+    const s = sentimentShare(dayReviews);
+    const extras = extractCompanyExtras(items);
+    const verified = dayReviews.filter((r) => r.verified).length;
+    const tally = new Map<string, number>();
+    for (const r of dayReviews) for (const t of r.topics) tally.set(t, (tally.get(t) ?? 0) + 1);
+    return {
+      rating: agg.rating,
+      reviewCount: agg.reviewCount,
+      pos: s.pos,
+      neg: s.neg,
+      raw: {
+        ...extras,
+        verifiedRatio: dayReviews.length ? Math.round((verified / dayReviews.length) * 100) : null,
+        topics: [...tally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t, c]) => ({ t, c })),
+      },
+    };
+  },
+};
 
 // ─── Mock generator ─────────────────────────────────────────────────────────
 

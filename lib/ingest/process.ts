@@ -9,15 +9,9 @@ import { and, desc, eq, lt } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { isApifyLive } from "@/lib/env";
 import { listDatasetPage } from "@/lib/apify";
-import {
-  extractCompanyExtras,
-  extractLiveAggregate,
-  isReviewItem,
-  mockTrustpilotDay,
-  normalizeLiveItem,
-  type NormalizedReview,
-  type SourceAggregate,
-} from "./trustpilot";
+import { mockTrustpilotDay } from "./trustpilot";
+import { HANDLERS } from "./handlers";
+import { sentimentShare, type DaySummary, type NormalizedReview, type SourceAggregate } from "./types";
 
 const { fintechs, reviews, metricSnapshots } = schema;
 const PAGE_SIZE = 1000;
@@ -80,14 +74,6 @@ async function upsertReviews(
   return rows.length;
 }
 
-function sentimentShare(items: NormalizedReview[]): { pos: number | null; neg: number | null } {
-  const rated = items.filter((r) => typeof r.rating === "number");
-  if (!rated.length) return { pos: null, neg: null };
-  const pos = rated.filter((r) => (r.rating as number) >= 4).length;
-  const posPct = Math.round((pos / rated.length) * 1000) / 10;
-  return { pos: posPct, neg: Math.round((100 - posPct) * 10) / 10 };
-}
-
 async function writeSnapshot(row: typeof metricSnapshots.$inferInsert): Promise<void> {
   await db
     .insert(metricSnapshots)
@@ -116,9 +102,12 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
     .where(eq(fintechs.id, p.fintechId))
     .limit(1);
 
+  // Handler encapsulates per-source parsing (Trustpilot / Google Play / App Store).
+  const handler = HANDLERS[p.kind];
+  if (!handler) throw new Error(`no ingest handler for kind "${p.kind}"`);
+
   let dayReviews: NormalizedReview[] = [];
-  let aggregate: SourceAggregate = { rating: null, reviewCount: null };
-  let rawItems: Record<string, any>[] = [];
+  let summary: DaySummary = { rating: null, reviewCount: null, pos: null, neg: null, raw: null };
   let done = true;
   let nextOffset: number | undefined;
 
@@ -126,13 +115,13 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
     const baseline = await baselineAggregate(p.sourceId, p.snapshotDate);
     const day = mockTrustpilotDay(p.sourceId, p.snapshotDate, ft?.country ?? null, baseline);
     dayReviews = day.reviews;
-    aggregate = day.aggregate;
+    const s = sentimentShare(dayReviews);
+    summary = { rating: day.aggregate.rating, reviewCount: day.aggregate.reviewCount, pos: s.pos, neg: s.neg, raw: null };
   } else {
     if (!p.datasetId) throw new Error("live mode requires datasetId");
     const items = await listDatasetPage(p.datasetId, offset, PAGE_SIZE);
-    rawItems = items;
-    dayReviews = items.filter(isReviewItem).map(normalizeLiveItem);
-    if (offset === 0) aggregate = extractLiveAggregate(items);
+    dayReviews = items.filter((i) => handler.isReviewItem(i)).map((i) => handler.normalizeReview(i));
+    if (offset === 0) summary = handler.summarize(items, dayReviews);
     if (items.length === PAGE_SIZE) {
       done = false;
       nextOffset = offset + PAGE_SIZE;
@@ -145,22 +134,6 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
   // Global (ZZ) rollup — only on the first page so re-paginating won't double-count.
   if (offset === 0) {
     const baseline = await baselineAggregate(p.sourceId, p.snapshotDate);
-    const s = sentimentShare(dayReviews);
-
-    // Company-level extras (live only): rating distribution, responsiveness,
-    // verified ratio and complaint/praise topics — stored in the ZZ raw column.
-    let raw: Record<string, unknown> | null = null;
-    if (!useMock && rawItems.length) {
-      const extras = extractCompanyExtras(rawItems);
-      const verified = dayReviews.filter((r) => r.verified).length;
-      const tally = new Map<string, number>();
-      for (const r of dayReviews) for (const t of r.topics) tally.set(t, (tally.get(t) ?? 0) + 1);
-      raw = {
-        ...extras,
-        verifiedRatio: dayReviews.length ? Math.round((verified / dayReviews.length) * 100) : null,
-        topics: [...tally.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t, c]) => ({ t, c })),
-      };
-    }
 
     await writeSnapshot({
       sourceId: p.sourceId,
@@ -168,15 +141,15 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
       kind: p.kind,
       country: "ZZ",
       snapshotDate: p.snapshotDate,
-      rating: aggregate.rating != null ? String(aggregate.rating) : null,
-      reviewCount: aggregate.reviewCount,
+      rating: summary.rating != null ? String(summary.rating) : null,
+      reviewCount: summary.reviewCount,
       reviewCountDelta:
-        aggregate.reviewCount != null && baseline.reviewCount != null
-          ? aggregate.reviewCount - baseline.reviewCount
+        summary.reviewCount != null && baseline.reviewCount != null
+          ? summary.reviewCount - baseline.reviewCount
           : null,
-      sentimentPos: s.pos != null ? String(s.pos) : null,
-      sentimentNeg: s.neg != null ? String(s.neg) : null,
-      raw,
+      sentimentPos: summary.pos != null ? String(summary.pos) : null,
+      sentimentNeg: summary.neg != null ? String(summary.neg) : null,
+      raw: summary.raw,
     });
     snapshotsWritten++;
 

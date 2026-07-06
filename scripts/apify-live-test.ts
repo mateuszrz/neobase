@@ -14,37 +14,42 @@
 import "dotenv/config";
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
-import { isApifyLive } from "../lib/env.ts";
-import { startTrustpilotRun, apify, trustpilotDailyInput } from "../lib/apify/index.ts";
+import { isApifyLive, apifyActorFor } from "../lib/env.ts";
+import { startActorRun, apify, SOURCE_KINDS } from "../lib/apify/index.ts";
 import { processDatasetJob } from "../lib/ingest/process.ts";
 import { todayUtc } from "../lib/ingest/kickoff.ts";
 
-const { sources } = schema;
+const { sources, fintechs } = schema;
 const fintechId = process.argv[2] ?? "revolut";
+const kind = process.argv[3] ?? "trustpilot";
 
-if (!isApifyLive()) {
-  console.error("APIFY_TOKEN and APIFY_TRUSTPILOT_ACTOR must be set in .env for the live test.");
+const spec = SOURCE_KINDS[kind];
+const actor = apifyActorFor(kind);
+if (!isApifyLive() || !spec || !actor) {
+  console.error(`APIFY_TOKEN and the actor for kind "${kind}" must be set in .env for the live test.`);
   process.exit(1);
 }
 
 const [src] = await db
-  .select()
+  .select({ id: sources.id, externalRef: sources.externalRef, storeCountry: fintechs.country })
   .from(sources)
-  .where(and(eq(sources.fintechId, fintechId), eq(sources.kind, "trustpilot")))
+  .innerJoin(fintechs, eq(fintechs.id, sources.fintechId))
+  .where(and(eq(sources.fintechId, fintechId), eq(sources.kind, kind)))
   .limit(1);
 
 if (!src) {
-  console.error(`No trustpilot source for fintech "${fintechId}". Seed first.`);
+  console.error(`No ${kind} source for fintech "${fintechId}". Seed / set app ids first.`);
   process.exit(1);
 }
 
 const day = todayUtc();
-console.log(`Starting live Trustpilot run for ${fintechId} (domain=${src.externalRef})…`);
+console.log(`Starting live ${kind} run for ${fintechId} (ref=${src.externalRef}, actor=${actor})…`);
 
-// startTrustpilotRun registers a webhook we won't receive locally — we poll instead.
-const { runId, datasetId } = await startTrustpilotRun(
-  trustpilotDailyInput(src.externalRef),
-  { runKey: `livetest|${src.id}|${day}`, sourceId: src.id, fintechId, snapshotDate: day },
+// startActorRun registers a webhook we won't receive locally — we poll instead.
+const { runId, datasetId } = await startActorRun(
+  actor,
+  spec.buildInput(src.externalRef, src.storeCountry ?? undefined),
+  { runKey: `livetest|${src.id}|${day}`, sourceId: src.id, fintechId, snapshotDate: day, kind },
 );
 console.log(`Run ${runId} started; waiting for completion…`);
 
@@ -54,7 +59,7 @@ console.log(`Run finished with status: ${finished.status}`);
 const result = await processDatasetJob({
   sourceId: src.id,
   fintechId,
-  kind: "trustpilot",
+  kind,
   snapshotDate: day,
   mock: false,
   datasetId,

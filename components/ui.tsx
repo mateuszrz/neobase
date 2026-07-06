@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { FintechListItem } from "@/lib/queries";
+import type { FintechListItem, PlatformRating } from "@/lib/queries";
 
 /* ─── Brand / chrome ──────────────────────────────────────────────────────── */
 
@@ -166,6 +166,43 @@ export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?
       </div>
       {f.rating != null && <span className="pill pill-score">★ {f.rating.toFixed(1)}</span>}
     </a>
+  );
+}
+
+/* ─── Cross-platform ratings ──────────────────────────────────────────────── */
+
+const PLATFORM_META: Record<string, { label: string; accent: string }> = {
+  trustpilot: { label: "Trustpilot", accent: "var(--cyan-signal)" },
+  google_play: { label: "Google Play", accent: "#34a853" },
+  app_store: { label: "App Store", accent: "var(--ink-black)" },
+};
+
+/** A row of per-platform rating tiles (Trustpilot / Google Play / App Store). */
+export function PlatformRatings({ items }: { items: PlatformRating[] }) {
+  const shown = items.filter((p) => p.rating != null);
+  if (!shown.length) return null;
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))`, gap: 12 }}>
+      {shown.map((p) => {
+        const m = PLATFORM_META[p.kind] ?? { label: p.kind, accent: "var(--ash-gray)" };
+        return (
+          <div key={p.kind} className="card" style={{ padding: 16 }}>
+            <div className="row" style={{ gap: 8, marginBottom: 10 }}>
+              <span style={{ width: 8, height: 8, borderRadius: 999, background: m.accent, flex: "0 0 auto" }} />
+              <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}>{m.label}</span>
+            </div>
+            <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1 }}>
+              {p.rating!.toFixed(1)}
+              <span style={{ fontSize: 15, color: m.accent }}> ★</span>
+            </div>
+            <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+              {p.count != null ? `${fmt(p.count)} ratings` : "—"}
+              {p.pos != null && ` · ${p.pos.toFixed(0)}% positive`}
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 

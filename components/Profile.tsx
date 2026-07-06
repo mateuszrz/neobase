@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getFintech, getSeries, getCountryBreakdown, getProfileExtras } from "@/lib/queries";
+import { getFintech, getSeries, getCountryBreakdown, getProfileExtras, getPlatformRatings } from "@/lib/queries";
 import {
   TrustScore,
   SeriesChart,
   SentimentChart,
   Delta,
   RatingDistribution,
+  PlatformRatings,
   MiniStat,
   flagEmoji,
   fmt,
@@ -28,10 +29,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, countries, extras] = await Promise.all([
+  const [series, countries, extras, platforms] = await Promise.all([
     getSeries(slug),
     getCountryBreakdown(slug),
     getProfileExtras(slug),
+    getPlatformRatings(slug),
   ]);
 
   const latest = series[series.length - 1];
@@ -108,6 +110,14 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             <div className="lbl">Reviewer countries</div>
           </div>
         </div>
+
+        {/* Ratings across platforms — Trustpilot + mobile stores */}
+        {platforms.length > 1 && (
+          <div style={{ marginTop: 28 }}>
+            <h2 className="subheading" style={{ marginBottom: 14 }}>Ratings across platforms</h2>
+            <PlatformRatings items={platforms} />
+          </div>
+        )}
 
         {/* Charts */}
         <div className="card" style={{ marginTop: 28 }}>

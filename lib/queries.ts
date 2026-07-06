@@ -128,6 +128,36 @@ export async function getProfileExtras(fintechId: string): Promise<ProfileExtras
   };
 }
 
+export interface PlatformRating {
+  kind: string; // trustpilot | google_play | app_store
+  rating: number | null;
+  count: number | null;
+  pos: number | null;
+}
+
+/**
+ * Latest global (ZZ) rating per platform for the cross-platform tile row.
+ * Returns one row per kind that has data, in a stable display order.
+ */
+export async function getPlatformRatings(fintechId: string): Promise<PlatformRating[]> {
+  const rows = await db.execute(sql`
+    SELECT DISTINCT ON (kind) kind, rating, review_count AS "count", sentiment_pos AS "pos"
+    FROM metric_snapshots
+    WHERE fintech_id = ${fintechId} AND country = 'ZZ'
+      AND kind IN ('trustpilot', 'google_play', 'app_store') AND rating IS NOT NULL
+    ORDER BY kind, snapshot_date DESC
+  `);
+  const order = ["trustpilot", "google_play", "app_store"];
+  return (rows.rows as any[])
+    .map((r) => ({
+      kind: r.kind,
+      rating: r.rating == null ? null : Number(r.rating),
+      count: r.count == null ? null : Number(r.count),
+      pos: r.pos == null ? null : Number(r.pos),
+    }))
+    .sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind));
+}
+
 export async function getRecentReviews(fintechId: string, limit = 10) {
   return db
     .select({

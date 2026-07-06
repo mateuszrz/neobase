@@ -8,13 +8,16 @@
  */
 
 import { createHash } from "node:crypto";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { isApifyLive, env } from "@/lib/env";
+import { isApifyLive, apifyActorFor } from "@/lib/env";
 import { enqueue } from "@/lib/queue";
-import { startTrustpilotRun, trustpilotDailyInput } from "@/lib/apify";
+import { startActorRun, SOURCE_KINDS } from "@/lib/apify";
 
-const { sources, ingestRuns } = schema;
+const { sources, fintechs, ingestRuns } = schema;
+
+/** Source kinds with a live scraper wired up (order irrelevant). */
+const SCRAPABLE_KINDS = Object.keys(SOURCE_KINDS);
 
 export function todayUtc(): string {
   return new Date().toISOString().slice(0, 10);
@@ -25,17 +28,37 @@ function runKeyFor(actor: string, sourceId: string, day: string): string {
 }
 
 export async function runDailyKickoff(day = todayUtc()): Promise<{ enqueued: number; skipped: number }> {
+  // Active sources across every wired-up kind, with the fintech's home country
+  // (used as the store market for Google Play / App Store scrapes).
   const active = await db
-    .select()
+    .select({
+      id: sources.id,
+      fintechId: sources.fintechId,
+      kind: sources.kind,
+      externalRef: sources.externalRef,
+      storeCountry: fintechs.country,
+    })
     .from(sources)
-    .where(and(eq(sources.kind, "trustpilot"), eq(sources.active, true)));
+    .innerJoin(fintechs, eq(fintechs.id, sources.fintechId))
+    .where(and(inArray(sources.kind, SCRAPABLE_KINDS), eq(sources.active, true)));
 
   const live = isApifyLive();
-  const actor = live ? env.APIFY_TRUSTPILOT_ACTOR : "mock:trustpilot";
   let enqueued = 0;
   let skipped = 0;
 
   for (const s of active) {
+    const spec = SOURCE_KINDS[s.kind];
+    if (!spec) {
+      skipped++;
+      continue;
+    }
+    const actor = live ? apifyActorFor(s.kind) : `mock:${s.kind}`;
+    // In live mode a kind with no configured actor can't run — skip it.
+    if (live && !actor) {
+      skipped++;
+      continue;
+    }
+
     const runKey = runKeyFor(actor, s.id, day);
 
     // Guard: claim this (source, day) exactly once.
@@ -53,14 +76,7 @@ export async function runDailyKickoff(day = todayUtc()): Promise<{ enqueued: num
     if (!live) {
       await enqueue({
         type: "process_dataset",
-        payload: {
-          sourceId: s.id,
-          fintechId: s.fintechId,
-          kind: s.kind,
-          snapshotDate: day,
-          mock: true,
-          runKey,
-        },
+        payload: { sourceId: s.id, fintechId: s.fintechId, kind: s.kind, snapshotDate: day, mock: true, runKey },
       });
       await db
         .update(ingestRuns)
@@ -68,11 +84,12 @@ export async function runDailyKickoff(day = todayUtc()): Promise<{ enqueued: num
         .where(eq(ingestRuns.runKey, runKey));
       enqueued++;
     } else {
-      // One run per source keeps dataset→source mapping trivial (batching is a
-      // later optimisation). The webhook enqueues the process job on completion.
-      const { runId, datasetId } = await startTrustpilotRun(
-        trustpilotDailyInput(s.externalRef),
-        { runKey, sourceId: s.id, fintechId: s.fintechId, snapshotDate: day },
+      // One run per source keeps dataset→source mapping trivial. The webhook
+      // enqueues the process job (carrying `kind`) on completion.
+      const { runId, datasetId } = await startActorRun(
+        actor,
+        spec.buildInput(s.externalRef, s.storeCountry ?? undefined),
+        { runKey, sourceId: s.id, fintechId: s.fintechId, snapshotDate: day, kind: s.kind },
       );
       await db
         .update(ingestRuns)

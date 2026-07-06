@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       payload: {
         sourceId: q.sourceId,
         fintechId: q.fintechId,
-        kind: "trustpilot",
+        kind: q.kind ?? "trustpilot",
         snapshotDate: q.snapshotDate ?? new Date().toISOString().slice(0, 10),
         mock: false,
         datasetId,
