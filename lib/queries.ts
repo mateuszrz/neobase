@@ -2,7 +2,7 @@
  * Server-side data access for the public directory. Read-only, used by RSC pages.
  */
 
-import { and, asc, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 
 const { fintechs, metricSnapshots, reviews } = schema;
@@ -72,9 +72,13 @@ export interface SeriesPoint {
   rating: number | null;
   count: number | null;
   pos: number | null;
-  live: boolean; // from the live pipeline (has raw) vs seeded monthly history
 }
 
+/**
+ * Live Trustpilot time-series — only snapshots produced by the pipeline (they
+ * carry a `raw` payload), never the uncertain seeded monthly history. One point
+ * per day; the series grows as the daily cron runs, powering real trends.
+ */
 export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
   const rows = await db
     .select({
@@ -82,8 +86,6 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
       rating: metricSnapshots.rating,
       count: metricSnapshots.reviewCount,
       pos: metricSnapshots.sentimentPos,
-      // Live pipeline snapshots carry a raw payload; seeded history does not.
-      live: sql<boolean>`${metricSnapshots.raw} IS NOT NULL`,
     })
     .from(metricSnapshots)
     .where(
@@ -91,6 +93,7 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
         eq(metricSnapshots.fintechId, fintechId),
         eq(metricSnapshots.kind, "trustpilot"),
         eq(metricSnapshots.country, "ZZ"),
+        isNotNull(metricSnapshots.raw),
       ),
     )
     .orderBy(asc(metricSnapshots.snapshotDate));
@@ -99,7 +102,6 @@ export async function getSeries(fintechId: string): Promise<SeriesPoint[]> {
     rating: r.rating == null ? null : Number(r.rating),
     count: r.count == null ? null : Number(r.count),
     pos: r.pos == null ? null : Number(r.pos),
-    live: Boolean(r.live),
   }));
 }
 
@@ -137,6 +139,7 @@ export interface PlatformRating {
   rating: number | null;
   count: number | null;
   pos: number | null;
+  installs: string | null; // Google Play install band, e.g. "10,000,000+"
 }
 
 /**
@@ -147,7 +150,8 @@ export async function getPlatformRatings(fintechId: string): Promise<PlatformRat
   // Only recent (live-pipeline) snapshots — never the seeded monthly history, so
   // a platform tile reflects a real current scrape, not stale app.js data.
   const rows = await db.execute(sql`
-    SELECT DISTINCT ON (kind) kind, rating, review_count AS "count", sentiment_pos AS "pos"
+    SELECT DISTINCT ON (kind) kind, rating, review_count AS "count", sentiment_pos AS "pos",
+           raw->>'installs' AS installs
     FROM metric_snapshots
     WHERE fintech_id = ${fintechId} AND country = 'ZZ'
       AND kind IN ('trustpilot', 'google_play', 'app_store') AND rating IS NOT NULL
@@ -161,6 +165,7 @@ export async function getPlatformRatings(fintechId: string): Promise<PlatformRat
       rating: r.rating == null ? null : Number(r.rating),
       count: r.count == null ? null : Number(r.count),
       pos: r.pos == null ? null : Number(r.pos),
+      installs: r.installs ?? null,
     }))
     .sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind));
 }
