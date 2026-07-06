@@ -17,7 +17,8 @@
     "pipeline:drain": "tsx scripts/run-local.ts drain",
     "apify:probe": "tsx scripts/apify-probe.ts",
     "apify:test": "tsx scripts/apify-live-test.ts",
-    "apify:ids": "tsx scripts/set-app-ids.ts"
+    "apify:ids": "tsx scripts/set-app-ids.ts",
+    "apify:backfill": "tsx scripts/backfill.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
