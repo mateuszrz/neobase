@@ -7,16 +7,17 @@
  */
 
 import "dotenv/config";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
 import { isApifyLive, apifyActorFor } from "../lib/env.ts";
 import { startActorRun, apify, SOURCE_KINDS } from "../lib/apify/index.ts";
 import { processDatasetJob } from "../lib/ingest/process.ts";
 import { todayUtc } from "../lib/ingest/kickoff.ts";
 
-const { sources, fintechs } = schema;
+const { sources, fintechs, metricSnapshots } = schema;
 const kind = process.argv[2] ?? "trustpilot";
 const BATCH = Number(process.argv[3] ?? 10);
+const onlyMissing = process.argv[4] === "missing"; // retry only sources lacking today's snapshot
 
 const actor = apifyActorFor(kind);
 const spec = SOURCE_KINDS[kind];
@@ -24,6 +25,8 @@ if (!isApifyLive() || !actor || !spec) {
   console.error(`APIFY_TOKEN and the actor for kind "${kind}" must be set in .env.`);
   process.exit(1);
 }
+
+const day = todayUtc();
 
 const rows = await db
   .select({
@@ -34,10 +37,17 @@ const rows = await db
   })
   .from(sources)
   .innerJoin(fintechs, eq(fintechs.id, sources.fintechId))
-  .where(and(eq(sources.kind, kind), eq(sources.active, true)));
+  .where(
+    and(
+      eq(sources.kind, kind),
+      eq(sources.active, true),
+      onlyMissing
+        ? sql`NOT EXISTS (SELECT 1 FROM ${metricSnapshots} m WHERE m.source_id = ${sources.id} AND m.country = 'ZZ' AND m.snapshot_date = ${day})`
+        : undefined,
+    ),
+  );
 
-const day = todayUtc();
-console.log(`Backfilling ${kind} for ${rows.length} sources (batch ${BATCH}, day ${day})…`);
+console.log(`Backfilling ${kind}${onlyMissing ? " (missing only)" : ""} for ${rows.length} sources (batch ${BATCH}, day ${day})…`);
 
 let ok = 0;
 let fail = 0;
