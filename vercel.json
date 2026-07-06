@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     { "path": "/api/cron/daily-kickoff", "schedule": "0 3 * * *" },
-    { "path": "/api/cron/drain-queue", "schedule": "* * * * *" }
+    { "path": "/api/cron/drain-queue", "schedule": "0 4 * * *" }
   ],
   "headers": [
     {

@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { isAuthorizedApifyWebhook } from "@/lib/http";
 import { enqueue } from "@/lib/queue";
+import { drainQueue } from "@/lib/ingest/drain";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -59,6 +60,11 @@ export async function POST(req: Request) {
         runKey,
       },
     });
+
+    // Drain inline so processing isn't gated on a frequent cron (the drain-queue
+    // cron only runs daily as a safety net — Hobby plans forbid sub-daily crons).
+    // Bounded batch to stay within maxDuration; anything left is swept next time.
+    await drainQueue(5).catch(() => {});
   }
 
   return NextResponse.json({ ok: true, handled: "succeeded" });
