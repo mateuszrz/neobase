@@ -67,7 +67,7 @@ npm run db:migrate           # apply Drizzle migrations
 ## Open threads / next steps (pick up here)
 
 1. **Finish visual review of the profile** — confirm rating-distribution + responsiveness render nicely at `/fintech/revolut/` (build passed; last live render-check was inconclusive due to server timing — just open it).
-2. **Sentiment drivers/topics:** this actor returned `topics`/`aiSummary` empty. Check its input options (maybe a flag/paid feature) or derive themes another way.
+2. **Sentiment drivers/topics — DIAGNOSED, DEFERRED.** Root cause: the actor does **not** emit per-review `topics` (the `topics` *input* is a category *filter*, not output), and `aiSummary` only appears "when available" (absent for Revolut). So `normalizeLiveItem`'s `item.topics` maps a non-existent field → tally always empty → section auto-hides. To ship this we must derive themes ourselves from review text (aggregate only, no raw text shown). Reviews are **multilingual** (PL/IT/EN…), so an English keyword lexicon is weak — the real fix is **Claude-based extraction at ingest** (needs `ANTHROPIC_API_KEY`, ~pennies/fintech), aligning with the paid-tier "AI digests" vision. **Deferred by product decision** (2026-07-06) until the Claude tier is built. Dead `topics` mapping left in place (harmless — always empty).
 3. **Backfill live data for more fintechs** (currently only Revolut) so the directory isn't mostly seeded history — or decide which markets to prioritise.
 4. **Decide what else to scrape:** Google Play, App Store, financial media, brand SERPs (was deferred — "potem zastanowimy się co scrapować").
 5. Later phases: dynamic `sitemap.ts`/`robots.ts` + hreflang; Auth.js; Paddle; Claude AI digests; deploy (Vercel preview → neobase.co).
