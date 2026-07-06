@@ -64,6 +64,10 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         <div className="row" style={{ gap: 18, alignItems: "flex-start" }}>
           {ft.logoSvg && <img className="flogo" style={{ width: 64, height: 64 }} src={ft.logoSvg} alt={`${ft.name} logo`} />}
           <div style={{ flex: 1, minWidth: 240 }}>
+            <p className="eyebrow" style={{ marginBottom: 7 }}>
+              {ft.type === "exchange" ? "Crypto exchange" : "Neobank"}
+              {ft.country ? ` · ${ft.country}` : ""}
+            </p>
             <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
             <p className="muted" style={{ margin: "8px 0 0" }}>
               {flagEmoji(ft.country)} {ft.headquarters || ft.country || "Global"}
@@ -94,8 +98,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             <div className="spread" style={{ marginBottom: 16, alignItems: "flex-end" }}>
               <h2 className="subheading">{rated.length > 1 ? "Ratings across platforms" : "Rating"}</h2>
               {rated.length > 1 && avgRating != null && (
-                <span className="muted" style={{ fontSize: 13 }}>
-                  ★ {avgRating.toFixed(1)} avg · {fmt(totalRatings)} ratings · {rated.length} platforms
+                <span style={{ fontSize: 13 }}>
+                  <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>★ {avgRating.toFixed(1)}</strong>
+                  <span className="muted"> avg · {fmt(totalRatings)} ratings · {rated.length} platforms</span>
                 </span>
               )}
             </div>

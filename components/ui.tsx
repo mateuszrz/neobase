@@ -177,6 +177,24 @@ const PLATFORM_META: Record<string, { label: string; accent: string }> = {
   app_store: { label: "App Store", accent: "var(--ink-black)" },
 };
 
+// Monochrome platform glyphs (star / play / apple) — recognisable but restrained.
+const PLATFORM_PATH: Record<string, string> = {
+  trustpilot: "M12 2l2.94 6.26L22 9.24l-5 4.73L18.18 21 12 17.27 5.82 21 7 13.97l-5-4.73 7.06-.98L12 2z",
+  google_play: "M5 3l14 9-14 9V3z",
+  app_store:
+    "M17.05 12.04c-.03-2.6 2.13-3.85 2.23-3.91-1.22-1.78-3.11-2.02-3.78-2.05-1.61-.16-3.14.95-3.96.95-.81 0-2.07-.93-3.41-.9-1.75.03-3.37 1.02-4.27 2.59-1.82 3.16-.47 7.83 1.31 10.39.87 1.25 1.9 2.66 3.25 2.61 1.31-.05 1.8-.85 3.38-.85 1.58 0 2.02.85 3.4.82 1.4-.03 2.29-1.28 3.15-2.54.99-1.46 1.4-2.87 1.42-2.94-.03-.01-2.73-1.05-2.76-4.16zM14.53 5.42c.72-.87 1.2-2.08 1.07-3.29-1.03.04-2.28.69-3.02 1.56-.66.77-1.24 2-1.09 3.18 1.15.09 2.32-.58 3.04-1.45z",
+};
+
+function PlatformIcon({ kind, color }: { kind: string; color: string }) {
+  const d = PLATFORM_PATH[kind];
+  if (!d) return <span style={{ width: 9, height: 9, borderRadius: 999, background: color, flex: "0 0 auto" }} />;
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill={color} aria-hidden style={{ flex: "0 0 auto" }}>
+      <path d={d} />
+    </svg>
+  );
+}
+
 /** A row of per-platform rating tiles (Trustpilot / Google Play / App Store). */
 export function PlatformRatings({ items }: { items: PlatformRating[] }) {
   const shown = items.filter((p) => p.rating != null);
@@ -189,7 +207,7 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
         return (
           <div key={p.kind} className="card" style={{ padding: 20 }}>
             <div className="row" style={{ gap: 8, marginBottom: 14 }}>
-              <span style={{ width: 9, height: 9, borderRadius: 999, background: m.accent, flex: "0 0 auto" }} />
+              <PlatformIcon kind={p.kind} color={m.accent} />
               <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}>{m.label}</span>
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
