@@ -32,7 +32,8 @@ Full plan: `C:\Users\PC\.claude\plans\merry-cuddling-hollerith.md`.
 ## Data currently in Neon
 
 - `fintechs` 128 · `sources` 512 · `metric_snapshots` ~4.6k (seeded monthly history + live Revolut) · `reviews` ~580 (Revolut live only) · `ingest_runs`/`job_queue` clean.
-- **6 neobanks now have live Trustpilot data** (backfilled 2026-07-06): Revolut, Monzo, N26, Wise, Chime, Bunq. ZZ TrustScores: Revolut 4.7, Wise 4.30, N26 4.10, Bunq 4.10, Monzo 4.60, Chime 3.50; lifetime counts 13k–294k; rich per-country breakdowns (Wise 39 countries, N26 12). Backfill cost: 4 new runs = **$0.30** total (Wise $0.22 — 39 countries = more compute). **All 6 have `raw` extras** (rating distribution + responsiveness) — `includeCompanyInfo:true` populates them on every daily run, so all 6 profiles show the analytical sections, not just Revolut. Other ~122 fintechs have seeded monthly history only.
+- **6 neobanks now carry Trustpilot + Google Play + App Store** (all backfilled 2026-07-06): Revolut, Monzo, N26, Wise, Chime, Bunq. Cross-platform tile row live on their profiles. Notable insight the view surfaces: mobile ratings run higher than Trustpilot (e.g. Chime TP 3.5 vs GP 4.73 / AS 4.82). Store aggregate (rating + total ratings) scraped from the app listing; GP sentiment from the star histogram, AS sentiment from a 50-review recent sample (noisier — Apple has no histogram).
+- **6 neobanks have live Trustpilot data** (backfilled 2026-07-06): Revolut, Monzo, N26, Wise, Chime, Bunq. ZZ TrustScores: Revolut 4.7, Wise 4.30, N26 4.10, Bunq 4.10, Monzo 4.60, Chime 3.50; lifetime counts 13k–294k; rich per-country breakdowns (Wise 39 countries, N26 12). Backfill cost: 4 new runs = **$0.30** total (Wise $0.22 — 39 countries = more compute). **All 6 have `raw` extras** (rating distribution + responsiveness) — `includeCompanyInfo:true` populates them on every daily run, so all 6 profiles show the analytical sections, not just Revolut. Other ~122 fintechs have seeded monthly history only.
 
 ## How to run (do this first in the morning)
 
@@ -56,7 +57,7 @@ npm run db:migrate           # apply Drizzle migrations
 
 ## Secrets / env (`.env`, gitignored — NOT in repo)
 
-`DATABASE_URL` (Neon), `APIFY_TOKEN` + `APIFY_TRUSTPILOT_ACTOR` (set), `CRON_SECRET`, `APIFY_WEBHOOK_SECRET`. `ANTHROPIC_API_KEY` (Claude — paid, not yet filled), Paddle keys (not yet). ⚠️ The Neon + Apify secrets were pasted in chat earlier — consider rotating.
+`DATABASE_URL` (Neon), `APIFY_TOKEN` + `APIFY_TRUSTPILOT_ACTOR` + `APIFY_GOOGLE_PLAY_ACTOR` + `APIFY_APPSTORE_ACTOR` (all set), `CRON_SECRET`, `APIFY_WEBHOOK_SECRET`. `ANTHROPIC_API_KEY` (Claude — paid, not yet filled), Paddle keys (not yet). ⚠️ The Neon + Apify secrets were pasted in chat earlier — consider rotating.
 
 ## Product decisions to remember
 
@@ -69,10 +70,9 @@ npm run db:migrate           # apply Drizzle migrations
 1. **Finish visual review of the profile** — confirm rating-distribution + responsiveness render nicely at `/fintech/revolut/` (build passed; last live render-check was inconclusive due to server timing — just open it).
 2. **Sentiment drivers/topics — DIAGNOSED, DEFERRED.** Root cause: the actor does **not** emit per-review `topics` (the `topics` *input* is a category *filter*, not output), and `aiSummary` only appears "when available" (absent for Revolut). So `normalizeLiveItem`'s `item.topics` maps a non-existent field → tally always empty → section auto-hides. To ship this we must derive themes ourselves from review text (aggregate only, no raw text shown). Reviews are **multilingual** (PL/IT/EN…), so an English keyword lexicon is weak — the real fix is **Claude-based extraction at ingest** (needs `ANTHROPIC_API_KEY`, ~pennies/fintech), aligning with the paid-tier "AI digests" vision. **Deferred by product decision** (2026-07-06) until the Claude tier is built. Dead `topics` mapping left in place (harmless — always empty).
 3. **Backfill live data — top 6 neobanks DONE** (Revolut, Monzo, N26, Wise, Chime, Bunq; $0.30 for the 4 new runs; all 6 have full `raw` extras). Next: extend to more fintechs/markets (crypto exchanges are still all seeded), or decide priority markets.
-4. **Additional sources — costs measured (2026-07-06), see [[review-source-costs]]:**
-   - **Google Play** reviews (`thewolves/google-play-reviews-scraper`) — **$0.10/1k**, ~38s/run, pay-per-result. NOT built yet (needs own normalizer + pipeline wiring).
-   - **App Store** reviews (`thewolves/appstore-reviews-scraper`) — **$0.10/1k**, ~12s/run; hard cap 500 rev/country/app. NOT built yet.
-   - **News (Google News, brand queries per market) via DataForSEO** — planned separate provider (not Apify); pricing to estimate when built. Feeds media-coverage/brand-mention competitive intel. NOT built yet. See [[news-source-dataforseo]].
+4. **Additional sources:**
+   - **Google Play + App Store — BUILT & LIVE (2026-07-06).** Pipeline generalized to a `KindHandler` registry (`lib/ingest/{types,handlers,googleplay,appstore}.ts`); `automation-lab/google-play-scraper` + `automation-lab/apple-app-store-scraper` in `details` mode (GP $0.007/run, AS ~$0.05/run). `npm run apify:test -- <slug> google_play|app_store`; `npm run apify:ids` sets store app ids. Only the 6 live neobanks activated — extend by adding app ids to `scripts/set-app-ids.ts`. See [[review-source-costs]].
+   - **News (Google News, brand queries per market) via DataForSEO** — planned separate provider (not Apify); ~$0.0006/request (standard queue), $50 min deposit. NOT built. See [[news-source-dataforseo]].
    - Trustpilot dominates the bill (~$1.29/1k, ~13× mobile). All sources: aggregate only, never show raw text.
 5. Later phases: dynamic `sitemap.ts`/`robots.ts` + hreflang; Auth.js; Paddle; Claude AI digests; deploy (Vercel preview → neobase.co).
 
