@@ -1,7 +1,44 @@
 {
   "name": "neobase",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "build": "node generate.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "seed": "tsx scripts/seed-from-appjs.ts",
+    "pipeline:kickoff": "tsx scripts/run-local.ts kickoff",
+    "pipeline:drain": "tsx scripts/run-local.ts drain",
+    "apify:probe": "tsx scripts/apify-probe.ts",
+    "apify:test": "tsx scripts/apify-live-test.ts",
+    "apify:ids": "tsx scripts/set-app-ids.ts",
+    "apify:appids": "tsx scripts/collect-app-ids.ts",
+    "apify:crypto": "tsx scripts/ingest-crypto.ts",
+    "apify:backfill": "tsx scripts/backfill.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "apify-client": "^2.23.0",
+    "drizzle-orm": "^0.45.0",
+    "next": "^16.2.10",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "dotenv": "^17.4.0",
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.0"
   }
 }
