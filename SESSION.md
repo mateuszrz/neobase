@@ -32,7 +32,7 @@ Full plan: `C:\Users\PC\.claude\plans\merry-cuddling-hollerith.md`.
 ## Data currently in Neon
 
 - `fintechs` 128 · `sources` 512 · `metric_snapshots` ~4.6k (seeded monthly history + live Revolut) · `reviews` ~580 (Revolut live only) · `ingest_runs`/`job_queue` clean.
-- Only **Revolut** has live Trustpilot data + `raw` extras. Other fintechs have seeded monthly history only.
+- **Revolut** + **Monzo** now have live Trustpilot data (Monzo backfilled 2026-07-06 during cost testing). Revolut also has `raw` extras (dist/responsiveness). Other fintechs have seeded monthly history only.
 
 ## How to run (do this first in the morning)
 
@@ -68,8 +68,12 @@ npm run db:migrate           # apply Drizzle migrations
 
 1. **Finish visual review of the profile** — confirm rating-distribution + responsiveness render nicely at `/fintech/revolut/` (build passed; last live render-check was inconclusive due to server timing — just open it).
 2. **Sentiment drivers/topics — DIAGNOSED, DEFERRED.** Root cause: the actor does **not** emit per-review `topics` (the `topics` *input* is a category *filter*, not output), and `aiSummary` only appears "when available" (absent for Revolut). So `normalizeLiveItem`'s `item.topics` maps a non-existent field → tally always empty → section auto-hides. To ship this we must derive themes ourselves from review text (aggregate only, no raw text shown). Reviews are **multilingual** (PL/IT/EN…), so an English keyword lexicon is weak — the real fix is **Claude-based extraction at ingest** (needs `ANTHROPIC_API_KEY`, ~pennies/fintech), aligning with the paid-tier "AI digests" vision. **Deferred by product decision** (2026-07-06) until the Claude tier is built. Dead `topics` mapping left in place (harmless — always empty).
-3. **Backfill live data for more fintechs** (currently only Revolut) so the directory isn't mostly seeded history — or decide which markets to prioritise.
-4. **Decide what else to scrape:** Google Play, App Store, financial media, brand SERPs (was deferred — "potem zastanowimy się co scrapować").
+3. **Backfill live data for more fintechs** (Revolut + **Monzo** now live; rest seeded) so the directory isn't mostly seeded history — or decide which markets to prioritise. Cost is cheap: ~6 top neobanks ≈ $1 (Trustpilot only).
+4. **Additional sources — costs measured (2026-07-06), see [[review-source-costs]]:**
+   - **Google Play** reviews (`thewolves/google-play-reviews-scraper`) — **$0.10/1k**, ~38s/run, pay-per-result. NOT built yet (needs own normalizer + pipeline wiring).
+   - **App Store** reviews (`thewolves/appstore-reviews-scraper`) — **$0.10/1k**, ~12s/run; hard cap 500 rev/country/app. NOT built yet.
+   - **News (Google News, brand queries per market) via DataForSEO** — planned separate provider (not Apify); pricing to estimate when built. Feeds media-coverage/brand-mention competitive intel. NOT built yet. See [[news-source-dataforseo]].
+   - Trustpilot dominates the bill (~$1.29/1k, ~13× mobile). All sources: aggregate only, never show raw text.
 5. Later phases: dynamic `sitemap.ts`/`robots.ts` + hreflang; Auth.js; Paddle; Claude AI digests; deploy (Vercel preview → neobase.co).
 
 ## Git
