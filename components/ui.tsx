@@ -260,7 +260,7 @@ function fmtMonth(d: string): string {
 export function SeriesChart({
   points,
 }: {
-  points: { date: string; rating: number | null; count: number | null }[];
+  points: { date: string; rating: number | null; count: number | null; live?: boolean }[];
 }) {
   const W = 820;
   const H = 280;
@@ -289,6 +289,11 @@ export function SeriesChart({
   const last = points[n - 1];
   const ticks = [...new Set([0, Math.floor((n - 1) / 3), Math.floor((2 * (n - 1)) / 3), n - 1])];
 
+  // Boundary between seeded history and live-pipeline data.
+  const boundary = points.findIndex((p) => p.live);
+  const showBoundary = boundary > 0 && boundary < n;
+  const xb = showBoundary ? (x(boundary - 1) + x(boundary)) / 2 : 0;
+
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="TrustScore and review volume over time">
       <defs>
@@ -307,6 +312,16 @@ export function SeriesChart({
           </text>
         </g>
       ))}
+
+      {/* seeded↔live boundary: shade the live region + dashed divider */}
+      {showBoundary && (
+        <>
+          <rect x={xb} y={PAD.t} width={W - PAD.r - xb} height={H - PAD.t - PAD.b} fill="var(--warm-gray)" opacity={0.06} />
+          <line x1={xb} x2={xb} y1={PAD.t} y2={H - PAD.b} stroke="var(--stone-muted)" strokeWidth={1} strokeDasharray="2 3" />
+          <text x={xb - 5} y={PAD.t + 10} textAnchor="end" fontSize={9} fill="var(--ash-gray)">seeded</text>
+          <text x={xb + 5} y={PAD.t + 10} fontSize={9} fill="var(--cyan-edge)">live</text>
+        </>
+      )}
 
       {/* review-volume area + edge */}
       <path d={areaFill} fill="url(#volFill)" />
