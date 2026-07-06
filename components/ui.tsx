@@ -197,7 +197,9 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
             </div>
             <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
               {p.count != null ? `${fmt(p.count)} ratings` : "—"}
-              {p.pos != null && ` · ${p.pos.toFixed(0)}% positive`}
+              {/* App Store sentiment is from a recent-review sample (Apple exposes no
+                  rating histogram), unlike Google Play's lifetime breakdown. */}
+              {p.pos != null && ` · ${p.pos.toFixed(0)}% positive${p.kind === "app_store" ? " (recent)" : ""}`}
             </div>
           </div>
         );
