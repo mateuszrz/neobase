@@ -1,12 +1,18 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getFintech, getSeries, getProfileExtras, getPlatformRatings, getRatingDistribution } from "@/lib/queries";
+import {
+  getFintech,
+  getSeries,
+  getProfileExtras,
+  getPlatformRatings,
+  getRatingDistribution,
+  getPlatformSentimentSeries,
+} from "@/lib/queries";
 import {
   SeriesChart,
-  SentimentChart,
+  PlatformSentimentChart,
   RatingDistribution,
   PlatformRatings,
-  Delta,
   MiniStat,
   flagEmoji,
   fmt,
@@ -28,11 +34,12 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, extras, platforms, distData] = await Promise.all([
+  const [series, extras, platforms, distData, platformSent] = await Promise.all([
     getSeries(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
     getRatingDistribution(slug),
+    getPlatformSentimentSeries(slug),
   ]);
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
@@ -53,11 +60,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const hasResponsiveness = extras?.responseRate != null || extras?.responseTime != null;
   const hasSeries = series.filter((p) => p.rating != null).length >= 2;
 
-  // Brand sentiment trend — from the live daily series (needs ≥2 measurements).
-  const sentPoints = series.filter((p) => p.pos != null);
-  const hasSentTrend = sentPoints.length >= 2;
-  const lastSent = sentPoints[sentPoints.length - 1];
-  const sentDelta = hasSentTrend ? Math.round((lastSent.pos! - sentPoints[0].pos!) * 10) / 10 : null;
+  // Per-platform sentiment trend — needs ≥2 distinct measurement days.
+  const sentDates = new Set(platformSent.flatMap((s) => s.points.map((p) => p.date)));
+  const hasSentTrend = sentDates.size >= 2;
 
   return (
     <main className="section">
@@ -148,18 +153,14 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         )}
 
-        {/* Brand sentiment trend (live series) */}
+        {/* Brand sentiment trend — positive sentiment per platform over time */}
         {hasSentTrend && (
           <div className="card" style={{ marginTop: 20 }}>
             <div className="spread" style={{ marginBottom: 16, alignItems: "flex-end" }}>
               <h2 className="subheading">Brand sentiment trend</h2>
-              <span style={{ fontSize: 13 }}>
-                <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{lastSent.pos!.toFixed(0)}%</strong>
-                <span className="muted"> positive </span>
-                <Delta value={sentDelta} suffix="pp" />
-              </span>
+              <span className="muted" style={{ fontSize: 12 }}>positive sentiment, by platform</span>
             </div>
-            <SentimentChart points={series.map((p) => ({ date: p.date, pos: p.pos }))} />
+            <PlatformSentimentChart series={platformSent} />
           </div>
         )}
 
