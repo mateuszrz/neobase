@@ -371,17 +371,29 @@ export function RatingDistribution({ dist }: { dist: { s1: number; s2: number; s
     [1, dist.s1],
   ];
   const total = rows.reduce((a, [, v]) => a + (v || 0), 0) || 1;
+  const barColor = (star: number) => (star >= 4 ? "var(--cyan-signal)" : star === 3 ? "var(--ash-gray)" : "var(--neg)");
   return (
     <div className="stack-8">
       {rows.map(([star, v]) => {
-        const pct = Math.round(((v || 0) / total) * 100);
+        const pct = ((v || 0) / total) * 100;
+        const shown = Math.round(pct);
         return (
-          <div key={star} className="row" style={{ gap: 10 }}>
-            <span style={{ width: 28, fontSize: 12, color: "var(--warm-gray)" }}>{star}★</span>
-            <div className="meter" style={{ flex: 1 }}>
-              <span style={{ width: `${pct}%`, background: star >= 4 ? "var(--cyan-signal)" : star === 3 ? "var(--ash-gray)" : "var(--neg)" }} />
+          <div key={star} className="row" style={{ gap: 12 }} title={`${star}★ — ${fmt(v || 0)} ratings (${shown}%)`}>
+            <span style={{ width: 22, fontSize: 12, color: "var(--warm-gray)", fontVariantNumeric: "tabular-nums" }}>{star}★</span>
+            <div style={{ flex: 1, height: 10, borderRadius: "var(--r-full)", background: "var(--stone-border)", overflow: "hidden" }}>
+              <span
+                style={{
+                  display: "block",
+                  height: "100%",
+                  width: `${v > 0 ? Math.max(2.5, pct) : 0}%`,
+                  background: barColor(star),
+                  borderRadius: "var(--r-full)",
+                }}
+              />
             </div>
-            <span style={{ width: 36, textAlign: "right", fontSize: 12, color: "var(--warm-gray)" }}>{pct}%</span>
+            <span style={{ width: 78, textAlign: "right", fontSize: 12, fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>
+              {shown}%<span className="muted" style={{ fontWeight: 400 }}> · {fmt(v || 0)}</span>
+            </span>
           </div>
         );
       })}
