@@ -1,11 +1,8 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getFintech, getSeries, getCountryBreakdown, getProfileExtras, getPlatformRatings } from "@/lib/queries";
+import { getFintech, getSeries, getProfileExtras, getPlatformRatings } from "@/lib/queries";
 import {
-  TrustScore,
   SeriesChart,
-  SentimentChart,
-  Delta,
   RatingDistribution,
   PlatformRatings,
   MiniStat,
@@ -18,7 +15,7 @@ import {
 function FactRow({ label, value }: { label: string; value: ReactNode }) {
   if (value == null || value === "" || value === "—") return null;
   return (
-    <div className="spread" style={{ fontSize: 13, padding: "6px 0", borderBottom: "1px solid var(--stone-border)" }}>
+    <div className="spread" style={{ fontSize: 13, padding: "7px 0", borderBottom: "1px solid var(--stone-border)" }}>
       <span className="muted">{label}</span>
       <span style={{ fontWeight: 500, textAlign: "right" }}>{value}</span>
     </div>
@@ -29,24 +26,23 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, countries, extras, platforms] = await Promise.all([
+  const [series, extras, platforms] = await Promise.all([
     getSeries(slug),
-    getCountryBreakdown(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
   ]);
 
-  const latest = series[series.length - 1];
-  const prev = series[series.length - 2];
-  const ratingDelta = latest?.rating != null && prev?.rating != null ? Math.round((latest.rating - prev.rating) * 100) / 100 : null;
-  const reviewDelta = latest?.count != null && prev?.count != null ? latest.count - prev.count : null;
-  const sentDelta = latest?.pos != null && prev?.pos != null ? Math.round((latest.pos - prev.pos) * 10) / 10 : null;
-  const since = prev?.date?.slice(0, 7) ?? undefined;
+  // Cross-platform consensus (simple average of available platform ratings).
+  const rated = platforms.filter((p) => p.rating != null);
+  const avgRating = rated.length ? Math.round((rated.reduce((s, p) => s + (p.rating as number), 0) / rated.length) * 10) / 10 : null;
+  const totalRatings = platforms.reduce((s, p) => s + (p.count ?? 0), 0);
 
   const tags: string[] = Array.isArray(ft.tags) ? ft.tags : [];
   const faqs: { q: string; a: string }[] = Array.isArray(ft.faqs) ? (ft.faqs as any) : [];
   const licenses: string[] = Array.isArray(ft.licenses) ? (ft.licenses as any) : [];
   const availableIn: string[] = Array.isArray(ft.availableIn) ? (ft.availableIn as any) : [];
+  const hasExtras = !!(extras?.dist || extras?.responseRate != null || extras?.responseTime != null);
+  const hasSeries = series.filter((p) => p.rating != null).length >= 2;
 
   return (
     <main className="section">
@@ -57,14 +53,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </a>
         </p>
 
-        {/* Header */}
+        {/* Header — identity only; ratings live in the hero below */}
         <div className="row" style={{ gap: 18, alignItems: "flex-start" }}>
           {ft.logoSvg && <img className="flogo" style={{ width: 64, height: 64 }} src={ft.logoSvg} alt={`${ft.name} logo`} />}
           <div style={{ flex: 1, minWidth: 240 }}>
-            <div className="row" style={{ gap: 12 }}>
-              <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
-              <TrustScore rating={latest?.rating ?? null} />
-            </div>
+            <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
             <p className="muted" style={{ margin: "8px 0 0" }}>
               {flagEmoji(ft.country)} {ft.headquarters || ft.country || "Global"}
               {ft.website && (
@@ -88,50 +81,23 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {ft.description && <p className="lead" style={{ marginTop: 20, maxWidth: 760 }}>{ft.description}</p>}
 
-        {/* Momentum tiles — current value + change over time */}
-        <div className="grid grid-4" style={{ marginTop: 28 }}>
-          <div className="stat">
-            <div className="num">{latest?.rating != null ? latest.rating.toFixed(1) : "—"}</div>
-            <div className="lbl">TrustScore</div>
-            <div style={{ marginTop: 6 }}><Delta value={ratingDelta} since={since} /></div>
-          </div>
-          <div className="stat">
-            <div className="num">{fmt(latest?.count ?? null)}</div>
-            <div className="lbl">Total reviews</div>
-            <div style={{ marginTop: 6 }}><Delta value={reviewDelta} since={since} /></div>
-          </div>
-          <div className="stat">
-            <div className="num">{latest?.pos != null ? `${latest.pos.toFixed(0)}%` : "—"}</div>
-            <div className="lbl">Positive sentiment</div>
-            <div style={{ marginTop: 6 }}><Delta value={sentDelta} suffix="pp" since={since} /></div>
-          </div>
-          <div className="stat">
-            <div className="num">{countries.length || "—"}</div>
-            <div className="lbl">Reviewer countries</div>
-          </div>
-        </div>
-
-        {/* Ratings across platforms — Trustpilot + mobile stores */}
-        {platforms.length > 1 && (
-          <div style={{ marginTop: 28 }}>
-            <h2 className="subheading" style={{ marginBottom: 14 }}>Ratings across platforms</h2>
+        {/* HERO — cross-platform ratings, the differentiator */}
+        {platforms.length > 0 && (
+          <section style={{ marginTop: 32 }}>
+            <div className="spread" style={{ marginBottom: 16, alignItems: "flex-end" }}>
+              <h2 className="subheading">{rated.length > 1 ? "Ratings across platforms" : "Rating"}</h2>
+              {rated.length > 1 && avgRating != null && (
+                <span className="muted" style={{ fontSize: 13 }}>
+                  ★ {avgRating.toFixed(1)} avg · {fmt(totalRatings)} ratings · {rated.length} platforms
+                </span>
+              )}
+            </div>
             <PlatformRatings items={platforms} />
-          </div>
+          </section>
         )}
 
-        {/* Charts */}
-        <div className="card" style={{ marginTop: 28 }}>
-          <h2 className="subheading" style={{ marginBottom: 16 }}>Rating &amp; review volume over time</h2>
-          <SeriesChart points={series.map((p) => ({ date: p.date, rating: p.rating, count: p.count }))} />
-        </div>
-
-        <div className="card" style={{ marginTop: 20 }}>
-          <h2 className="subheading" style={{ marginBottom: 16 }}>Sentiment over time</h2>
-          <SentimentChart points={series.map((p) => ({ date: p.date, pos: p.pos }))} />
-        </div>
-
-        {/* Rating distribution + responsiveness (live Trustpilot extras) */}
-        {(extras?.dist || extras?.responseRate != null || extras?.verifiedRatio != null) && (
+        {/* Rating distribution + company responsiveness (from Trustpilot) */}
+        {hasExtras && (
           <div className="grid grid-2" style={{ marginTop: 20, alignItems: "start" }}>
             {extras?.dist && (
               <div className="card">
@@ -139,38 +105,30 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                 <RatingDistribution dist={extras.dist} />
               </div>
             )}
-            {(extras?.responseRate != null || extras?.responseTime != null || extras?.verifiedRatio != null) && (
+            {(extras?.responseRate != null || extras?.responseTime != null) && (
               <div className="card">
                 <h2 className="subheading" style={{ marginBottom: 16 }}>Company responsiveness</h2>
                 <div className="row" style={{ gap: 40 }}>
                   {extras?.responseRate != null && <MiniStat label="Replies to reviews" value={`${Math.round(extras.responseRate)}%`} />}
                   {extras?.responseTime != null && <MiniStat label="Typical reply time" value={fmtReplyTime(extras.responseTime)} />}
-                  {extras?.verifiedRatio != null && <MiniStat label="Verified (recent)" value={`${extras.verifiedRatio}%`} />}
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Sentiment drivers */}
-        {(extras?.aiSummary || (extras?.topics?.length ?? 0) > 0) && (
+        {/* Review volume over time (Trustpilot history) */}
+        {hasSeries && (
           <div className="card" style={{ marginTop: 20 }}>
-            <h2 className="subheading" style={{ marginBottom: 12 }}>What&apos;s driving sentiment</h2>
-            {extras?.aiSummary && <p className="muted" style={{ marginTop: 0, lineHeight: 1.7 }}>{extras.aiSummary}</p>}
-            {(extras?.topics?.length ?? 0) > 0 && (
-              <div className="row" style={{ gap: 6, marginTop: 12 }}>
-                {extras!.topics.slice(0, 10).map((t) => (
-                  <span key={t.t} className="badge">{t.t} <span className="muted">· {t.c}</span></span>
-                ))}
-              </div>
-            )}
+            <h2 className="subheading" style={{ marginBottom: 16 }}>Rating &amp; review volume over time</h2>
+            <SeriesChart points={series.map((p) => ({ date: p.date, rating: p.rating, count: p.count }))} />
           </div>
         )}
 
-        {/* Two columns: facts + country sentiment */}
-        <div className="grid grid-2" style={{ marginTop: 28, alignItems: "start" }}>
-          <div className="card">
-            <h2 className="subheading" style={{ marginBottom: 12 }}>Company</h2>
+        {/* Company facts */}
+        <div className="card" style={{ marginTop: 20 }}>
+          <h2 className="subheading" style={{ marginBottom: 14 }}>Company</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", columnGap: 40 }}>
             <FactRow label="Founded" value={ft.founded ?? undefined} />
             <FactRow label="Headquarters" value={ft.headquarters ?? undefined} />
             <FactRow label="Employees" value={ft.employees ? fmt(ft.employees) : undefined} />
@@ -178,27 +136,6 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             <FactRow label="Status" value={ft.status ?? undefined} />
             <FactRow label="Licenses" value={licenses.length ? licenses.slice(0, 4).join(", ") : undefined} />
             <FactRow label="Available in" value={availableIn.length ? `${availableIn.length} markets` : undefined} />
-          </div>
-
-          <div className="card">
-            <div className="spread" style={{ marginBottom: 12 }}>
-              <h2 className="subheading">Sentiment by country</h2>
-              <span className="muted" style={{ fontSize: 12 }}>reviewer origin</span>
-            </div>
-            {countries.length === 0 && <p className="muted">Country segmentation accrues as reviews are collected.</p>}
-            <div className="stack-16">
-              {countries.slice(0, 10).map((c) => (
-                <div key={c.country}>
-                  <div className="spread" style={{ fontSize: 13, marginBottom: 4 }}>
-                    <span>{flagEmoji(c.country)} {c.country} <span className="muted">· {fmt(c.count)} rev</span></span>
-                    <span style={{ fontWeight: 500 }}>{c.pos != null ? `${c.pos.toFixed(0)}%` : c.rating != null ? `★${c.rating.toFixed(1)}` : "—"}</span>
-                  </div>
-                  {c.pos != null && (
-                    <div className="meter"><span style={{ width: `${Math.max(0, Math.min(100, c.pos))}%` }} /></div>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -226,7 +163,8 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         )}
 
         <p className="muted" style={{ marginTop: 40, fontSize: 12 }}>
-          Ratings &amp; sentiment aggregated from Trustpilot. Google Play &amp; App Store tracking coming next.
+          Ratings &amp; sentiment aggregated from Trustpilot, Google Play and App Store — anonymised store
+          metrics only, no individual reviews.
         </p>
       </div>
     </main>

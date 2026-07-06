@@ -140,11 +140,14 @@ export interface PlatformRating {
  * Returns one row per kind that has data, in a stable display order.
  */
 export async function getPlatformRatings(fintechId: string): Promise<PlatformRating[]> {
+  // Only recent (live-pipeline) snapshots — never the seeded monthly history, so
+  // a platform tile reflects a real current scrape, not stale app.js data.
   const rows = await db.execute(sql`
     SELECT DISTINCT ON (kind) kind, rating, review_count AS "count", sentiment_pos AS "pos"
     FROM metric_snapshots
     WHERE fintech_id = ${fintechId} AND country = 'ZZ'
       AND kind IN ('trustpilot', 'google_play', 'app_store') AND rating IS NOT NULL
+      AND snapshot_date >= current_date - interval '14 days'
     ORDER BY kind, snapshot_date DESC
   `);
   const order = ["trustpilot", "google_play", "app_store"];
