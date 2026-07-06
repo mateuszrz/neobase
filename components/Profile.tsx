@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { getFintech, getSeries, getProfileExtras, getPlatformRatings, getRatingDistribution } from "@/lib/queries";
 import {
   SeriesChart,
+  SentimentChart,
   RatingDistribution,
   PlatformRatings,
+  Delta,
   MiniStat,
   flagEmoji,
   fmt,
@@ -50,6 +52,12 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const availableIn: string[] = Array.isArray(ft.availableIn) ? (ft.availableIn as any) : [];
   const hasResponsiveness = extras?.responseRate != null || extras?.responseTime != null;
   const hasSeries = series.filter((p) => p.rating != null).length >= 2;
+
+  // Brand sentiment trend — from the live daily series (needs ≥2 measurements).
+  const sentPoints = series.filter((p) => p.pos != null);
+  const hasSentTrend = sentPoints.length >= 2;
+  const lastSent = sentPoints[sentPoints.length - 1];
+  const sentDelta = hasSentTrend ? Math.round((lastSent.pos! - sentPoints[0].pos!) * 10) / 10 : null;
 
   return (
     <main className="section">
@@ -132,11 +140,26 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         )}
 
-        {/* Review volume over time (Trustpilot history) */}
+        {/* Review volume over time (live Trustpilot series) */}
         {hasSeries && (
           <div className="card" style={{ marginTop: 20 }}>
             <h2 className="subheading" style={{ marginBottom: 16 }}>Rating &amp; review volume over time</h2>
             <SeriesChart points={series.map((p) => ({ date: p.date, rating: p.rating, count: p.count }))} />
+          </div>
+        )}
+
+        {/* Brand sentiment trend (live series) */}
+        {hasSentTrend && (
+          <div className="card" style={{ marginTop: 20 }}>
+            <div className="spread" style={{ marginBottom: 16, alignItems: "flex-end" }}>
+              <h2 className="subheading">Brand sentiment trend</h2>
+              <span style={{ fontSize: 13 }}>
+                <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{lastSent.pos!.toFixed(0)}%</strong>
+                <span className="muted"> positive </span>
+                <Delta value={sentDelta} suffix="pp" />
+              </span>
+            </div>
+            <SentimentChart points={series.map((p) => ({ date: p.date, pos: p.pos }))} />
           </div>
         )}
 
