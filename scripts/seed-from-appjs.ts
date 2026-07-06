@@ -151,14 +151,26 @@ function buildEntity(
   }
 }
 
+/** app.js lists a handful of entities twice under an underscore-variant slug;
+ *  skip the underscore duplicates so the canonical slug is the only record. */
+const DUP_SKIP = new Set([
+  "atom_bank",
+  "hello_bank",
+  "hey_banco",
+  "illimity_bank",
+  "interactive_brokers",
+  "jenius_bank",
+  "judo_bank",
+]);
+
 async function main() {
   console.log("Loading legacy data from", APP_JS);
   const data = loadAppJsData(APP_JS);
   console.log(`  banks=${data.banks.length} exchanges=${data.exchanges.length} news=${data.news.length}`);
 
   const acc = { fintechRows: [] as FintechRow[], sourceRows: [] as SourceRow[], snapRows: [] as SnapshotRow[] };
-  for (const b of data.banks) if (b.id) buildEntity(b, "neobank", acc);
-  for (const e of data.exchanges) if (e.id) buildEntity(e, "exchange", acc);
+  for (const b of data.banks) if (b.id && !DUP_SKIP.has(String(b.id))) buildEntity(b, "neobank", acc);
+  for (const e of data.exchanges) if (e.id && !DUP_SKIP.has(String(e.id))) buildEntity(e, "exchange", acc);
 
   // Dedupe by unique key so no single upsert command touches a row twice.
   acc.fintechRows = dedupeBy(acc.fintechRows, (r) => r.id);
