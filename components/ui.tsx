@@ -182,22 +182,30 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
   const shown = items.filter((p) => p.rating != null);
   if (!shown.length) return null;
   return (
-    <div style={{ display: "grid", gridTemplateColumns: `repeat(${shown.length}, minmax(0, 1fr))`, gap: 12 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 14 }}>
       {shown.map((p) => {
         const m = PLATFORM_META[p.kind] ?? { label: p.kind, accent: "var(--ash-gray)" };
+        const pos = p.pos;
         return (
-          <div key={p.kind} className="card" style={{ padding: 16 }}>
-            <div className="row" style={{ gap: 8, marginBottom: 10 }}>
-              <span style={{ width: 8, height: 8, borderRadius: 999, background: m.accent, flex: "0 0 auto" }} />
+          <div key={p.kind} className="card" style={{ padding: 20 }}>
+            <div className="row" style={{ gap: 8, marginBottom: 14 }}>
+              <span style={{ width: 9, height: 9, borderRadius: 999, background: m.accent, flex: "0 0 auto" }} />
               <span className="muted" style={{ fontSize: 13, fontWeight: 500 }}>{m.label}</span>
             </div>
-            <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1 }}>
-              {p.rating!.toFixed(1)}
-              <span style={{ fontSize: 15, color: m.accent }}> ★</span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontSize: "2.1rem", fontWeight: 500, lineHeight: 1 }}>
+                {p.rating!.toFixed(1)}
+              </span>
+              <span style={{ fontSize: 16, color: m.accent }}>★</span>
             </div>
-            <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+            {pos != null && (
+              <div className="meter" style={{ marginTop: 14 }}>
+                <span style={{ width: `${Math.max(0, Math.min(100, pos))}%`, background: m.accent }} />
+              </div>
+            )}
+            <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
               {p.count != null ? `${fmt(p.count)} ratings` : "—"}
-              {p.pos != null && ` · ${p.pos.toFixed(0)}% positive`}
+              {pos != null && ` · ${pos.toFixed(0)}% positive`}
             </div>
           </div>
         );
