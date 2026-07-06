@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { getFintech, getSeries, getProfileExtras, getPlatformRatings } from "@/lib/queries";
+import { getFintech, getSeries, getProfileExtras, getPlatformRatings, getRatingDistribution } from "@/lib/queries";
 import {
   SeriesChart,
   RatingDistribution,
@@ -26,11 +26,18 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, extras, platforms] = await Promise.all([
+  const [series, extras, platforms, distData] = await Promise.all([
     getSeries(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
+    getRatingDistribution(slug),
   ]);
+
+  const DIST_SOURCE_LABEL: Record<string, string> = {
+    trustpilot: "Trustpilot",
+    google_play: "Google Play",
+    app_store: "App Store",
+  };
 
   // Cross-platform consensus (simple average of available platform ratings).
   const rated = platforms.filter((p) => p.rating != null);
@@ -41,7 +48,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const faqs: { q: string; a: string }[] = Array.isArray(ft.faqs) ? (ft.faqs as any) : [];
   const licenses: string[] = Array.isArray(ft.licenses) ? (ft.licenses as any) : [];
   const availableIn: string[] = Array.isArray(ft.availableIn) ? (ft.availableIn as any) : [];
-  const hasExtras = !!(extras?.dist || extras?.responseRate != null || extras?.responseTime != null);
+  const hasResponsiveness = extras?.responseRate != null || extras?.responseTime != null;
   const hasSeries = series.filter((p) => p.rating != null).length >= 2;
 
   return (
@@ -96,16 +103,19 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </section>
         )}
 
-        {/* Rating distribution + company responsiveness (from Trustpilot) */}
-        {hasExtras && (
+        {/* Rating distribution (best available source) + Trustpilot responsiveness */}
+        {(distData || hasResponsiveness) && (
           <div className="grid grid-2" style={{ marginTop: 20, alignItems: "start" }}>
-            {extras?.dist && (
+            {distData && (
               <div className="card">
-                <h2 className="subheading" style={{ marginBottom: 14 }}>Rating distribution</h2>
-                <RatingDistribution dist={extras.dist} />
+                <div className="spread" style={{ marginBottom: 14 }}>
+                  <h2 className="subheading">Rating distribution</h2>
+                  <span className="muted" style={{ fontSize: 12 }}>{DIST_SOURCE_LABEL[distData.source] ?? distData.source}</span>
+                </div>
+                <RatingDistribution dist={distData.dist} />
               </div>
             )}
-            {(extras?.responseRate != null || extras?.responseTime != null) && (
+            {hasResponsiveness && (
               <div className="card">
                 <h2 className="subheading" style={{ marginBottom: 16 }}>Company responsiveness</h2>
                 <div className="row" style={{ gap: 40 }}>
