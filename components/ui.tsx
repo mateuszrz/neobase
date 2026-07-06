@@ -409,14 +409,21 @@ export function MiniStat({ label, value }: { label: string; value: string }) {
 /** Positive-sentiment share over time (0–100%). */
 export function SentimentChart({ points }: { points: { date: string; pos: number | null }[] }) {
   const W = 820;
-  const H = 200;
-  const PAD = { t: 20, r: 16, b: 24, l: 16 };
+  const H = 220;
+  const PAD = { t: 22, r: 20, b: 36, l: 16 };
   const withData = points.filter((p) => p.pos != null);
   if (withData.length < 2) return <p className="muted">Sentiment history accrues daily.</p>;
 
+  // Auto-scale the y-axis to the data range — lifetime sentiment moves subtly,
+  // so a fixed 0–100 axis would flatten the trend into a line at the top.
+  const vals = withData.map((p) => p.pos as number);
+  const lo = Math.max(0, Math.floor(Math.min(...vals) - 2));
+  let hi = Math.min(100, Math.ceil(Math.max(...vals) + 2));
+  if (hi - lo < 4) hi = Math.min(100, lo + 4);
+
   const n = points.length;
   const x = (i: number) => PAD.l + (i / (n - 1)) * (W - PAD.l - PAD.r);
-  const y = (v: number) => PAD.t + (1 - v / 100) * (H - PAD.t - PAD.b);
+  const y = (v: number) => PAD.t + (1 - (v - lo) / (hi - lo)) * (H - PAD.t - PAD.b);
 
   const line = points
     .map((p, i) => (p.pos == null ? null : `${i === 0 ? "M" : "L"}${x(i)},${y(p.pos)}`))
@@ -424,19 +431,46 @@ export function SentimentChart({ points }: { points: { date: string; pos: number
     .join(" ");
   const area = `${line} L${x(n - 1)},${H - PAD.b} L${x(0)},${H - PAD.b} Z`;
   const last = points[n - 1];
+  const ticks = [...new Set([0, Math.floor((n - 1) / 3), Math.floor((2 * (n - 1)) / 3), n - 1])];
+  const gridVals = [...new Set([hi, Math.round((lo + hi) / 2), lo])];
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Positive sentiment over time">
-      {[0, 50, 100].map((v) => (
+      <defs>
+        <linearGradient id="sentFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--sky-wash)" stopOpacity="0.7" />
+          <stop offset="100%" stopColor="var(--sky-wash)" stopOpacity="0.04" />
+        </linearGradient>
+      </defs>
+      {gridVals.map((v) => (
         <g key={v}>
           <line x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} stroke="var(--stone-border)" strokeWidth={1} />
-          <text x={W - PAD.r} y={y(v) - 3} textAnchor="end" fontSize={10} fill="var(--ash-gray)">{v}%</text>
+          <text x={W - PAD.r} y={y(v) - 4} textAnchor="end" fontSize={10} fill="var(--ash-gray)">{v}%</text>
         </g>
       ))}
-      <path d={area} fill="var(--sky-wash)" opacity={0.6} />
-      <path d={line} fill="none" stroke="var(--cyan-signal)" strokeWidth={2.5} />
-      {last.pos != null && <circle cx={x(n - 1)} cy={y(last.pos)} r={4} fill="var(--cyan-signal)" />}
-      <text x={PAD.l} y={13} fontSize={11} fill="var(--cyan-edge)">● Positive sentiment %</text>
+      <path d={area} fill="url(#sentFill)" />
+      <path d={line} fill="none" stroke="var(--cyan-signal)" strokeWidth={2.5} strokeLinejoin="round" strokeLinecap="round" />
+      {last.pos != null && (
+        <>
+          <circle cx={x(n - 1)} cy={y(last.pos)} r={4} fill="var(--cyan-signal)" stroke="#fff" strokeWidth={1.5} />
+          <text x={x(n - 1) - 8} y={y(last.pos) - 9} textAnchor="end" fontSize={12} fontWeight={600} fill="var(--cyan-edge)">
+            {last.pos.toFixed(0)}%
+          </text>
+        </>
+      )}
+      {ticks.map((i) => (
+        <text
+          key={i}
+          x={x(i)}
+          y={H - 12}
+          textAnchor={i === 0 ? "start" : i === n - 1 ? "end" : "middle"}
+          fontSize={10}
+          fill="var(--ash-gray)"
+        >
+          {fmtMonth(points[i].date)}
+        </text>
+      ))}
+      <text x={PAD.l} y={13} fontSize={11} fill="var(--cyan-edge)">● Positive sentiment</text>
     </svg>
   );
 }
