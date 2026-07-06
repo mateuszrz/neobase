@@ -136,7 +136,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {hasSeries && (
           <div className="card" style={{ marginTop: 20 }}>
             <h2 className="subheading" style={{ marginBottom: 16 }}>Rating &amp; review volume over time</h2>
-            <SeriesChart points={series.map((p) => ({ date: p.date, rating: p.rating, count: p.count, live: p.live }))} />
+            <SeriesChart points={series.map((p) => ({ date: p.date, rating: p.rating, count: p.count }))} />
           </div>
         )}
 

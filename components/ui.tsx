@@ -185,6 +185,13 @@ const PLATFORM_PATH: Record<string, string> = {
     "M17.05 12.04c-.03-2.6 2.13-3.85 2.23-3.91-1.22-1.78-3.11-2.02-3.78-2.05-1.61-.16-3.14.95-3.96.95-.81 0-2.07-.93-3.41-.9-1.75.03-3.37 1.02-4.27 2.59-1.82 3.16-.47 7.83 1.31 10.39.87 1.25 1.9 2.66 3.25 2.61 1.31-.05 1.8-.85 3.38-.85 1.58 0 2.02.85 3.4.82 1.4-.03 2.29-1.28 3.15-2.54.99-1.46 1.4-2.87 1.42-2.94-.03-.01-2.73-1.05-2.76-4.16zM14.53 5.42c.72-.87 1.2-2.08 1.07-3.29-1.03.04-2.28.69-3.02 1.56-.66.77-1.24 2-1.09 3.18 1.15.09 2.32-.58 3.04-1.45z",
 };
 
+/** "10,000,000+" → "10M+". */
+function fmtInstalls(s: string): string {
+  const n = parseInt(String(s).replace(/[^0-9]/g, ""), 10);
+  if (!Number.isFinite(n) || n <= 0) return s;
+  return `${fmt(n).replace(/\.0([KM])/, "$1")}${String(s).includes("+") ? "+" : ""}`;
+}
+
 function PlatformIcon({ kind, color }: { kind: string; color: string }) {
   const d = PLATFORM_PATH[kind];
   if (!d) return <span style={{ width: 9, height: 9, borderRadius: 999, background: color, flex: "0 0 auto" }} />;
@@ -225,6 +232,9 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
               {p.count != null ? `${fmt(p.count)} ratings` : "—"}
               {pos != null && ` · ${pos.toFixed(0)}% positive`}
             </div>
+            {p.installs && (
+              <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{fmtInstalls(p.installs)} installs</div>
+            )}
           </div>
         );
       })}
@@ -260,7 +270,7 @@ function fmtMonth(d: string): string {
 export function SeriesChart({
   points,
 }: {
-  points: { date: string; rating: number | null; count: number | null; live?: boolean }[];
+  points: { date: string; rating: number | null; count: number | null }[];
 }) {
   const W = 820;
   const H = 280;
@@ -289,11 +299,6 @@ export function SeriesChart({
   const last = points[n - 1];
   const ticks = [...new Set([0, Math.floor((n - 1) / 3), Math.floor((2 * (n - 1)) / 3), n - 1])];
 
-  // Boundary between seeded history and live-pipeline data.
-  const boundary = points.findIndex((p) => p.live);
-  const showBoundary = boundary > 0 && boundary < n;
-  const xb = showBoundary ? (x(boundary - 1) + x(boundary)) / 2 : 0;
-
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="TrustScore and review volume over time">
       <defs>
@@ -312,16 +317,6 @@ export function SeriesChart({
           </text>
         </g>
       ))}
-
-      {/* seeded↔live boundary: shade the live region + dashed divider */}
-      {showBoundary && (
-        <>
-          <rect x={xb} y={PAD.t} width={W - PAD.r - xb} height={H - PAD.t - PAD.b} fill="var(--warm-gray)" opacity={0.06} />
-          <line x1={xb} x2={xb} y1={PAD.t} y2={H - PAD.b} stroke="var(--stone-muted)" strokeWidth={1} strokeDasharray="2 3" />
-          <text x={xb - 5} y={PAD.t + 10} textAnchor="end" fontSize={9} fill="var(--ash-gray)">seeded</text>
-          <text x={xb + 5} y={PAD.t + 10} fontSize={9} fill="var(--cyan-edge)">live</text>
-        </>
-      )}
 
       {/* review-volume area + edge */}
       <path d={areaFill} fill="url(#volFill)" />
