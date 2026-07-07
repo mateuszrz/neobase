@@ -11,6 +11,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
+    "db:apply": "tsx scripts/apply-migration.ts",
     "db:studio": "drizzle-kit studio",
     "seed": "tsx scripts/seed-from-appjs.ts",
     "pipeline:kickoff": "tsx scripts/run-local.ts kickoff",
@@ -20,7 +21,9 @@
     "apify:ids": "tsx scripts/set-app-ids.ts",
     "apify:appids": "tsx scripts/collect-app-ids.ts",
     "apify:crypto": "tsx scripts/ingest-crypto.ts",
-    "apify:backfill": "tsx scripts/backfill.ts"
+    "apify:backfill": "tsx scripts/backfill.ts",
+    "crawl:seed": "tsx scripts/seed-crawl-sources.ts",
+    "crawl:test": "tsx scripts/crawl-test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
