@@ -142,6 +142,67 @@ export const reviews = pgTable(
   ],
 );
 
+// ─── Content intelligence (crawl + diff) ────────────────────────────────────
+// Unlike metric_snapshots (numeric aggregates), these capture PAGE CONTENT for
+// week-over-week change detection: homepage/pricing/offer/blog. A snapshot stores
+// the Claude-extracted canonical structure (plans/prices/features) plus a hash of
+// it; when the hash differs from the prior snapshot we record a content_change
+// with a human summary of what moved (price up, new feature, dropped offer…).
+
+export const contentSnapshots = pgTable(
+  "content_snapshots",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    sourceId: uuid("source_id")
+      .notNull()
+      .references(() => sources.id, { onDelete: "cascade" }),
+    fintechId: text("fintech_id").notNull(), // denormalised for fast reads
+    kind: text("kind").notNull(), // homepage | pricing_page | offer_page | blog
+    country: char("country", { length: 2 }).notNull().default("ZZ"),
+    snapshotDate: date("snapshot_date").notNull(),
+    url: text("url").notNull(),
+    httpStatus: integer("http_status"),
+    fetchedVia: text("fetched_via"), // fetch | apify | mock
+    // sha256 of the canonicalised `extracted` blob — cheap change detection that
+    // ignores cosmetic HTML noise (only meaningful structure changes flip it).
+    contentHash: text("content_hash").notNull(),
+    extracted: jsonb("extracted"), // { pageType, headline, plans[], features[], offers[], fees[] }
+    rawText: text("raw_text"), // cleaned main text (audit / re-extraction)
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // Idempotency: one capture per (source, country, day).
+    uniqueIndex("content_snapshots_natural_key").on(t.sourceId, t.country, t.snapshotDate),
+    index("content_snapshots_series_idx").on(t.fintechId, t.kind, t.country, t.snapshotDate),
+  ],
+);
+
+export const contentChanges = pgTable(
+  "content_changes",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id").notNull(),
+    kind: text("kind").notNull(),
+    country: char("country", { length: 2 }).notNull().default("ZZ"),
+    sourceId: uuid("source_id")
+      .notNull()
+      .references(() => sources.id, { onDelete: "cascade" }),
+    fromSnapshotId: bigint("from_snapshot_id", { mode: "number" }), // null on first-ever capture
+    toSnapshotId: bigint("to_snapshot_id", { mode: "number" }).notNull(),
+    fromDate: date("from_date"),
+    toDate: date("to_date").notNull(),
+    changeKinds: text("change_kinds").array(), // price | feature | offer | copy
+    diff: jsonb("diff"), // { added, removed, changed } structural delta
+    summary: text("summary"), // Claude's human-readable "what changed"
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    // One change row per new snapshot — re-processing the same day writes nothing new.
+    uniqueIndex("content_changes_to_snapshot_key").on(t.toSnapshotId),
+    index("content_changes_feed_idx").on(t.fintechId, t.toDate),
+  ],
+);
+
 // ─── Pipeline plumbing ──────────────────────────────────────────────────────
 
 export const ingestRuns = pgTable(
@@ -182,4 +243,7 @@ export type Fintech = typeof fintechs.$inferSelect;
 export type NewFintech = typeof fintechs.$inferInsert;
 export type Source = typeof sources.$inferSelect;
 export type MetricSnapshot = typeof metricSnapshots.$inferSelect;
+export type ContentSnapshot = typeof contentSnapshots.$inferSelect;
+export type NewContentSnapshot = typeof contentSnapshots.$inferInsert;
+export type ContentChange = typeof contentChanges.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;

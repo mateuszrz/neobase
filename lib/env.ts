@@ -24,6 +24,12 @@ export const env = {
   APIFY_APPSTORE_ACTOR: process.env.APIFY_APPSTORE_ACTOR ?? "",
 
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ?? "",
+  // Model for crawl content extraction + diff summaries. Defaults to Opus 4.8;
+  // Haiku 4.5 (claude-haiku-4-5) is a strong cheaper pick for this high-volume,
+  // structured-extraction workload — set here to switch the whole crawl pipeline.
+  ANTHROPIC_CRAWL_MODEL: process.env.ANTHROPIC_CRAWL_MODEL ?? "claude-opus-4-8",
+  // Apify actor used as the fetch fallback when a direct fetch() is empty/blocked.
+  APIFY_CRAWLER_ACTOR: process.env.APIFY_CRAWLER_ACTOR ?? "apify/website-content-crawler",
 
   PADDLE_API_KEY: process.env.PADDLE_API_KEY ?? "",
   PADDLE_WEBHOOK_SECRET: process.env.PADDLE_WEBHOOK_SECRET ?? "",
