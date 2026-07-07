@@ -98,6 +98,17 @@ Makes the daily-project track real: a subscribed user's project generates the da
 - **Verified:** `tsc` + `next build` clean; `npm run project:demo` runs the full vertical (user→Pro sub→project 3 brands×2 markets→**24 shared daily sources**→daily-project would fire 24) and self-cleans (prod left at 0 daily sources). No jobs enqueued against prod.
 - **Next slices:** 1) **Auth.js magic-link** (tables ready; needs email sender + Next 16 compat check) so real users log in; 2) wire **live Paddle keys** + price ids + checkout UI; 3) project management UI (`/panel`); 4) monthly report generation (Claude digest over shared data).
 
+## Auth — magic-link sign-in (NEW, 2026-07-07)
+
+Passwordless login so real users can own projects. **Merged to main.**
+- **Auth.js v5** (`next-auth@5.0.0-beta.31`, supports Next 16) + `@auth/drizzle-adapter` mapped onto the existing `users`/`accounts`/`sessions`/`verification_tokens` tables. Database session strategy. `lib/auth/index.ts` exports `handlers`/`auth`/`signIn`/`signOut`; route `/api/auth/[...nextauth]` (nodejs runtime); `trustHost: true`.
+- **Email delivery** (`lib/auth/email-provider.ts`): magic link sent via **Resend HTTP API** when `RESEND_API_KEY` set, else **logged to the server console** (dev) — usable now with no email account.
+- **Pages:** `/login` (email → magic link, server action `signIn`), `/login/verify` (check inbox), `/panel` (gated by `auth()`; shows email + subscription/package + projects; `signOut`). Seline styling.
+- **Verified live:** Drizzle adapter round-trip (createUser→token→session→delete) clean; `next build` clean; **full magic-link E2E** against a running dev server — signin → link (console) → callback (200, session) → `/panel` renders the logged-in user; `/panel` unauth → redirects to `/login`.
+- ⚠️ **`trailingSlash: true`** adds a 308 hop on auth POSTs — browsers follow it (verified E2E), harmless.
+- ⚠️ **DO FIRST on Vercel:** set **`AUTH_SECRET`** (else `/login` + `/panel` 500 at runtime). For real emails set `RESEND_API_KEY` + verified `EMAIL_FROM` domain (else links only print to server logs). Rest of the site is unaffected.
+- **Next:** project-management UI on `/panel` (create project, pick brands/markets → calls `lib/projects/service`); live Paddle keys + checkout; monthly report generation.
+
 ## Open threads / next steps
 
 1. ⚠️ **Set `APP_BASE_URL` on Vercel prod** (above) — unblocks the daily cron so trends accrue. Highest priority.
