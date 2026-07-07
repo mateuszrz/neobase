@@ -1,6 +1,0 @@
-{
-  "buildCommand": "node generate.js",
-  "outputDirectory": ".",
-  "cleanUrls": true,
-  "trailingSlash": true
-}
