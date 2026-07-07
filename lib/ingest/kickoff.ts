@@ -1,23 +1,27 @@
 /**
- * Daily kickoff: for every active Trustpilot source, either enqueue a mock
- * process job (no Apify token) or start a live Apify run whose completion webhook
- * enqueues the process job.
+ * Review-source kickoff primitives: start ONE review source (Trustpilot / Google
+ * Play / App Store) for a given day — either enqueue a mock process job (no Apify
+ * token) or start a live Apify run whose completion webhook enqueues the process
+ * job.
  *
  * Idempotent per day via an `ingest_runs` row keyed by sha256(actor|source|date):
  * a second kickoff on the same day inserts nothing and enqueues nothing.
+ *
+ * The cadence/scope-aware orchestration that decides WHICH sources run lives in
+ * `lib/ingest/orchestrate.ts`; this module only knows how to fire one.
  */
 
 import { createHash } from "node:crypto";
-import { and, eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { isApifyLive, apifyActorFor } from "@/lib/env";
 import { enqueue } from "@/lib/queue";
 import { startActorRun, SOURCE_KINDS } from "@/lib/apify";
 
-const { sources, fintechs, ingestRuns } = schema;
+const { ingestRuns } = schema;
 
-/** Source kinds with a live scraper wired up (order irrelevant). */
-const SCRAPABLE_KINDS = Object.keys(SOURCE_KINDS);
+/** Source kinds with a live review scraper wired up. */
+export const SCRAPABLE_KINDS = Object.keys(SOURCE_KINDS);
 
 export function todayUtc(): string {
   return new Date().toISOString().slice(0, 10);
@@ -27,77 +31,53 @@ function runKeyFor(actor: string, sourceId: string, day: string): string {
   return createHash("sha256").update(`${actor}|${sourceId}|${day}`).digest("hex");
 }
 
-export async function runDailyKickoff(day = todayUtc()): Promise<{ enqueued: number; skipped: number }> {
-  // Active sources across every wired-up kind, with the fintech's home country
-  // (used as the store market for Google Play / App Store scrapes).
-  const active = await db
-    .select({
-      id: sources.id,
-      fintechId: sources.fintechId,
-      kind: sources.kind,
-      externalRef: sources.externalRef,
-      storeCountry: fintechs.country,
-    })
-    .from(sources)
-    .innerJoin(fintechs, eq(fintechs.id, sources.fintechId))
-    .where(and(inArray(sources.kind, SCRAPABLE_KINDS), eq(sources.active, true)));
+/** One active review source, with the fintech's home country as the store market. */
+export interface ReviewSourceRow {
+  id: string;
+  fintechId: string;
+  kind: string;
+  externalRef: string;
+  storeCountry: string | null;
+}
+
+/**
+ * Kick off one review source for `day`. Returns whether work was enqueued or the
+ * (source, day) was already claimed / not runnable.
+ */
+export async function startReviewSource(s: ReviewSourceRow, day: string): Promise<"enqueued" | "skipped"> {
+  const spec = SOURCE_KINDS[s.kind];
+  if (!spec) return "skipped";
 
   const live = isApifyLive();
-  let enqueued = 0;
-  let skipped = 0;
+  const actor = live ? apifyActorFor(s.kind) : `mock:${s.kind}`;
+  if (live && !actor) return "skipped"; // no configured actor for this kind
 
-  for (const s of active) {
-    const spec = SOURCE_KINDS[s.kind];
-    if (!spec) {
-      skipped++;
-      continue;
-    }
-    const actor = live ? apifyActorFor(s.kind) : `mock:${s.kind}`;
-    // In live mode a kind with no configured actor can't run — skip it.
-    if (live && !actor) {
-      skipped++;
-      continue;
-    }
+  const runKey = runKeyFor(actor, s.id, day);
 
-    const runKey = runKeyFor(actor, s.id, day);
+  // Claim this (source, day) exactly once.
+  const inserted = await db
+    .insert(ingestRuns)
+    .values({ runKey, actor, status: "started" })
+    .onConflictDoNothing()
+    .returning({ id: ingestRuns.id });
+  if (!inserted.length) return "skipped";
 
-    // Guard: claim this (source, day) exactly once.
-    const inserted = await db
-      .insert(ingestRuns)
-      .values({ runKey, actor, status: "started" })
-      .onConflictDoNothing()
-      .returning({ id: ingestRuns.id });
-
-    if (!inserted.length) {
-      skipped++;
-      continue;
-    }
-
-    if (!live) {
-      await enqueue({
-        type: "process_dataset",
-        payload: { sourceId: s.id, fintechId: s.fintechId, kind: s.kind, snapshotDate: day, mock: true, runKey },
-      });
-      await db
-        .update(ingestRuns)
-        .set({ status: "succeeded", finishedAt: new Date() })
-        .where(eq(ingestRuns.runKey, runKey));
-      enqueued++;
-    } else {
-      // One run per source keeps dataset→source mapping trivial. The webhook
-      // enqueues the process job (carrying `kind`) on completion.
-      const { runId, datasetId } = await startActorRun(
-        actor,
-        spec.buildInput(s.externalRef, s.storeCountry ?? undefined),
-        { runKey, sourceId: s.id, fintechId: s.fintechId, snapshotDate: day, kind: s.kind },
-      );
-      await db
-        .update(ingestRuns)
-        .set({ apifyRunId: runId, datasetId })
-        .where(eq(ingestRuns.runKey, runKey));
-      enqueued++;
-    }
+  if (!live) {
+    await enqueue({
+      type: "process_dataset",
+      payload: { sourceId: s.id, fintechId: s.fintechId, kind: s.kind, snapshotDate: day, mock: true, runKey },
+    });
+    await db.update(ingestRuns).set({ status: "succeeded", finishedAt: new Date() }).where(eq(ingestRuns.runKey, runKey));
+    return "enqueued";
   }
 
-  return { enqueued, skipped };
+  // One run per source keeps dataset→source mapping trivial. The webhook enqueues
+  // the process job (carrying `kind`) on completion.
+  const { runId, datasetId } = await startActorRun(
+    actor,
+    spec.buildInput(s.externalRef, s.storeCountry ?? undefined),
+    { runKey, sourceId: s.id, fintechId: s.fintechId, snapshotDate: day, kind: s.kind },
+  );
+  await db.update(ingestRuns).set({ apifyRunId: runId, datasetId }).where(eq(ingestRuns.runKey, runKey));
+  return "enqueued";
 }

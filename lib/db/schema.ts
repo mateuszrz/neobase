@@ -75,6 +75,11 @@ export const sources = pgTable(
     kind: text("kind").notNull(), // trustpilot | google_play | app_store | serp | homepage | offer_page | social_*
     externalRef: text("external_ref").notNull(), // url / app-id / handle / trustpilot domain
     country: char("country", { length: 2 }).notNull().default("ZZ"),
+    // Two-tier collection: public directory data is global + weekly; paid-project
+    // data is per-market + daily. Cadence drives which cron kicks a source off;
+    // scope tags who it serves (entitlements/reporting).
+    scope: text("scope").notNull().default("public"), // public | project
+    cadence: text("cadence").notNull().default("weekly"), // weekly | daily
     apifyActorId: text("apify_actor_id"),
     active: boolean("active").notNull().default(true),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -83,6 +88,8 @@ export const sources = pgTable(
     uniqueIndex("sources_natural_key").on(t.fintechId, t.kind, t.externalRef, t.country),
     index("sources_fintech_idx").on(t.fintechId),
     index("sources_active_kind_idx").on(t.active, t.kind),
+    // Primary kickoff query: active sources for a given cadence.
+    index("sources_cadence_idx").on(t.cadence, t.active),
   ],
 );
 
