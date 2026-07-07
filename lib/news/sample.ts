@@ -11,13 +11,22 @@ export type NewsSentiment = "positive" | "neutral" | "negative";
 export interface NewsItemView {
   title: string;
   publisher: string;
+  domain: string | null; // for the publisher favicon
   publishedAt: string; // ISO
   snippet: string;
   sentiment: NewsSentiment;
   url: string | null;
 }
 
-const PUBLISHERS = ["TechCrunch", "Reuters", "Financial Times", "Bloomberg", "Sifted", "The Verge", "Finextra"];
+const PUBLISHERS: { name: string; domain: string }[] = [
+  { name: "TechCrunch", domain: "techcrunch.com" },
+  { name: "Reuters", domain: "reuters.com" },
+  { name: "Financial Times", domain: "ft.com" },
+  { name: "Bloomberg", domain: "bloomberg.com" },
+  { name: "Sifted", domain: "sifted.eu" },
+  { name: "The Verge", domain: "theverge.com" },
+  { name: "Finextra", domain: "finextra.com" },
+];
 
 const STORIES: { t: (n: string) => string; s: NewsSentiment; snip: (n: string) => string }[] = [
   {
@@ -59,9 +68,11 @@ export function sampleNews(fintechId: string, name: string, count = 5): NewsItem
   const picks = [...STORIES].sort(() => r.next() - 0.5).slice(0, count);
   let daysAgo = r.int(1, 3);
   return picks.map((story) => {
+    const pub = r.pick(PUBLISHERS);
     const item: NewsItemView = {
       title: story.t(name),
-      publisher: r.pick(PUBLISHERS),
+      publisher: pub.name,
+      domain: pub.domain,
       publishedAt: new Date(now - daysAgo * day).toISOString(),
       snippet: story.snip(name),
       sentiment: story.s,

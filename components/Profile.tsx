@@ -196,7 +196,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                 <span className="muted" style={{ fontSize: 12 }}>LinkedIn &amp; Facebook</span>
               )}
             </div>
-            <SocialFeed posts={social.posts} />
+            <SocialFeed posts={social.posts} name={ft.name} logo={ft.logoSvg} />
           </div>
         )}
 
