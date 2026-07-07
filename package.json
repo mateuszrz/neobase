@@ -24,6 +24,8 @@
     "apify:backfill": "tsx scripts/backfill.ts",
     "crawl:seed": "tsx scripts/seed-crawl-sources.ts",
     "crawl:test": "tsx scripts/crawl-test.ts",
+    "social:test": "tsx scripts/social-test.ts",
+    "news:test": "tsx scripts/news-test.ts",
     "project:demo": "tsx scripts/project-demo.ts"
   },
   "dependencies": {

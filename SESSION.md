@@ -109,6 +109,16 @@ Passwordless login so real users can own projects. **Merged to main.**
 - ⚠️ **DO FIRST on Vercel:** set **`AUTH_SECRET`** (else `/login` + `/panel` 500 at runtime). For real emails set `RESEND_API_KEY` + verified `EMAIL_FROM` domain (else links only print to server logs). Rest of the site is unaffected.
 - **Next:** project-management UI on `/panel` (create project, pick brands/markets → calls `lib/projects/service`); live Paddle keys + checkout; monthly report generation.
 
+## Public page — social + news sections (NEW, 2026-07-07)
+
+Fintech profile now has **"In the media"** (news) and **"Latest from social"** (LinkedIn/Facebook) sections. **Merged to main.**
+- **Tables:** `social_posts` + `news_items` (public brand/press content — allowed, unlike user reviews).
+- **Sample-first, honest:** when no real data exists, the query returns a **deterministic sample generated at render time (never stored)**, and the UI shows a **"Sample" pill**. Real data (Apify social / DataForSEO news) replaces it automatically — so prod is never misleading.
+- **Modules:** `lib/social/{sample,apify}.ts`, `lib/news/{sample,dataforseo}.ts`, shared `lib/rng.ts`. Queries `getSocialPosts`/`getNews` (real→sample fallback). UI `SocialFeed`/`NewsList` in `components/ui.tsx`; sections in `Profile.tsx`.
+- **Live path wired, dormant:** social via Apify (`APIFY_LINKEDIN_ACTOR`/`APIFY_FACEBOOK_ACTOR` + a handle in `fintechs.socials`); news via DataForSEO (`DATAFORSEO_LOGIN`/`PASSWORD`). Go live per-fintech: `npm run social:test -- <slug> linkedin`, `npm run news:test -- <slug> <query> <country>`.
+- **Not yet:** wire social/news into the weekly-public cron (needs handle/query discovery); derive news sentiment (Claude); DataForSEO account/credentials ($50 min deposit — none yet).
+- **Verified:** tsc + next build; prerendered /fintech/revolut renders both sections with sample content + Sample pills.
+
 ## Open threads / next steps
 
 1. ⚠️ **Set `APP_BASE_URL` on Vercel prod** (above) — unblocks the daily cron so trends accrue. Highest priority.

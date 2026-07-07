@@ -5,7 +5,10 @@
 import { and, asc, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 
-const { fintechs, metricSnapshots, reviews } = schema;
+import { sampleSocialPosts, type SocialPostView } from "@/lib/social/sample";
+import { sampleNews, type NewsItemView, type NewsSentiment } from "@/lib/news/sample";
+
+const { fintechs, metricSnapshots, reviews, socialPosts, newsItems } = schema;
 
 export interface FintechListItem {
   id: string;
@@ -241,6 +244,83 @@ export async function getRecentReviews(fintechId: string, limit = 10) {
     .where(eq(reviews.fintechId, fintechId))
     .orderBy(desc(reviews.postedAt))
     .limit(limit);
+}
+
+/**
+ * Social feed for the profile. Real Apify-ingested posts if any exist; otherwise
+ * a deterministic labelled SAMPLE so the page shows the design (never persisted).
+ */
+export async function getSocialPosts(
+  fintechId: string,
+  name: string,
+  limit = 4,
+): Promise<{ posts: SocialPostView[]; isSample: boolean }> {
+  const rows = await db
+    .select({
+      network: socialPosts.network,
+      text: socialPosts.text,
+      postedAt: socialPosts.postedAt,
+      likes: socialPosts.likes,
+      comments: socialPosts.comments,
+      shares: socialPosts.shares,
+      url: socialPosts.url,
+    })
+    .from(socialPosts)
+    .where(eq(socialPosts.fintechId, fintechId))
+    .orderBy(desc(socialPosts.postedAt))
+    .limit(limit);
+
+  if (rows.length) {
+    return {
+      isSample: false,
+      posts: rows.map((r) => ({
+        network: (r.network === "facebook" ? "facebook" : "linkedin") as SocialPostView["network"],
+        text: r.text ?? "",
+        postedAt: r.postedAt ? new Date(r.postedAt).toISOString() : new Date().toISOString(),
+        likes: r.likes ?? 0,
+        comments: r.comments ?? 0,
+        shares: r.shares ?? 0,
+        url: r.url,
+      })),
+    };
+  }
+  return { posts: sampleSocialPosts(fintechId, name, limit), isSample: true };
+}
+
+/** News/media coverage. Real DataForSEO items if any, else labelled SAMPLE. */
+export async function getNews(
+  fintechId: string,
+  name: string,
+  limit = 5,
+): Promise<{ items: NewsItemView[]; isSample: boolean }> {
+  const rows = await db
+    .select({
+      title: newsItems.title,
+      publisher: newsItems.publisher,
+      publishedAt: newsItems.publishedAt,
+      snippet: newsItems.snippet,
+      sentiment: newsItems.sentiment,
+      url: newsItems.url,
+    })
+    .from(newsItems)
+    .where(eq(newsItems.fintechId, fintechId))
+    .orderBy(desc(newsItems.publishedAt))
+    .limit(limit);
+
+  if (rows.length) {
+    return {
+      isSample: false,
+      items: rows.map((r) => ({
+        title: r.title,
+        publisher: r.publisher ?? "",
+        publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString() : new Date().toISOString(),
+        snippet: r.snippet ?? "",
+        sentiment: (["positive", "neutral", "negative"].includes(r.sentiment ?? "") ? r.sentiment : "neutral") as NewsSentiment,
+        url: r.url,
+      })),
+    };
+  }
+  return { items: sampleNews(fintechId, name, limit), isSample: true };
 }
 
 export interface CountryRow {

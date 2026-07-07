@@ -30,6 +30,12 @@ export const env = {
   ANTHROPIC_CRAWL_MODEL: process.env.ANTHROPIC_CRAWL_MODEL ?? "claude-opus-4-8",
   // Apify actor used as the fetch fallback when a direct fetch() is empty/blocked.
   APIFY_CRAWLER_ACTOR: process.env.APIFY_CRAWLER_ACTOR ?? "apify/website-content-crawler",
+  // Apify actors for social posts (set to go live; empty = sample-only).
+  APIFY_LINKEDIN_ACTOR: process.env.APIFY_LINKEDIN_ACTOR ?? "",
+  APIFY_FACEBOOK_ACTOR: process.env.APIFY_FACEBOOK_ACTOR ?? "",
+  // DataForSEO (Google News) — Basic-auth login/password (empty = sample-only).
+  DATAFORSEO_LOGIN: process.env.DATAFORSEO_LOGIN ?? "",
+  DATAFORSEO_PASSWORD: process.env.DATAFORSEO_PASSWORD ?? "",
 
   PADDLE_API_KEY: process.env.PADDLE_API_KEY ?? "",
   PADDLE_WEBHOOK_SECRET: process.env.PADDLE_WEBHOOK_SECRET ?? "",

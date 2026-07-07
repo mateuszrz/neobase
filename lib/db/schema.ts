@@ -328,6 +328,59 @@ export const projectMarkets = pgTable(
   (t) => [uniqueIndex("project_markets_key").on(t.projectId, t.country)],
 );
 
+// ─── Public content: social + news ──────────────────────────────────────────
+// Companies' own public posts and press coverage — public brand content (not
+// user reviews), so surfacing headlines/snippets is consistent with the
+// no-review-text rule. Content, not histograms.
+
+export const socialPosts = pgTable(
+  "social_posts",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    network: text("network").notNull(), // linkedin | facebook
+    externalId: text("external_id").notNull(),
+    url: text("url"),
+    postedAt: timestamp("posted_at", { withTimezone: true }),
+    text: text("text"),
+    likes: integer("likes"),
+    comments: integer("comments"),
+    shares: integer("shares"),
+    raw: jsonb("raw"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("social_posts_natural_key").on(t.fintechId, t.network, t.externalId),
+    index("social_posts_feed_idx").on(t.fintechId, t.postedAt),
+  ],
+);
+
+export const newsItems = pgTable(
+  "news_items",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    country: char("country", { length: 2 }).notNull().default("ZZ"), // market of the brand query
+    externalId: text("external_id").notNull(),
+    url: text("url"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    title: text("title").notNull(),
+    publisher: text("publisher"),
+    snippet: text("snippet"),
+    sentiment: text("sentiment"), // positive | neutral | negative (derived later)
+    raw: jsonb("raw"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("news_items_natural_key").on(t.fintechId, t.externalId),
+    index("news_items_feed_idx").on(t.fintechId, t.publishedAt),
+  ],
+);
+
 // ─── Pipeline plumbing ──────────────────────────────────────────────────────
 
 export const ingestRuns = pgTable(
@@ -374,4 +427,6 @@ export type ContentChange = typeof contentChanges.$inferSelect;
 export type User = typeof users.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type Project = typeof projects.$inferSelect;
+export type SocialPost = typeof socialPosts.$inferSelect;
+export type NewsItem = typeof newsItems.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;
