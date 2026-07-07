@@ -210,6 +210,124 @@ export const contentChanges = pgTable(
   ],
 );
 
+// ─── Accounts & auth (Auth.js Drizzle adapter schema) ───────────────────────
+// Standard shape expected by @auth/drizzle-adapter so magic-link auth is drop-in
+// in the next slice. Ids are text/UUID strings (adapter default).
+
+export const users = pgTable("users", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").notNull().unique(),
+  emailVerified: timestamp("email_verified", { withTimezone: true }),
+  image: text("image"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const accounts = pgTable(
+  "accounts",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("provider_account_id").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
+  (t) => [uniqueIndex("accounts_provider_key").on(t.provider, t.providerAccountId)],
+);
+
+export const sessions = pgTable("sessions", {
+  sessionToken: text("session_token").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expires: timestamp("expires", { withTimezone: true }).notNull(),
+});
+
+export const verificationTokens = pgTable(
+  "verification_tokens",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { withTimezone: true }).notNull(),
+  },
+  (t) => [uniqueIndex("verification_tokens_key").on(t.identifier, t.token)],
+);
+
+// ─── Billing (Paddle) ───────────────────────────────────────────────────────
+
+export const subscriptions = pgTable(
+  "subscriptions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    packageId: text("package_id").notNull(), // starter | growth | pro (see lib/packages)
+    status: text("status").notNull().default("active"), // active | trialing | past_due | canceled
+    paddleSubscriptionId: text("paddle_subscription_id"),
+    paddleCustomerId: text("paddle_customer_id"),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index("subscriptions_user_idx").on(t.userId),
+    uniqueIndex("subscriptions_paddle_key").on(t.paddleSubscriptionId),
+  ],
+);
+
+// ─── Projects (monitoring scopes a customer buys) ───────────────────────────
+// A project declares WHICH brands × markets to track; it does not own scrapers.
+// The reconciler maintains the union of desired coverage as active daily sources.
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("projects_user_idx").on(t.userId)],
+);
+
+export const projectBrands = pgTable(
+  "project_brands",
+  {
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+  },
+  (t) => [uniqueIndex("project_brands_key").on(t.projectId, t.fintechId)],
+);
+
+export const projectMarkets = pgTable(
+  "project_markets",
+  {
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    country: char("country", { length: 2 }).notNull(), // ISO2 market
+  },
+  (t) => [uniqueIndex("project_markets_key").on(t.projectId, t.country)],
+);
+
 // ─── Pipeline plumbing ──────────────────────────────────────────────────────
 
 export const ingestRuns = pgTable(
@@ -253,4 +371,7 @@ export type MetricSnapshot = typeof metricSnapshots.$inferSelect;
 export type ContentSnapshot = typeof contentSnapshots.$inferSelect;
 export type NewContentSnapshot = typeof contentSnapshots.$inferInsert;
 export type ContentChange = typeof contentChanges.$inferSelect;
+export type User = typeof users.$inferSelect;
+export type Subscription = typeof subscriptions.$inferSelect;
+export type Project = typeof projects.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;
