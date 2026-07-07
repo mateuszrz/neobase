@@ -553,3 +553,79 @@ export function PlatformSentimentChart({
     </>
   );
 }
+
+// ─── Social feed + news (public content preview) ─────────────────────────────
+
+function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  const days = Math.max(0, Math.round((Date.now() - then) / 86_400_000));
+  if (days === 0) return "today";
+  if (days === 1) return "1d ago";
+  if (days < 7) return `${days}d ago`;
+  const weeks = Math.round(days / 7);
+  if (weeks < 5) return `${weeks}w ago`;
+  return `${Math.round(days / 30)}mo ago`;
+}
+
+const NET_LABEL: Record<string, string> = { linkedin: "LinkedIn", facebook: "Facebook" };
+
+export function SocialFeed({
+  posts,
+}: {
+  posts: { network: string; text: string; postedAt: string; likes: number; comments: number; shares: number; url: string | null }[];
+}) {
+  return (
+    <div className="stack-16">
+      {posts.map((p, i) => (
+        <div key={i} style={{ paddingBottom: 16, borderBottom: i < posts.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
+          <div className="row" style={{ gap: 8, marginBottom: 8, alignItems: "center" }}>
+            <span className="badge">{NET_LABEL[p.network] ?? p.network}</span>
+            <span className="muted" style={{ fontSize: 12 }}>{timeAgo(p.postedAt)}</span>
+          </div>
+          <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>{p.text}</p>
+          <div className="row muted" style={{ gap: 18, fontSize: 12 }}>
+            <span>♡ {fmt(p.likes)}</span>
+            <span>💬 {fmt(p.comments)}</span>
+            <span>↻ {fmt(p.shares)}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const SENT_COLOR: Record<string, string> = { positive: "var(--pos)", negative: "var(--neg)", neutral: "var(--stone-muted)" };
+
+export function NewsList({
+  items,
+}: {
+  items: { title: string; publisher: string; publishedAt: string; snippet: string; sentiment: string; url: string | null }[];
+}) {
+  return (
+    <div className="stack-16">
+      {items.map((n, i) => (
+        <div key={i} style={{ paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
+          <div className="row" style={{ gap: 10, alignItems: "baseline" }}>
+            <span
+              title={n.sentiment}
+              style={{ width: 8, height: 8, borderRadius: "50%", background: SENT_COLOR[n.sentiment] ?? "var(--stone-muted)", flex: "0 0 auto", transform: "translateY(-1px)" }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
+                {n.url ? (
+                  <a href={n.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{n.title}</a>
+                ) : (
+                  n.title
+                )}
+              </p>
+              <p className="muted" style={{ margin: "0 0 6px", fontSize: 12 }}>
+                {n.publisher}{n.publisher ? " · " : ""}{timeAgo(n.publishedAt)}
+              </p>
+              {n.snippet && <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>{n.snippet}</p>}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

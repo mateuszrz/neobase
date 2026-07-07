@@ -7,12 +7,16 @@ import {
   getPlatformRatings,
   getRatingDistribution,
   getPlatformSentimentSeries,
+  getSocialPosts,
+  getNews,
 } from "@/lib/queries";
 import {
   SeriesChart,
   PlatformSentimentChart,
   RatingDistribution,
   PlatformRatings,
+  SocialFeed,
+  NewsList,
   MiniStat,
   flagEmoji,
   fmt,
@@ -34,12 +38,14 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, extras, platforms, distData, platformSent] = await Promise.all([
+  const [series, extras, platforms, distData, platformSent, social, news] = await Promise.all([
     getSeries(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
     getRatingDistribution(slug),
     getPlatformSentimentSeries(slug),
+    getSocialPosts(slug, ft.name),
+    getNews(slug, ft.name),
   ]);
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
@@ -161,6 +167,36 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
               <span className="muted" style={{ fontSize: 12 }}>positive sentiment, by platform</span>
             </div>
             <PlatformSentimentChart series={platformSent} />
+          </div>
+        )}
+
+        {/* In the media — brand news (DataForSEO; sample until live) */}
+        {news.items.length > 0 && (
+          <div className="card" style={{ marginTop: 20 }}>
+            <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
+              <h2 className="subheading">In the media</h2>
+              {news.isSample ? (
+                <span className="pill pill-neutral" title="Preview data — live news feed coming soon">Sample</span>
+              ) : (
+                <span className="muted" style={{ fontSize: 12 }}>brand coverage</span>
+              )}
+            </div>
+            <NewsList items={news.items} />
+          </div>
+        )}
+
+        {/* Latest from social — LinkedIn / Facebook (Apify; sample until live) */}
+        {social.posts.length > 0 && (
+          <div className="card" style={{ marginTop: 20 }}>
+            <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
+              <h2 className="subheading">Latest from social</h2>
+              {social.isSample ? (
+                <span className="pill pill-neutral" title="Preview data — live social feed coming soon">Sample</span>
+              ) : (
+                <span className="muted" style={{ fontSize: 12 }}>LinkedIn &amp; Facebook</span>
+              )}
+            </div>
+            <SocialFeed posts={social.posts} />
           </div>
         )}
 
