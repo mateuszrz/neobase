@@ -36,6 +36,13 @@
       "when": 1783459398066,
       "tag": "0004_messy_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1783461522700,
+      "tag": "0005_legal_loki",
+      "breakpoints": true
     }
   ]
 }

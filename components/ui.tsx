@@ -665,3 +665,25 @@ export function NewsList({
     </div>
   );
 }
+
+// ─── AI weekly brief ─────────────────────────────────────────────────────────
+
+export function AiBrief({ text, isSample, updatedAt }: { text: string; isSample: boolean; updatedAt: Date | null }) {
+  const when = updatedAt ? new Date(updatedAt).toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" }) : null;
+  return (
+    <div
+      className="card"
+      style={{ marginTop: 24, borderLeft: "3px solid var(--cyan-signal)", background: "var(--stone-canvas)" }}
+    >
+      <div className="spread" style={{ marginBottom: 10, alignItems: "center" }}>
+        <span className="eyebrow" style={{ margin: 0, color: "var(--cyan-edge)" }}>✦ AI brief</span>
+        {isSample ? (
+          <span className="pill pill-neutral" title="Preview — refreshed weekly once live">Sample</span>
+        ) : (
+          <span className="muted" style={{ fontSize: 12 }}>Updated weekly{when ? ` · ${when}` : ""}</span>
+        )}
+      </div>
+      <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7 }}>{text}</p>
+    </div>
+  );
+}

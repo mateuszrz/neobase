@@ -7,6 +7,8 @@ import { db, schema } from "@/lib/db";
 
 import { sampleSocialPosts, type SocialPostView } from "@/lib/social/sample";
 import { sampleNews, type NewsItemView, type NewsSentiment } from "@/lib/news/sample";
+import { gatherContext, getStoredSummary } from "@/lib/summary/generate";
+import { composeBrief } from "@/lib/summary/compose";
 
 const { fintechs, metricSnapshots, reviews, socialPosts, newsItems } = schema;
 
@@ -285,6 +287,25 @@ export async function getSocialPosts(
     };
   }
   return { posts: sampleSocialPosts(fintechId, name, limit), isSample: true };
+}
+
+/**
+ * Weekly AI brief for the profile. The stored (Claude-written, refreshed weekly)
+ * brief if one exists; otherwise a deterministic SAMPLE composed from real
+ * ratings/sentiment plus the same sample news shown below — labelled "Sample".
+ */
+export async function getAiSummary(
+  fintechId: string,
+  name: string,
+): Promise<{ text: string; updatedAt: Date | null; isSample: boolean }> {
+  const stored = await getStoredSummary(fintechId);
+  if (stored) return { text: stored.text, updatedAt: stored.updatedAt, isSample: false };
+
+  const ctx = await gatherContext(fintechId);
+  if (!ctx.news.length) {
+    ctx.news = sampleNews(fintechId, name, 5).map((n) => ({ title: n.title, sentiment: n.sentiment }));
+  }
+  return { text: composeBrief(name, ctx), updatedAt: null, isSample: true };
 }
 
 /** Best-effort publisher domain for a favicon: from the article URL, else a
