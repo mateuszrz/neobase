@@ -568,25 +568,62 @@ function timeAgo(iso: string): string {
 }
 
 const NET_LABEL: Record<string, string> = { linkedin: "LinkedIn", facebook: "Facebook" };
+const NET_COLOR: Record<string, string> = { linkedin: "#0a66c2", facebook: "#1877f2" };
+
+/** Publisher favicon via Google's favicon service (falls back to a globe). */
+export function faviconUrl(domain: string, size = 64): string {
+  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=${size}`;
+}
+
+function Avatar({ src, alt }: { src?: string | null; alt: string }) {
+  return (
+    <span
+      aria-hidden={!src}
+      style={{
+        width: 36,
+        height: 36,
+        borderRadius: 9,
+        flex: "0 0 auto",
+        overflow: "hidden",
+        display: "grid",
+        placeItems: "center",
+        background: "var(--stone-canvas)",
+        border: "1px solid var(--stone-border)",
+      }}
+    >
+      {src ? <img src={src} alt={alt} style={{ width: "100%", height: "100%", objectFit: "contain" }} /> : null}
+    </span>
+  );
+}
 
 export function SocialFeed({
   posts,
+  name,
+  logo,
 }: {
   posts: { network: string; text: string; postedAt: string; likes: number; comments: number; shares: number; url: string | null }[];
+  name: string;
+  logo?: string | null;
 }) {
   return (
     <div className="stack-16">
       {posts.map((p, i) => (
-        <div key={i} style={{ paddingBottom: 16, borderBottom: i < posts.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
-          <div className="row" style={{ gap: 8, marginBottom: 8, alignItems: "center" }}>
-            <span className="badge">{NET_LABEL[p.network] ?? p.network}</span>
-            <span className="muted" style={{ fontSize: 12 }}>{timeAgo(p.postedAt)}</span>
-          </div>
-          <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>{p.text}</p>
-          <div className="row muted" style={{ gap: 18, fontSize: 12 }}>
-            <span>♡ {fmt(p.likes)}</span>
-            <span>💬 {fmt(p.comments)}</span>
-            <span>↻ {fmt(p.shares)}</span>
+        <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < posts.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
+          <Avatar src={logo} alt={`${name} logo`} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="row" style={{ gap: 8, marginBottom: 6, alignItems: "center" }}>
+              <strong style={{ fontSize: 14 }}>{name}</strong>
+              <span style={{ fontSize: 11, fontWeight: 600, color: NET_COLOR[p.network] ?? "var(--stone-muted)" }}>
+                {NET_LABEL[p.network] ?? p.network}
+              </span>
+              <span className="muted" style={{ fontSize: 12 }}>· {timeAgo(p.postedAt)}</span>
+            </div>
+            <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>{p.text}</p>
+            <div className="row muted" style={{ gap: 18, fontSize: 12 }}>
+              <span>♡ {fmt(p.likes)}</span>
+              <span>💬 {fmt(p.comments)}</span>
+              <span>↻ {fmt(p.shares)}</span>
+            </div>
           </div>
         </div>
       ))}
@@ -599,30 +636,29 @@ const SENT_COLOR: Record<string, string> = { positive: "var(--pos)", negative: "
 export function NewsList({
   items,
 }: {
-  items: { title: string; publisher: string; publishedAt: string; snippet: string; sentiment: string; url: string | null }[];
+  items: { title: string; publisher: string; domain: string | null; publishedAt: string; snippet: string; sentiment: string; url: string | null }[];
 }) {
   return (
     <div className="stack-16">
       {items.map((n, i) => (
-        <div key={i} style={{ paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
-          <div className="row" style={{ gap: 10, alignItems: "baseline" }}>
-            <span
-              title={n.sentiment}
-              style={{ width: 8, height: 8, borderRadius: "50%", background: SENT_COLOR[n.sentiment] ?? "var(--stone-muted)", flex: "0 0 auto", transform: "translateY(-1px)" }}
-            />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
-                {n.url ? (
-                  <a href={n.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{n.title}</a>
-                ) : (
-                  n.title
-                )}
-              </p>
-              <p className="muted" style={{ margin: "0 0 6px", fontSize: 12 }}>
-                {n.publisher}{n.publisher ? " · " : ""}{timeAgo(n.publishedAt)}
-              </p>
-              {n.snippet && <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>{n.snippet}</p>}
-            </div>
+        <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
+          <Avatar src={n.domain ? faviconUrl(n.domain) : null} alt={n.publisher || "source"} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
+              {n.url ? (
+                <a href={n.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{n.title}</a>
+              ) : (
+                n.title
+              )}
+            </p>
+            <p className="muted row" style={{ margin: "0 0 6px", fontSize: 12, gap: 7, alignItems: "center" }}>
+              <span
+                title={n.sentiment}
+                style={{ width: 7, height: 7, borderRadius: "50%", background: SENT_COLOR[n.sentiment] ?? "var(--stone-muted)", flex: "0 0 auto" }}
+              />
+              {n.publisher}{n.publisher ? " · " : ""}{timeAgo(n.publishedAt)}
+            </p>
+            {n.snippet && <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>{n.snippet}</p>}
           </div>
         </div>
       ))}

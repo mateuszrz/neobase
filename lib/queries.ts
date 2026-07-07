@@ -287,6 +287,20 @@ export async function getSocialPosts(
   return { posts: sampleSocialPosts(fintechId, name, limit), isSample: true };
 }
 
+/** Best-effort publisher domain for a favicon: from the article URL, else a
+ * publisher string that already looks like a domain. */
+function domainOf(url: string | null, publisher: string | null): string | null {
+  if (url) {
+    try {
+      return new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      /* fall through */
+    }
+  }
+  if (publisher && /^[a-z0-9.-]+\.[a-z]{2,}$/i.test(publisher)) return publisher.toLowerCase();
+  return null;
+}
+
 /** News/media coverage. Real DataForSEO items if any, else labelled SAMPLE. */
 export async function getNews(
   fintechId: string,
@@ -313,6 +327,7 @@ export async function getNews(
       items: rows.map((r) => ({
         title: r.title,
         publisher: r.publisher ?? "",
+        domain: domainOf(r.url, r.publisher),
         publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString() : new Date().toISOString(),
         snippet: r.snippet ?? "",
         sentiment: (["positive", "neutral", "negative"].includes(r.sentiment ?? "") ? r.sentiment : "neutral") as NewsSentiment,
