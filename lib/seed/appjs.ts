@@ -1,6 +1,6 @@
 /**
  * Extracts the hardcoded data arrays (vl = banks, yl = exchanges, cv = news)
- * out of the legacy minified bundle `_legacy/app.js`.
+ * out of the legacy minified bundle `scripts/seed-data/app.js`.
  *
  * Why not JSON.parse: the arrays are JS object literals with UNQUOTED keys and
  * embedded helper calls like `ratings:H(...)` / `sentimentHistory:W(...)`.

@@ -55,7 +55,7 @@ npm run apify:backfill -- <kind> <batch> [missing]               # bulk backfill
 npm run apify:appids [dry N]     # discover app ids via search (home-country storefront, domain-verified)
 npm run apify:crypto             # manual crypto-exchange app ids + ingest
 npm run apify:ids                # set the 6 original neobanks' store ids
-npm run seed                     # reseed from _legacy/app.js (idempotent; skips DUP_SKIP)
+npm run seed                     # reseed from scripts/seed-data/app.js (idempotent; skips DUP_SKIP)
 npm run db:studio                # browse Neon
 ```
 

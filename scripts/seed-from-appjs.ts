@@ -18,7 +18,7 @@ import { loadAppJsData, parseEmployees, parseValuation } from "../lib/seed/appjs
 const { fintechs, sources, metricSnapshots } = schema;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const APP_JS = path.join(__dirname, "..", "_legacy", "app.js");
+const APP_JS = path.join(__dirname, "seed-data", "app.js");
 
 const PLATFORMS = [
   { kind: "trustpilot", rating: "trustpilot", count: "trustpilotReviews" },
