@@ -69,6 +69,16 @@ npm run db:studio                # browse Neon
 - **Auto push+merge to `main` after each verified change** (no per-change confirmation) — see [[auto-push-merge]]. `main` is the Vercel prod branch. Merge via GitHub API `POST /repos/mateuszrz/neobase/merges` (no `gh` CLI; token from `git credential fill`).
 - Later: gate live scraping to paid monitors (Paddle entitlements); scraping all 121 daily is the cost driver.
 
+## Content intelligence — crawl + week-over-week diff (NEW, 2026-07-07)
+
+First data type of the SaaS expansion (5 planned: pages/social/news/blog/store). **Merged to main.**
+- **Model:** two-tier data collection — **public = global (ZZ), weekly**; **paid project = chosen markets, daily** (projects/billing NOT built yet). This crawl engine is the public/weekly page tier.
+- **Fetch:** free server `fetch()` → **Apify `website-content-crawler` fallback only on empty/blocked** (`lib/crawl/fetch.ts`). Claude never fetches.
+- **Claude:** extracts canonical `{plans, prices, features, offers, fees}` (structured outputs `messages.parse`+zod) and summarises the change. Model `ANTHROPIC_CRAWL_MODEL` (default `claude-opus-4-8`; **Haiku 4.5** is the cheaper high-volume pick). **Mock path** (no key) runs the whole flow offline + produces a detectable change.
+- **Tables:** `content_snapshots` (hash of extracted + raw_text) + `content_changes` (structural diff + human summary). Migration `0001` applied to Neon. `metric_snapshots` unchanged (numbers); content is separate (structure/diff).
+- **Pipeline:** `crawl_page` job type in `job_queue`, dispatched in `lib/ingest/drain.ts` beside `process_dataset`. Kickoff `lib/crawl/kickoff.ts` (idempotent/day). Cron `/api/cron/weekly-crawl` (Mon 02:00). Scripts: `crawl:seed` (homepage from `fintechs.website`), `crawl:test -- <slug> [kind]` (2 dates, shows the week-over-week change), `db:apply` (non-TTY migration apply).
+- **Go-live checklist (not done):** 1) set `ANTHROPIC_API_KEY` on Vercel; 2) `npm run crawl:seed`; 3) one live `crawl:test` on a real page to validate fetch+Claude; 4) discover pricing/offer/blog URLs (only homepage seeded). DataForSEO stays reserved for **news** (not www crawl).
+
 ## Open threads / next steps
 
 1. ⚠️ **Set `APP_BASE_URL` on Vercel prod** (above) — unblocks the daily cron so trends accrue. Highest priority.
