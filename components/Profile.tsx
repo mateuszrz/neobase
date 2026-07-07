@@ -9,12 +9,14 @@ import {
   getPlatformSentimentSeries,
   getSocialPosts,
   getNews,
+  getAiSummary,
 } from "@/lib/queries";
 import {
   SeriesChart,
   PlatformSentimentChart,
   RatingDistribution,
   PlatformRatings,
+  AiBrief,
   SocialFeed,
   NewsList,
   MiniStat,
@@ -38,7 +40,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, extras, platforms, distData, platformSent, social, news] = await Promise.all([
+  const [series, extras, platforms, distData, platformSent, social, news, brief] = await Promise.all([
     getSeries(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
@@ -46,6 +48,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
     getPlatformSentimentSeries(slug),
     getSocialPosts(slug, ft.name),
     getNews(slug, ft.name),
+    getAiSummary(slug, ft.name),
   ]);
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
@@ -110,6 +113,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         </div>
 
         {ft.description && <p className="lead" style={{ marginTop: 20, maxWidth: 760 }}>{ft.description}</p>}
+
+        {/* AI weekly brief — synthesised from recent coverage + rating/sentiment moves */}
+        {brief.text && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
 
         {/* HERO — cross-platform ratings, the differentiator */}
         {platforms.length > 0 && (

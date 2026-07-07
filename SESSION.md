@@ -119,6 +119,15 @@ Fintech profile now has **"In the media"** (news) and **"Latest from social"** (
 - **Not yet:** wire social/news into the weekly-public cron (needs handle/query discovery); derive news sentiment (Claude); DataForSEO account/credentials ($50 min deposit — none yet).
 - **Verified:** tsc + next build; prerendered /fintech/revolut renders both sections with sample content + Sample pills.
 
+## AI weekly brief (NEW, 2026-07-08)
+
+Profile now leads with an **"✦ AI brief"** card — a short narrative synthesised from recent news + rating/sentiment moves, refreshed weekly. **Merged to main.**
+- **Table `ai_summaries`** (one row per fintech/kind, weekly upsert). Modules `lib/summary/{compose,generate}.ts`.
+- **Sample-first:** `getAiSummary` returns the stored brief if generated, else a deterministic composed preview grounded in **real ratings/sentiment + the same sample news** shown below, labelled "Sample".
+- **Generation:** `generateSummary(fintechId)` gathers context (avg rating, sentiment direction, recent news) → Claude when `ANTHROPIC_API_KEY` set, else the deterministic composer (still factual). `npm run summary:generate -- <slug>|all`.
+- **Verified:** tsc + next build; prerendered /fintech/revolut shows the brief (e.g. "Revolut holds a cross-platform rating of 4.8/5 … coverage is largely positive …").
+- **Weekly auto-refresh — go-live:** run `summary:generate -- all` on a weekly cron *after* data collection (add `/api/cron/weekly-briefs`, or fold into the weekly-public flow). Needs `ANTHROPIC_API_KEY` for real Claude briefs (else composed).
+
 ## Open threads / next steps
 
 1. ⚠️ **Set `APP_BASE_URL` on Vercel prod** (above) — unblocks the daily cron so trends accrue. Highest priority.

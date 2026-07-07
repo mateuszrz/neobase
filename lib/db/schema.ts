@@ -381,6 +381,28 @@ export const newsItems = pgTable(
   ],
 );
 
+// ─── AI weekly brief ────────────────────────────────────────────────────────
+// A short Claude-written narrative per fintech, refreshed weekly from recent news
+// + rating/sentiment moves. One current row per (fintech, kind) — the weekly job
+// upserts it. The public page shows a labelled render-time sample until generated.
+
+export const aiSummaries = pgTable(
+  "ai_summaries",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull().default("weekly_brief"),
+    summary: text("summary").notNull(),
+    generatedFor: date("generated_for"), // the week this brief covers
+    model: text("model"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("ai_summaries_key").on(t.fintechId, t.kind)],
+);
+
 // ─── Pipeline plumbing ──────────────────────────────────────────────────────
 
 export const ingestRuns = pgTable(

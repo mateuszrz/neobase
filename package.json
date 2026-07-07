@@ -26,6 +26,7 @@
     "crawl:test": "tsx scripts/crawl-test.ts",
     "social:test": "tsx scripts/social-test.ts",
     "news:test": "tsx scripts/news-test.ts",
+    "summary:generate": "tsx scripts/summary-generate.ts",
     "project:demo": "tsx scripts/project-demo.ts"
   },
   "dependencies": {
