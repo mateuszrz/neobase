@@ -15,6 +15,13 @@
       "when": 1783445660412,
       "tag": "0001_amusing_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1783447551947,
+      "tag": "0002_awesome_sleepwalker",
+      "breakpoints": true
     }
   ]
 }

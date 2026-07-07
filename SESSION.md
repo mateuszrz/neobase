@@ -76,7 +76,14 @@ First data type of the SaaS expansion (5 planned: pages/social/news/blog/store).
 - **Fetch:** free server `fetch()` → **Apify `website-content-crawler` fallback only on empty/blocked** (`lib/crawl/fetch.ts`). Claude never fetches.
 - **Claude:** extracts canonical `{plans, prices, features, offers, fees}` (structured outputs `messages.parse`+zod) and summarises the change. Model `ANTHROPIC_CRAWL_MODEL` (default `claude-opus-4-8`; **Haiku 4.5** is the cheaper high-volume pick). **Mock path** (no key) runs the whole flow offline + produces a detectable change.
 - **Tables:** `content_snapshots` (hash of extracted + raw_text) + `content_changes` (structural diff + human summary). Migration `0001` applied to Neon. `metric_snapshots` unchanged (numbers); content is separate (structure/diff).
-- **Pipeline:** `crawl_page` job type in `job_queue`, dispatched in `lib/ingest/drain.ts` beside `process_dataset`. Kickoff `lib/crawl/kickoff.ts` (idempotent/day). Cron `/api/cron/weekly-crawl` (Mon 02:00). Scripts: `crawl:seed` (homepage from `fintechs.website`), `crawl:test -- <slug> [kind]` (2 dates, shows the week-over-week change), `db:apply` (non-TTY migration apply).
+- **Pipeline:** `crawl_page` job type in `job_queue`, dispatched in `lib/ingest/drain.ts` beside `process_dataset`. Scripts: `crawl:seed` (homepage from `fintechs.website`), `crawl:test -- <slug> [kind]` (2 dates, shows the week-over-week change), `db:apply` (non-TTY migration apply).
+
+## Collection tracks split (two-tier crons, 2026-07-07)
+
+`sources.scope` (public|project) + `sources.cadence` (weekly|daily) added (migration `0002`; existing 484 sources backfilled to **public/weekly**). One cadence-aware orchestrator `lib/ingest/orchestrate.ts` → `runKickoff(cadence)` selects active sources of that cadence and dispatches by kind (review kinds → Apify/mock via `startReviewSource`; crawl kinds → `enqueueCrawlSource`).
+- **Crons (replaced `daily-kickoff` + `weekly-crawl`):** `/api/cron/weekly-public` (Mon 03:00 → public/weekly: 266 active review sources + crawl) · `/api/cron/daily-project` (03:00 daily → project/daily: **0 today**, inert until projects exist) · `/api/cron/drain-queue` (04:00).
+- **Behaviour change:** public reviews now collect **weekly** (was daily). Verified in mock: daily=all-zeros; weekly selects 266 review sources (homepage crawl sources are inactive → 0 until activated). `pipeline:kickoff [weekly|daily]` runs a cadence locally.
+- ⚠️ **Drain throughput:** drain is 20 jobs/day at `0 4 * * *`; a weekly burst of ~266+ jobs won't clear in one day. When going live, raise drain frequency (if the Vercel plan allows sub-daily crons) and/or `maxJobs`.
 - **Go-live checklist (not done):** 1) set `ANTHROPIC_API_KEY` on Vercel; 2) `npm run crawl:seed`; 3) one live `crawl:test` on a real page to validate fetch+Claude; 4) discover pricing/offer/blog URLs (only homepage seeded). DataForSEO stays reserved for **news** (not www crawl).
 
 ## Open threads / next steps
