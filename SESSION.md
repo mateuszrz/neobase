@@ -86,6 +86,18 @@ First data type of the SaaS expansion (5 planned: pages/social/news/blog/store).
 - ⚠️ **Drain throughput:** drain is 20 jobs/day at `0 4 * * *`; a weekly burst of ~266+ jobs won't clear in one day. When going live, raise drain frequency (if the Vercel plan allows sub-daily crons) and/or `maxJobs`.
 - **Go-live checklist (not done):** 1) set `ANTHROPIC_API_KEY` on Vercel; 2) `npm run crawl:seed`; 3) one live `crawl:test` on a real page to validate fetch+Claude; 4) discover pricing/offer/blog URLs (only homepage seeded). DataForSEO stays reserved for **news** (not www crawl).
 
+## SaaS foundation — projects + packages + Paddle (NEW, 2026-07-07)
+
+Makes the daily-project track real: a subscribed user's project generates the daily sources. **Merged to main.**
+- **Data model (migration `0003`, applied):** Auth.js Drizzle-adapter tables (`users`/`accounts`/`sessions`/`verification_tokens`) + `subscriptions` (Paddle) + `projects` + `project_brands` + `project_markets`.
+- **Packages** (`lib/packages.ts`): 3 tiers — Starter 3 brands·1 market, Growth 6·3, Pro 10·5. Paddle price ids from env `PADDLE_PRICE_{STARTER,GROWTH,PRO}`.
+- **Shared-source model:** a project declares brands × markets; it does NOT own scrapers. `lib/projects/reconcile.ts` maintains the UNION of desired (fintech × market × kind) across all entitled projects as active `scope='project', cadence='daily'` sources (revolut/DE scraped once for all projects). `setWhere scope='project'` guard never hijacks a public row. Orphans → `active=false`. Project kinds today: trustpilot/google_play/app_store/homepage (social/news/blog later).
+- **Per-market storefront:** orchestrate now uses `source.country` as the store market for project sources (public stays fintech home country).
+- **Service** (`lib/projects/service.ts`): createProject / setBrands / setMarkets enforce package slot limits vs the user's active/trialing subscription, then reconcile.
+- **Paddle** (`lib/paddle/`, `@paddle/paddle-node-sdk`): webhook `/api/webhooks/paddle` verifies signature → syncs `subscription.*` events (customData.userId + price id → package) into `subscriptions` → reconcile. Manual mode (no key): `upsertSubscription()` activates a sub for testing. `PADDLE_ENV` sandbox|production.
+- **Verified:** `tsc` + `next build` clean; `npm run project:demo` runs the full vertical (user→Pro sub→project 3 brands×2 markets→**24 shared daily sources**→daily-project would fire 24) and self-cleans (prod left at 0 daily sources). No jobs enqueued against prod.
+- **Next slices:** 1) **Auth.js magic-link** (tables ready; needs email sender + Next 16 compat check) so real users log in; 2) wire **live Paddle keys** + price ids + checkout UI; 3) project management UI (`/panel`); 4) monthly report generation (Claude digest over shared data).
+
 ## Open threads / next steps
 
 1. ⚠️ **Set `APP_BASE_URL` on Vercel prod** (above) — unblocks the daily cron so trends accrue. Highest priority.

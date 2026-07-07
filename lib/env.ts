@@ -33,7 +33,11 @@ export const env = {
 
   PADDLE_API_KEY: process.env.PADDLE_API_KEY ?? "",
   PADDLE_WEBHOOK_SECRET: process.env.PADDLE_WEBHOOK_SECRET ?? "",
+  PADDLE_ENV: process.env.PADDLE_ENV ?? "sandbox", // sandbox | production
 };
+
+/** True once a Paddle API key is configured (else billing runs in manual mode). */
+export const isPaddleLive = () => Boolean(env.PADDLE_API_KEY);
 
 /** Source kinds that have a live Apify scraper wired up. */
 export type ScrapableKind = "trustpilot" | "google_play" | "app_store";

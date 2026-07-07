@@ -46,8 +46,11 @@ export async function runKickoff(cadence: Cadence, day = todayUtc()): Promise<Ki
 
   for (const s of active) {
     if (SCRAPABLE_KINDS.includes(s.kind)) {
+      // Project sources carry a real market in source.country → scrape that
+      // storefront; public sources are global (ZZ) → use the fintech's home store.
+      const storeCountry = s.country !== "ZZ" ? s.country : s.storeCountry;
       const r = await startReviewSource(
-        { id: s.id, fintechId: s.fintechId, kind: s.kind, externalRef: s.externalRef, storeCountry: s.storeCountry },
+        { id: s.id, fintechId: s.fintechId, kind: s.kind, externalRef: s.externalRef, storeCountry },
         day,
       );
       r === "enqueued" ? summary.reviews++ : summary.skipped++;

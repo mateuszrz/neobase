@@ -23,11 +23,13 @@
     "apify:crypto": "tsx scripts/ingest-crypto.ts",
     "apify:backfill": "tsx scripts/backfill.ts",
     "crawl:seed": "tsx scripts/seed-crawl-sources.ts",
-    "crawl:test": "tsx scripts/crawl-test.ts"
+    "crawl:test": "tsx scripts/crawl-test.ts",
+    "project:demo": "tsx scripts/project-demo.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
     "@neondatabase/serverless": "^1.1.0",
+    "@paddle/paddle-node-sdk": "^3.8.0",
     "apify-client": "^2.23.0",
     "drizzle-orm": "^0.45.0",
     "next": "^16.2.10",
