@@ -6,7 +6,8 @@
     { "path": "/api/cron/daily-project", "schedule": "0 3 * * *" },
     { "path": "/api/cron/drain-queue", "schedule": "0 4 * * *" },
     { "path": "/api/cron/weekly-news", "schedule": "0 5 * * 1" },
-    { "path": "/api/cron/weekly-briefs", "schedule": "0 6 * * 1" }
+    { "path": "/api/cron/weekly-briefs", "schedule": "0 6 * * 1" },
+    { "path": "/api/cron/monthly-reports", "schedule": "0 7 1 * *" }
   ],
   "headers": [
     {
