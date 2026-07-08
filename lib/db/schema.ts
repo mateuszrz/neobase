@@ -488,6 +488,26 @@ export const reportRequests = pgTable(
   (t) => [index("report_requests_created_idx").on(t.createdAt), index("report_requests_ip_idx").on(t.ip, t.createdAt)],
 );
 
+// Per-project monthly intelligence report (Claude digest over the shared daily
+// data for the project's brands × markets). One row per (project, period end);
+// regenerating the same day upserts. Shown in the panel; refreshed by a cron.
+export const projectReports = pgTable(
+  "project_reports",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    periodDays: integer("period_days").notNull().default(30),
+    generatedFor: date("generated_for").notNull(), // period-end date (upsert key)
+    report: jsonb("report").notNull(),
+    model: text("model"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("project_reports_key").on(t.projectId, t.generatedFor)],
+);
+
 export type Fintech = typeof fintechs.$inferSelect;
 export type NewFintech = typeof fintechs.$inferInsert;
 export type Source = typeof sources.$inferSelect;
