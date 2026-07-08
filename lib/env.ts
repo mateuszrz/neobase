@@ -32,6 +32,9 @@ export const env = {
   // the fast/cheap pick for this latency-sensitive, templated-JSON workload —
   // Opus would risk exceeding the serverless function timeout on the form POST.
   ANTHROPIC_REPORT_MODEL: process.env.ANTHROPIC_REPORT_MODEL ?? "claude-haiku-4-5",
+  // Model for the weekly AI brief (short 2–3 sentence narrative). Haiku keeps the
+  // weekly-briefs cron fast enough to churn all fintechs within the function budget.
+  ANTHROPIC_BRIEF_MODEL: process.env.ANTHROPIC_BRIEF_MODEL ?? "claude-haiku-4-5",
   // Apify actor used as the fetch fallback when a direct fetch() is empty/blocked.
   APIFY_CRAWLER_ACTOR: process.env.APIFY_CRAWLER_ACTOR ?? "apify/website-content-crawler",
   // Apify actors for social posts (set to go live; empty = sample-only).

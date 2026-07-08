@@ -9,7 +9,8 @@
 
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { anthropic, crawlModel, isClaudeLive } from "@/lib/anthropic";
+import { anthropic, isClaudeLive } from "@/lib/anthropic";
+import { env } from "@/lib/env";
 import { composeBrief, type BriefContext, type SentimentDir } from "./compose";
 
 const { aiSummaries, metricSnapshots, newsItems, fintechs } = schema;
@@ -77,13 +78,17 @@ const SYSTEM =
   "No hype, no advice, no invented facts. Plain prose, under 60 words.";
 
 async function writeWithClaude(name: string, ctx: BriefContext): Promise<string> {
-  const res = await anthropic().messages.create({
-    model: crawlModel(),
-    max_tokens: 300,
-    system: SYSTEM,
-    output_config: { effort: "low" },
-    messages: [{ role: "user", content: `Fintech: ${name}\nData:\n${JSON.stringify(ctx, null, 2)}` }],
-  });
+  // Haiku by default; no `effort` (it 400s on Haiku); short hard timeout + no
+  // retries so one slow call can't stall a batch run of the weekly-briefs cron.
+  const res = await anthropic().messages.create(
+    {
+      model: env.ANTHROPIC_BRIEF_MODEL,
+      max_tokens: 300,
+      system: SYSTEM,
+      messages: [{ role: "user", content: `Fintech: ${name}\nData:\n${JSON.stringify(ctx, null, 2)}` }],
+    },
+    { timeout: 20_000, maxRetries: 0 },
+  );
   const text = res.content.map((b) => (b.type === "text" ? b.text : "")).join("").trim();
   return text || composeBrief(name, ctx);
 }
@@ -94,9 +99,20 @@ export async function generateSummary(fintechId: string): Promise<string> {
   if (!ft) throw new Error(`no such fintech: ${fintechId}`);
 
   const ctx = await gatherContext(fintechId);
-  const live = isClaudeLive();
-  const summary = live ? await writeWithClaude(ft.name, ctx) : composeBrief(ft.name, ctx);
-  const model = live ? crawlModel() : "composed";
+  let summary: string;
+  let model: string;
+  if (isClaudeLive()) {
+    try {
+      summary = await writeWithClaude(ft.name, ctx);
+      model = env.ANTHROPIC_BRIEF_MODEL;
+    } catch {
+      summary = composeBrief(ft.name, ctx); // API/timeout failure → grounded fallback
+      model = "composed";
+    }
+  } else {
+    summary = composeBrief(ft.name, ctx);
+    model = "composed";
+  }
 
   await db
     .insert(aiSummaries)
