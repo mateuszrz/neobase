@@ -15,8 +15,22 @@ export interface BrandOption {
   logoSvg: string | null;
 }
 
-export function CompetitorPicker({ options, max = 8 }: { options: BrandOption[]; max?: number }) {
-  const [selected, setSelected] = useState<string[]>([]);
+export function CompetitorPicker({
+  options,
+  max = 8,
+  initial = [],
+  label = "Competitors",
+  hint,
+  inputName = "competitorIds",
+}: {
+  options: BrandOption[];
+  max?: number;
+  initial?: string[];
+  label?: string;
+  hint?: string;
+  inputName?: string;
+}) {
+  const [selected, setSelected] = useState<string[]>(initial);
   const [query, setQuery] = useState("");
   const byId = useMemo(() => new Map(options.map((o) => [o.id, o])), [options]);
 
@@ -41,7 +55,7 @@ export function CompetitorPicker({ options, max = 8 }: { options: BrandOption[];
 
   return (
     <div className="stack-8">
-      <span style={{ fontWeight: 500, fontSize: 14 }}>Competitors</span>
+      <span style={{ fontWeight: 500, fontSize: 14 }}>{label}</span>
 
       {/* Selected chips (each carries a hidden input for the server action) */}
       {selected.length > 0 && (
@@ -52,7 +66,7 @@ export function CompetitorPicker({ options, max = 8 }: { options: BrandOption[];
               <span key={id} className="pill pill-score" style={{ gap: 8, paddingRight: 8 }}>
                 {o?.logoSvg && <img src={o.logoSvg} alt="" style={{ width: 16, height: 16, borderRadius: 4 }} />}
                 {o?.name ?? id}
-                <input type="hidden" name="competitorIds" value={id} />
+                <input type="hidden" name={inputName} value={id} />
                 <button
                   type="button"
                   onClick={() => remove(id)}
@@ -111,7 +125,7 @@ export function CompetitorPicker({ options, max = 8 }: { options: BrandOption[];
       )}
 
       <span className="muted" style={{ fontSize: 12 }}>
-        Pick up to {max} from the brands we track — that&apos;s where the demo data comes from.
+        {hint ?? `Pick up to ${max} from the brands we track — that's where the demo data comes from.`}
       </span>
     </div>
   );

@@ -31,7 +31,8 @@
     "blog:test": "tsx scripts/blog-test.ts",
     "summary:generate": "tsx scripts/summary-generate.ts",
     "report:test": "tsx scripts/report-test.ts",
-    "project:demo": "tsx scripts/project-demo.ts"
+    "project:demo": "tsx scripts/project-demo.ts",
+    "sub:grant": "tsx scripts/grant-sub.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

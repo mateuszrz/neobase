@@ -4,6 +4,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { auth, signOut } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import { PACKAGES, isEntitled, isPackageId } from "@/lib/packages";
+import { createProject, EntitlementError } from "@/lib/projects/service";
 
 export const metadata: Metadata = { title: "Panel" };
 
@@ -40,6 +41,23 @@ export default async function PanelPage() {
     await signOut({ redirectTo: "/" });
   }
 
+  async function newProject(formData: FormData) {
+    "use server";
+    const s = await auth();
+    const uid = (s?.user as { id?: string } | undefined)?.id;
+    if (!uid) redirect("/login");
+    const name = String(formData.get("name") ?? "").trim();
+    if (!name) redirect("/panel/");
+    let id: string;
+    try {
+      id = await createProject(uid!, name);
+    } catch (e) {
+      if (e instanceof EntitlementError) redirect("/panel/?error=entitlement");
+      throw e;
+    }
+    redirect(`/panel/project/${id}/`);
+  }
+
   return (
     <main className="section">
       <div className="wrap" style={{ maxWidth: 820 }}>
@@ -74,18 +92,31 @@ export default async function PanelPage() {
         <div className="spread" style={{ marginTop: 36 }}>
           <h2 className="subheading">Projects</h2>
         </div>
-        {projs.length ? (
+
+        {projs.length > 0 && (
           <div className="stack-8" style={{ marginTop: 12 }}>
             {projs.map((p) => (
-              <div key={p.id} className="card row spread">
+              <a key={p.id} href={`/panel/project/${p.id}/`} className="card row spread" style={{ textDecoration: "none", color: "inherit" }}>
                 <strong>{p.name}</strong>
-                <span className="muted" style={{ fontSize: 14 }}>{p.brands} brands · {p.markets} markets</span>
-              </div>
+                <span className="muted" style={{ fontSize: 14 }}>{p.brands} brands · {p.markets} markets →</span>
+              </a>
             ))}
           </div>
+        )}
+
+        {entitled ? (
+          <form action={newProject} className="card row" style={{ marginTop: 16, gap: 8 }}>
+            <input
+              name="name"
+              required
+              placeholder="New project name — e.g. Q3 competitor watch"
+              style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "1px solid var(--stone-border)", fontSize: 15 }}
+            />
+            <button className="btn btn-cyan" type="submit">Create project</button>
+          </form>
         ) : (
           <p className="muted" style={{ marginTop: 12 }}>
-            No projects yet. Project creation UI lands in the next slice — the data model, package limits and daily collection are already wired.
+            An active subscription is required to create projects. <a href="/monitoring" style={{ color: "var(--cyan-signal)" }}>Choose a plan</a>.
           </p>
         )}
       </div>
