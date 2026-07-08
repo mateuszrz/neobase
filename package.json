@@ -27,6 +27,8 @@
     "social:seed": "tsx scripts/seed-social-sources.ts",
     "social:test": "tsx scripts/social-test.ts",
     "news:test": "tsx scripts/news-test.ts",
+    "blog:seed": "tsx scripts/seed-blog-sources.ts",
+    "blog:test": "tsx scripts/blog-test.ts",
     "summary:generate": "tsx scripts/summary-generate.ts",
     "report:test": "tsx scripts/report-test.ts",
     "project:demo": "tsx scripts/project-demo.ts"

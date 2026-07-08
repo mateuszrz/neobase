@@ -381,6 +381,31 @@ export const newsItems = pgTable(
   ],
 );
 
+// Companies' own blog/newsroom posts — public marketing content (like social),
+// so surfacing titles/snippets is consistent with the no-review-text rule.
+// Collected by crawling each fintech's blog (crawl `blog` kind) and extracting
+// the recent post list; the profile shows a render-time sample until then.
+export const blogPosts = pgTable(
+  "blog_posts",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    externalId: text("external_id").notNull(),
+    url: text("url"),
+    title: text("title").notNull(),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    snippet: text("snippet"),
+    raw: jsonb("raw"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("blog_posts_natural_key").on(t.fintechId, t.externalId),
+    index("blog_posts_feed_idx").on(t.fintechId, t.publishedAt),
+  ],
+);
+
 // ─── AI weekly brief ────────────────────────────────────────────────────────
 // A short Claude-written narrative per fintech, refreshed weekly from recent news
 // + rating/sentiment moves. One current row per (fintech, kind) — the weekly job
@@ -475,5 +500,6 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type SocialPost = typeof socialPosts.$inferSelect;
 export type NewsItem = typeof newsItems.$inferSelect;
+export type BlogPost = typeof blogPosts.$inferSelect;
 export type ReportRequest = typeof reportRequests.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;

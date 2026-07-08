@@ -109,12 +109,16 @@ function isMiss(p: FetchedPage | null): boolean {
 /**
  * Fetch a page's text, escalating to Apify only when the free path misses.
  * Throws if neither path produces usable content (job retries via the queue).
+ *
+ * `directOnly` skips the Apify fallback — used for blog listings (SSR pages where
+ * a direct miss usually means a wrong/guessed URL, not a bot-block, so a 120s
+ * Apify run per miss would just burn cost).
  */
-export async function fetchPage(url: string): Promise<FetchedPage> {
+export async function fetchPage(url: string, opts: { directOnly?: boolean } = {}): Promise<FetchedPage> {
   const direct = await directFetch(url);
   if (!isMiss(direct)) return direct!;
 
-  if (isApifyLive()) {
+  if (!opts.directOnly && isApifyLive()) {
     const viaApify = await apifyFetch(url);
     if (!isMiss(viaApify)) return viaApify!;
   }
