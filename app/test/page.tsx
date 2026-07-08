@@ -2,23 +2,30 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { generateReport } from "@/lib/report/generate";
 import { clientIp, withinRateLimit, RATE_MAX, RATE_WINDOW_MIN } from "@/lib/report/rate-limit";
+import { getAllFintechs } from "@/lib/queries";
+import { CompetitorPicker } from "@/components/CompetitorPicker";
 
 export const metadata: Metadata = {
   title: "Test our reports — free weekly competitive brief",
   description:
-    "Enter your brand and a few competitors and get a free weekly competitive-intelligence brief — grounded in real ratings, sentiment and media data.",
+    "Enter your brand and pick a few competitors and get a free weekly competitive-intelligence brief — grounded in real ratings, sentiment and media data.",
 };
+
+export const revalidate = 3600;
 
 export default async function TestReportPage({ searchParams }: { searchParams: Promise<{ slow?: string }> }) {
   const { slow } = await searchParams;
+  const brands = await getAllFintechs();
+  const options = brands.map((b) => ({ id: b.id, name: b.name, country: b.country, logoSvg: b.logoSvg }));
 
   async function run(formData: FormData) {
     "use server";
     const brand = String(formData.get("brand") ?? "").trim();
     if (!brand) return;
-    const competitors = String(formData.get("competitors") ?? "")
-      .split(/[\n,]+/)
-      .map((s) => s.trim())
+    // Competitors are picked from the tracked list → we receive their ids.
+    const competitors = formData
+      .getAll("competitorIds")
+      .map((v) => String(v).trim())
       .filter(Boolean)
       .slice(0, 8); // cap the fan-out
 
@@ -64,18 +71,7 @@ export default async function TestReportPage({ searchParams }: { searchParams: P
             />
           </label>
 
-          <label className="stack-8" style={{ display: "block" }}>
-            <span style={{ fontWeight: 500, fontSize: 14 }}>Competitors</span>
-            <textarea
-              name="competitors"
-              rows={4}
-              placeholder="One per line or comma-separated&#10;e.g. Revolut, Wise, Monzo, N26"
-              style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }}
-            />
-            <span className="muted" style={{ fontSize: 12 }}>
-              Domains or names. Up to 8 — we match them to brands we already track.
-            </span>
-          </label>
+          <CompetitorPicker options={options} max={8} />
 
           <button className="btn btn-cyan" type="submit" style={{ justifyContent: "center" }}>
             Build my free brief →

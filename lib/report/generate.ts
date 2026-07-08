@@ -13,6 +13,8 @@ import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { anthropic, crawlModel, isClaudeLive } from "@/lib/anthropic";
 import { gatherContext } from "@/lib/summary/generate";
+import { sampleNews } from "@/lib/news/sample";
+import { sampleSocialPosts } from "@/lib/social/sample";
 import { matchFintechs, type Candidate } from "./match";
 import { REPORT_SYSTEM, buildUserMessage } from "./prompt";
 import type { BrandData, Report, ReportBrandFocus, Severity } from "./types";
@@ -30,12 +32,30 @@ async function realSocial(fintechId: string): Promise<{ network: string; text: s
   return rows.filter((r) => r.text).map((r) => ({ network: r.network, text: r.text as string }));
 }
 
-/** Build the real-data context for one matched/unmatched candidate. */
+/** Build the data context for one matched/unmatched candidate. Ratings and
+ * sentiment are always real; news/social fall back to the same deterministic
+ * SAMPLE we show on public profiles when no live items exist yet, so the demo
+ * report is populated (and swaps to real data automatically once live). */
 async function brandData(c: Candidate, isBrand: boolean): Promise<BrandData> {
   if (!c.fintechId) {
-    return { name: c.name, isBrand, tracked: false, avgRating: null, ratingCount: 0, platformCount: 0, sentimentDir: null, news: [], social: [] };
+    const news = sampleNews(c.name, c.name, 3).map((n) => ({ title: n.title, sentiment: n.sentiment }));
+    const social = sampleSocialPosts(c.name, c.name, 2).map((p) => ({ network: p.network, text: p.text }));
+    return { name: c.name, isBrand, tracked: false, avgRating: null, ratingCount: 0, platformCount: 0, sentimentDir: null, news, social, sampleMedia: true };
   }
-  const [ctx, social] = await Promise.all([gatherContext(c.fintechId), realSocial(c.fintechId)]);
+  const [ctx, liveSocial] = await Promise.all([gatherContext(c.fintechId), realSocial(c.fintechId)]);
+
+  let news = ctx.news;
+  let social = liveSocial;
+  let sampleMedia = false;
+  if (!news.length) {
+    news = sampleNews(c.fintechId, c.name, 3).map((n) => ({ title: n.title, sentiment: n.sentiment }));
+    sampleMedia = true;
+  }
+  if (!social.length) {
+    social = sampleSocialPosts(c.fintechId, c.name, 2).map((p) => ({ network: p.network, text: p.text }));
+    sampleMedia = true;
+  }
+
   return {
     name: c.name,
     isBrand,
@@ -44,19 +64,17 @@ async function brandData(c: Candidate, isBrand: boolean): Promise<BrandData> {
     ratingCount: ctx.ratingCount,
     platformCount: ctx.platformCount,
     sentimentDir: ctx.sentimentDir,
-    news: ctx.news,
+    news,
     social,
+    sampleMedia,
   };
 }
 
-/** How much real event data (news/social) do we actually have across all brands? */
-function eventCount(brands: BrandData[]): number {
-  return brands.reduce((s, b) => s + b.news.length + b.social.length, 0);
-}
-
-function dataNoteFor(brandTracked: boolean, brands: BrandData[]): string | null {
-  if (!brandTracked) return "This brand isn't in our tracked set yet, so the brief below is illustrative. Once we onboard it, the report is built from its live ratings, sentiment and media coverage.";
-  if (eventCount(brands) === 0) return "Grounded in live cross-platform ratings and customer-sentiment data. Media & social event tracking for these brands switches on with a paid project — those sections fill in once it's live.";
+function dataNoteFor(brandTracked: boolean, usesSampleMedia: boolean): string | null {
+  if (!brandTracked)
+    return "This brand isn't in our tracked set yet, so the brief below uses illustrative demo data. Once we onboard it, the report is built from its live ratings, sentiment and media coverage.";
+  if (usesSampleMedia)
+    return "Ratings and customer sentiment here are live. The news & social items are illustrative demo samples (the same you'd see on our public profiles) — they switch to live media tracking on a paid project.";
   return null;
 }
 
@@ -115,8 +133,7 @@ function composeReport(brand: string, brands: BrandData[]): Partial<Report> {
   if (self?.sentimentDir) exec.push(`For ${self.name}, ${DIR_PHRASE[self.sentimentDir]}.`);
   const rated = comps.filter((c) => c.avgRating != null).sort((a, b) => (b.avgRating ?? 0) - (a.avgRating ?? 0));
   if (rated.length) exec.push(`Best-rated competitor this week: ${rated[0].name} (${rated[0].avgRating!.toFixed(1)}/5).`);
-  if (eventCount(brands) === 0) exec.push("No major public media events detected in the window — the picture is driven by ratings and sentiment.");
-  else for (const b of brands) for (const n of b.news.slice(0, 1)) exec.push(`${b.name}: ${n.title}`);
+  for (const b of brands) for (const n of b.news.slice(0, 1)) exec.push(`${b.name}: ${n.title}`);
 
   return {
     execSummary: exec.slice(0, 8),
@@ -130,7 +147,7 @@ function composeReport(brand: string, brands: BrandData[]): Partial<Report> {
       needsReaction: false,
     })),
     products: [],
-    marketing: eventCount(brands) === 0 ? ["Media & social tracking not yet live for these brands — marketing signal fills in once enabled."] : brands.flatMap((b) => b.social.slice(0, 1).map((s) => `${b.name} (${s.network}): ${s.text.slice(0, 140)}`)),
+    marketing: brands.flatMap((b) => b.social.slice(0, 1).map((s) => `${b.name} (${s.network}): ${s.text.slice(0, 140)}`)),
     signals: [],
     risks: self?.sentimentDir === "softening" ? [{ text: `${self.name}'s customer sentiment is softening.`, severity: "medium" as Severity }] : [],
     recommendations: {
@@ -150,11 +167,13 @@ const EMPTY_FOCUS: ReportBrandFocus = { rating: null, ratingCount: 0, sentimentD
 function assemble(brand: string, brands: BrandData[], grounded: boolean, partial: Partial<Report>): Report {
   const self = brands.find((b) => b.isBrand);
   const focus = partial.brandFocus ?? EMPTY_FOCUS;
+  const usesSampleMedia = brands.some((b) => b.sampleMedia);
   return {
     brand,
     competitors: brands.filter((b) => !b.isBrand).map((b) => b.name),
     grounded,
-    dataNote: dataNoteFor(grounded, brands),
+    usesSampleMedia,
+    dataNote: dataNoteFor(grounded, usesSampleMedia),
     generatedAt: new Date().toISOString().slice(0, 10),
     periodDays: 7,
     execSummary: partial.execSummary ?? [],

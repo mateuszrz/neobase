@@ -50,6 +50,7 @@ export interface Report {
   brand: string; // display name
   competitors: string[]; // display names (matched or raw)
   grounded: boolean; // true when the brand matched a tracked fintech
+  usesSampleMedia: boolean; // news/social sections use illustrative sample data
   dataNote: string | null; // honest caveat about coverage (e.g. no live news yet)
   generatedAt: string; // ISO date
   periodDays: number; // analysis window (7)
@@ -72,6 +73,7 @@ export interface BrandData {
   ratingCount: number;
   platformCount: number;
   sentimentDir: "improving" | "steady" | "softening" | null;
-  news: { title: string; sentiment: string }[]; // real news_items only
-  social: { network: string; text: string }[]; // real social_posts only
+  news: { title: string; sentiment: string }[]; // real news_items, or illustrative sample
+  social: { network: string; text: string }[]; // real social_posts, or illustrative sample
+  sampleMedia: boolean; // true when news/social above are sample (no live data yet)
 }
