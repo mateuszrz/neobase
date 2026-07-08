@@ -3,6 +3,7 @@ import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { isAuthorizedCron } from "@/lib/http";
 import { ingestNews, isDataForSeoLive } from "@/lib/news/dataforseo";
+import { classifyNews } from "@/lib/news/sentiment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +40,7 @@ export async function GET(req: Request) {
   let next = 0;
   let collected = 0;
   let itemsUpserted = 0;
+  let sentimentSet = 0;
   let failed = 0;
   async function worker() {
     while (Date.now() - startedAt < budgetMs) {
@@ -48,6 +50,8 @@ export async function GET(req: Request) {
       try {
         itemsUpserted += await ingestNews(f.id, f.name, "ZZ");
         collected++;
+        // Derive sentiment for the just-ingested (and any older un-scored) items.
+        sentimentSet += await classifyNews(f.id).catch(() => 0);
       } catch {
         failed++;
       }
@@ -61,6 +65,7 @@ export async function GET(req: Request) {
     total: fintechs.length,
     collected,
     itemsUpserted,
+    sentimentSet,
     failed,
     remaining: fintechs.length - processed,
     tookMs: Date.now() - startedAt,
