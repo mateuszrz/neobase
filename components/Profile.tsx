@@ -9,6 +9,7 @@ import {
   getPlatformSentimentSeries,
   getSocialPosts,
   getNews,
+  getBlogPosts,
   getAiSummary,
 } from "@/lib/queries";
 import {
@@ -19,6 +20,7 @@ import {
   AiBrief,
   SocialFeed,
   NewsList,
+  BlogList,
   MiniStat,
   flagEmoji,
   fmt,
@@ -40,7 +42,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, extras, platforms, distData, platformSent, social, news, brief] = await Promise.all([
+  const [series, extras, platforms, distData, platformSent, social, news, blog, brief] = await Promise.all([
     getSeries(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
@@ -48,6 +50,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
     getPlatformSentimentSeries(slug),
     getSocialPosts(slug, ft.name),
     getNews(slug, ft.name),
+    getBlogPosts(slug, ft.name),
     getAiSummary(slug, ft.name),
   ]);
 
@@ -203,6 +206,21 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
               )}
             </div>
             <SocialFeed posts={social.posts} name={ft.name} logo={ft.logoSvg} />
+          </div>
+        )}
+
+        {/* From the blog — company posts (crawled; sample until live) */}
+        {blog.posts.length > 0 && (
+          <div className="card" style={{ marginTop: 20 }}>
+            <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
+              <h2 className="subheading">From the blog</h2>
+              {blog.isSample ? (
+                <span className="pill pill-neutral" title="Preview data — live blog feed coming soon">Sample</span>
+              ) : (
+                <span className="muted" style={{ fontSize: 12 }}>company posts</span>
+              )}
+            </div>
+            <BlogList items={blog.posts} name={ft.name} logo={ft.logoSvg} />
           </div>
         )}
 

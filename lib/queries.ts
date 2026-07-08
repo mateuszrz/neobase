@@ -7,10 +7,11 @@ import { db, schema } from "@/lib/db";
 
 import { sampleSocialPosts, type SocialPostView } from "@/lib/social/sample";
 import { sampleNews, type NewsItemView, type NewsSentiment } from "@/lib/news/sample";
+import { sampleBlogPosts, type BlogPostView } from "@/lib/blog/sample";
 import { gatherContext, getStoredSummary } from "@/lib/summary/generate";
 import { composeBrief } from "@/lib/summary/compose";
 
-const { fintechs, metricSnapshots, reviews, socialPosts, newsItems } = schema;
+const { fintechs, metricSnapshots, reviews, socialPosts, newsItems, blogPosts } = schema;
 
 export interface FintechListItem {
   id: string;
@@ -357,6 +358,33 @@ export async function getNews(
     };
   }
   return { items: sampleNews(fintechId, name, limit), isSample: true };
+}
+
+/** Company blog posts. Real crawled posts if any, else labelled SAMPLE. */
+export async function getBlogPosts(
+  fintechId: string,
+  name: string,
+  limit = 4,
+): Promise<{ posts: BlogPostView[]; isSample: boolean }> {
+  const rows = await db
+    .select({ title: blogPosts.title, url: blogPosts.url, publishedAt: blogPosts.publishedAt, snippet: blogPosts.snippet })
+    .from(blogPosts)
+    .where(eq(blogPosts.fintechId, fintechId))
+    .orderBy(desc(blogPosts.publishedAt))
+    .limit(limit);
+
+  if (rows.length) {
+    return {
+      isSample: false,
+      posts: rows.map((r) => ({
+        title: r.title,
+        url: r.url,
+        publishedAt: r.publishedAt ? new Date(r.publishedAt).toISOString() : new Date().toISOString(),
+        snippet: r.snippet ?? "",
+      })),
+    };
+  }
+  return { posts: sampleBlogPosts(fintechId, name, limit), isSample: true };
 }
 
 export interface CountryRow {

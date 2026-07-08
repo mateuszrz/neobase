@@ -666,6 +666,37 @@ export function NewsList({
   );
 }
 
+export function BlogList({
+  items,
+  name,
+  logo,
+}: {
+  items: { title: string; url: string | null; publishedAt: string; snippet: string }[];
+  name: string;
+  logo?: string | null;
+}) {
+  return (
+    <div className="stack-16">
+      {items.map((p, i) => (
+        <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
+          <Avatar src={logo} alt={`${name} logo`} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
+              {p.url ? (
+                <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{p.title}</a>
+              ) : (
+                p.title
+              )}
+            </p>
+            <p className="muted" style={{ margin: "0 0 6px", fontSize: 12 }}>{name} · {timeAgo(p.publishedAt)}</p>
+            {p.snippet && <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>{p.snippet}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ─── AI weekly brief ─────────────────────────────────────────────────────────
 
 export function AiBrief({ text, isSample, updatedAt }: { text: string; isSample: boolean; updatedAt: Date | null }) {

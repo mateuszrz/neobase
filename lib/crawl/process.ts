@@ -16,6 +16,7 @@ import { fetchPage } from "./fetch";
 import { extract, contentHash } from "./extract";
 import { diffExtracted, summarizeChange } from "./diff";
 import { EMPTY_EXTRACTED, isCrawlKind, type Extracted } from "./types";
+import { ingestBlogPage } from "@/lib/blog/ingest";
 
 const { contentSnapshots, contentChanges } = schema;
 
@@ -62,6 +63,14 @@ export async function processCrawlJob(p: CrawlPayload): Promise<CrawlResult> {
   if (!isCrawlKind(p.kind)) throw new Error(`not a crawl kind: "${p.kind}"`);
   const country = p.country ?? "ZZ";
   const useMock = p.mock ?? !isClaudeLive();
+
+  // Blogs are a post-list content type, not a pricing/plans page — extract the
+  // recent posts into blog_posts instead of a snapshot/diff. (Skips in mock so no
+  // fabricated posts are stored; the profile shows the render-time sample.)
+  if (p.kind === "blog") {
+    const res = await ingestBlogPage(p.fintechId, p.url, { mock: useMock });
+    return { snapshotsWritten: 0, changesWritten: res.upserted, changed: res.upserted > 0, via: res.via };
+  }
 
   // 1. Retrieve page text (skipped in mock — extraction is synthetic).
   let httpStatus: number | null = null;
