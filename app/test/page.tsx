@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { generateReport } from "@/lib/report/generate";
+import { clientIp, withinRateLimit, RATE_MAX, RATE_WINDOW_MIN } from "@/lib/report/rate-limit";
 
 export const metadata: Metadata = {
   title: "Test our reports — free weekly competitive brief",
@@ -8,7 +9,9 @@ export const metadata: Metadata = {
     "Enter your brand and a few competitors and get a free weekly competitive-intelligence brief — grounded in real ratings, sentiment and media data.",
 };
 
-export default function TestReportPage() {
+export default async function TestReportPage({ searchParams }: { searchParams: Promise<{ slow?: string }> }) {
+  const { slow } = await searchParams;
+
   async function run(formData: FormData) {
     "use server";
     const brand = String(formData.get("brand") ?? "").trim();
@@ -18,7 +21,11 @@ export default function TestReportPage() {
       .map((s) => s.trim())
       .filter(Boolean)
       .slice(0, 8); // cap the fan-out
-    const { id } = await generateReport(brand, competitors);
+
+    const ip = await clientIp();
+    if (!(await withinRateLimit(ip))) redirect("/test/?slow=1");
+
+    const { id } = await generateReport(brand, competitors, ip);
     redirect(`/test/${id}`);
   }
 
@@ -34,6 +41,16 @@ export default function TestReportPage() {
           report — ratings, sentiment, media and strategic signals — and show you the executive
           summary free. No account, no card.
         </p>
+
+        {slow && (
+          <p
+            className="stack-8"
+            style={{ padding: "12px 16px", borderRadius: 8, marginBottom: 20, background: "var(--stone-canvas)", border: "1px solid var(--neg)", color: "var(--neg)", fontSize: 14, lineHeight: 1.6 }}
+          >
+            You&apos;ve generated a few briefs in a short window (limit {RATE_MAX} per {RATE_WINDOW_MIN} minutes).
+            Give it a little while and try again — or <a href="/monitoring/" style={{ color: "inherit", textDecoration: "underline" }}>talk to us</a> for unlimited reports.
+          </p>
+        )}
 
         <form action={run} className="card stack-16" style={{ padding: 24 }}>
           <label className="stack-8" style={{ display: "block" }}>

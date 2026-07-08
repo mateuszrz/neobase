@@ -177,7 +177,7 @@ export interface GenerateResult {
  * Generate + persist a report for a brand and its competitors. Returns the row
  * id (the shareable teaser URL is /test/<id>).
  */
-export async function generateReport(brandInput: string, competitorInputs: string[]): Promise<GenerateResult> {
+export async function generateReport(brandInput: string, competitorInputs: string[], ip?: string | null): Promise<GenerateResult> {
   const [brandC] = await matchFintechs([brandInput]);
   const compCs = (await matchFintechs(competitorInputs)).filter((c) => !brandC || c.fintechId !== brandC.fintechId);
 
@@ -217,6 +217,7 @@ export async function generateReport(brandInput: string, competitorInputs: strin
       matchedIds,
       report: report as unknown as Record<string, unknown>,
       model,
+      ip: ip ?? null,
     })
     .returning({ id: reportRequests.id });
 
@@ -234,9 +235,16 @@ export async function getReportRequest(id: string): Promise<{ report: Report; un
   return { report: row.report as unknown as Report, unlocked: row.unlockedAt != null };
 }
 
-/** Capture the lead's email and unlock the full report. */
-export async function unlockReport(id: string, email: string): Promise<void> {
-  await db.update(reportRequests).set({ email: email.trim().toLowerCase(), unlockedAt: new Date() }).where(eq(reportRequests.id, id));
+/** Capture the lead's email and unlock the full report. Returns the brand (for
+ * the confirmation email), or null if the id doesn't exist. */
+export async function unlockReport(id: string, email: string): Promise<{ brand: string } | null> {
+  const [row] = await db
+    .update(reportRequests)
+    .set({ email: email.trim().toLowerCase(), unlockedAt: new Date() })
+    .where(eq(reportRequests.id, id))
+    .returning({ report: reportRequests.report });
+  if (!row) return null;
+  return { brand: (row.report as unknown as Report).brand };
 }
 
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);

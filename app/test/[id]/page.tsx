@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { getReportRequest, unlockReport } from "@/lib/report/generate";
+import { sendReportEmail } from "@/lib/report/email";
 import { ReportView } from "@/components/Report";
 
 export const metadata: Metadata = {
@@ -19,7 +21,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     const email = String(formData.get("email") ?? "").trim();
     const rid = String(formData.get("id") ?? "");
     if (!email || !rid) return;
-    await unlockReport(rid, email);
+    const res = await unlockReport(rid, email);
+    if (res) {
+      // Derive the public base URL from the request so the email links back correctly.
+      const h = await headers();
+      const host = h.get("x-forwarded-host") ?? h.get("host") ?? "neobase.co";
+      const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
+      await sendReportEmail(email, rid, res.brand, `${proto}://${host}`);
+    }
     redirect(`/test/${rid}`);
   }
 

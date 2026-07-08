@@ -456,10 +456,11 @@ export const reportRequests = pgTable(
     report: jsonb("report").notNull(), // generated structured report (see lib/report/types)
     model: text("model"), // claude model id, or "composed" for the deterministic fallback
     email: text("email"), // captured on unlock (null until then)
+    ip: text("ip"), // requester IP (from x-forwarded-for) — for abuse rate-limiting
     unlockedAt: timestamp("unlocked_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("report_requests_created_idx").on(t.createdAt)],
+  (t) => [index("report_requests_created_idx").on(t.createdAt), index("report_requests_ip_idx").on(t.ip, t.createdAt)],
 );
 
 export type Fintech = typeof fintechs.$inferSelect;
