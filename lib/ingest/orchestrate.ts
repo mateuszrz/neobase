@@ -16,6 +16,8 @@ import { db, schema } from "@/lib/db";
 import { SCRAPABLE_KINDS, startReviewSource, todayUtc } from "./kickoff";
 import { enqueueCrawlSource } from "@/lib/crawl/kickoff";
 import { CRAWL_KINDS } from "@/lib/crawl/types";
+import { isSocialKind } from "@/lib/social/apify";
+import { startSocialSource } from "@/lib/social/kickoff";
 
 const { sources, fintechs } = schema;
 
@@ -25,6 +27,7 @@ export interface KickoffSummary {
   cadence: Cadence;
   reviews: number; // review sources kicked off
   crawls: number; // crawl sources enqueued
+  social: number; // social runs started (LinkedIn/Facebook)
   skipped: number; // already-claimed / not runnable / unknown kind
 }
 
@@ -42,7 +45,7 @@ export async function runKickoff(cadence: Cadence, day = todayUtc()): Promise<Ki
     .innerJoin(fintechs, eq(fintechs.id, sources.fintechId))
     .where(and(eq(sources.cadence, cadence), eq(sources.active, true)));
 
-  const summary: KickoffSummary = { cadence, reviews: 0, crawls: 0, skipped: 0 };
+  const summary: KickoffSummary = { cadence, reviews: 0, crawls: 0, social: 0, skipped: 0 };
 
   for (const s of active) {
     if (SCRAPABLE_KINDS.includes(s.kind)) {
@@ -60,6 +63,12 @@ export async function runKickoff(cadence: Cadence, day = todayUtc()): Promise<Ki
         day,
       );
       r === "enqueued" ? summary.crawls++ : summary.skipped++;
+    } else if (isSocialKind(s.kind)) {
+      const r = await startSocialSource(
+        { id: s.id, fintechId: s.fintechId, kind: s.kind, externalRef: s.externalRef },
+        day,
+      );
+      r === "enqueued" ? summary.social++ : summary.skipped++;
     } else {
       summary.skipped++;
     }
