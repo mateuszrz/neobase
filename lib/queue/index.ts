@@ -13,7 +13,7 @@ import { db, schema } from "@/lib/db";
 
 const { jobQueue } = schema;
 
-export type JobType = "process_dataset" | "crawl_page";
+export type JobType = "process_dataset" | "crawl_page" | "collect_social";
 
 export interface EnqueueInput {
   type: JobType;

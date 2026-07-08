@@ -11,6 +11,7 @@
 import { claimJobs, completeJob, failJob, rescheduleJob } from "@/lib/queue";
 import { processDatasetJob, type ProcessPayload } from "./process";
 import { processCrawlJob, type CrawlPayload } from "@/lib/crawl/process";
+import { processSocialDataset, type SocialPayload } from "@/lib/social/process";
 
 export interface DrainSummary {
   claimed: number;
@@ -21,6 +22,7 @@ export interface DrainSummary {
   snapshotsWritten: number;
   contentSnapshots: number;
   contentChanges: number;
+  socialPosts: number;
 }
 
 export async function drainQueue(maxJobs = 20): Promise<DrainSummary> {
@@ -34,6 +36,7 @@ export async function drainQueue(maxJobs = 20): Promise<DrainSummary> {
     snapshotsWritten: 0,
     contentSnapshots: 0,
     contentChanges: 0,
+    socialPosts: 0,
   };
 
   for (const job of jobs) {
@@ -55,6 +58,12 @@ export async function drainQueue(maxJobs = 20): Promise<DrainSummary> {
         const res = await processCrawlJob(payload);
         summary.contentSnapshots += res.snapshotsWritten;
         summary.contentChanges += res.changesWritten;
+        await completeJob(job.id);
+        summary.completed++;
+      } else if (job.type === "collect_social") {
+        const payload = job.payload as unknown as SocialPayload;
+        const res = await processSocialDataset(payload);
+        summary.socialPosts += res.upserted;
         await completeJob(job.id);
         summary.completed++;
       } else {

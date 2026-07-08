@@ -46,7 +46,15 @@ export async function POST(req: Request) {
       .where(eq(ingestRuns.runKey, runKey));
   }
 
-  if (q.sourceId && q.fintechId && datasetId) {
+  const isSocial = (q.kind ?? "").startsWith("social_") && Boolean(q.network);
+
+  if (datasetId && q.fintechId && isSocial) {
+    await enqueue({
+      type: "collect_social",
+      payload: { fintechId: q.fintechId, network: q.network, datasetId, runKey },
+    });
+    await drainQueue(5).catch(() => {});
+  } else if (q.sourceId && q.fintechId && datasetId) {
     await enqueue({
       type: "process_dataset",
       payload: {
