@@ -43,6 +43,13 @@
       "when": 1783461522700,
       "tag": "0005_legal_loki",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1783494577638,
+      "tag": "0006_sudden_agent_brand",
+      "breakpoints": true
     }
   ]
 }
