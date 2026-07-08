@@ -38,7 +38,7 @@ export default async function Home() {
       <section className="wrap">
         <div className="grid grid-4">
           <Stat num={String(stats.fintechs)} label="Fintechs tracked" />
-          <Stat num={fmt(stats.reviews)} label="Reviews analysed" />
+          <Stat num={fmt(stats.ratings)} label="Ratings analysed" />
           <Stat num={String(stats.countries)} label="Countries segmented" />
           <Stat num="Daily" label="Data refresh cadence" />
         </div>

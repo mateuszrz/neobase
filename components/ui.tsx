@@ -160,7 +160,7 @@ export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?
       <div style={{ minWidth: 0, flex: 1 }}>
         <h3>{f.name}</h3>
         <p className="sub">
-          {flagEmoji(f.country)} {f.country ?? "Global"}
+          {f.country ?? "Global"}
           {f.reviewCount != null && ` · ${fmt(f.reviewCount)} reviews`}
         </p>
       </div>

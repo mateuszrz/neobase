@@ -22,7 +22,6 @@ import {
   NewsList,
   BlogList,
   MiniStat,
-  flagEmoji,
   fmt,
   fmtMoney,
   fmtReplyTime,
@@ -95,7 +94,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             </p>
             <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
             <p className="muted" style={{ margin: "8px 0 0" }}>
-              {flagEmoji(ft.country)} {ft.headquarters || ft.country || "Global"}
+              {ft.headquarters || ft.country || "Global"}
               {ft.website && (
                 <>
                   {" · "}
@@ -179,48 +178,51 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         )}
 
-        {/* In the media — brand news (DataForSEO; sample until live) */}
-        {news.items.length > 0 && (
-          <div className="card" style={{ marginTop: 20 }}>
-            <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-              <h2 className="subheading">In the media</h2>
-              {news.isSample ? (
-                <span className="pill pill-neutral" title="Preview data — live news feed coming soon">Sample</span>
-              ) : (
-                <span className="muted" style={{ fontSize: 12 }}>brand coverage</span>
-              )}
-            </div>
-            <NewsList items={news.items} />
-          </div>
-        )}
+        {/* Public content signals — news / social / blog, two-up on wide screens.
+            Each is sample-first until the live source is enabled. */}
+        {(news.items.length > 0 || social.posts.length > 0 || blog.posts.length > 0) && (
+          <div className="grid grid-2" style={{ marginTop: 20, alignItems: "start" }}>
+            {news.items.length > 0 && (
+              <div className="card">
+                <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
+                  <h2 className="subheading">In the media</h2>
+                  {news.isSample ? (
+                    <span className="pill pill-neutral" title="Preview data — live news feed coming soon">Sample</span>
+                  ) : (
+                    <span className="muted" style={{ fontSize: 12 }}>brand coverage</span>
+                  )}
+                </div>
+                <NewsList items={news.items} />
+              </div>
+            )}
 
-        {/* Latest from social — LinkedIn / Facebook (Apify; sample until live) */}
-        {social.posts.length > 0 && (
-          <div className="card" style={{ marginTop: 20 }}>
-            <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-              <h2 className="subheading">Latest from social</h2>
-              {social.isSample ? (
-                <span className="pill pill-neutral" title="Preview data — live social feed coming soon">Sample</span>
-              ) : (
-                <span className="muted" style={{ fontSize: 12 }}>LinkedIn &amp; Facebook</span>
-              )}
-            </div>
-            <SocialFeed posts={social.posts} name={ft.name} logo={ft.logoSvg} />
-          </div>
-        )}
+            {social.posts.length > 0 && (
+              <div className="card">
+                <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
+                  <h2 className="subheading">Latest from social</h2>
+                  {social.isSample ? (
+                    <span className="pill pill-neutral" title="Preview data — live social feed coming soon">Sample</span>
+                  ) : (
+                    <span className="muted" style={{ fontSize: 12 }}>LinkedIn &amp; Facebook</span>
+                  )}
+                </div>
+                <SocialFeed posts={social.posts} name={ft.name} logo={ft.logoSvg} />
+              </div>
+            )}
 
-        {/* From the blog — company posts (crawled; sample until live) */}
-        {blog.posts.length > 0 && (
-          <div className="card" style={{ marginTop: 20 }}>
-            <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-              <h2 className="subheading">From the blog</h2>
-              {blog.isSample ? (
-                <span className="pill pill-neutral" title="Preview data — live blog feed coming soon">Sample</span>
-              ) : (
-                <span className="muted" style={{ fontSize: 12 }}>company posts</span>
-              )}
-            </div>
-            <BlogList items={blog.posts} name={ft.name} logo={ft.logoSvg} />
+            {blog.posts.length > 0 && (
+              <div className="card">
+                <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
+                  <h2 className="subheading">From the blog</h2>
+                  {blog.isSample ? (
+                    <span className="pill pill-neutral" title="Preview data — live blog feed coming soon">Sample</span>
+                  ) : (
+                    <span className="muted" style={{ fontSize: 12 }}>company posts</span>
+                  )}
+                </div>
+                <BlogList items={blog.posts} name={ft.name} logo={ft.logoSvg} />
+              </div>
+            )}
           </div>
         )}
 

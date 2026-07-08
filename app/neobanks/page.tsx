@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { listNeobanks } from "@/lib/queries";
-import { FintechCard, flagEmoji } from "@/components/ui";
+import { FintechCard } from "@/components/ui";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
@@ -25,14 +25,14 @@ export default async function NeobanksPage({
         <h1 className="h-sm">Neobanks &amp; fintechs</h1>
         <p className="lead" style={{ marginTop: 10, marginBottom: 24 }}>
           {list.length} {list.length === 1 ? "company" : "companies"}
-          {country ? ` in ${flagEmoji(country)} ${country}` : " worldwide"}, ranked by TrustScore.
+          {country ? ` in ${country}` : " worldwide"}, ranked by TrustScore.
         </p>
 
         <div className="row" style={{ gap: 8, marginBottom: 28 }}>
           <a className={`badge${!country ? " pill-score" : ""}`} href="/neobanks/">All</a>
           {countries.map((c) => (
             <a key={c} className={`badge${country === c ? " pill-score" : ""}`} href={`/neobanks/?country=${c}`}>
-              {flagEmoji(c)} {c}
+              {c}
             </a>
           ))}
         </div>

@@ -58,14 +58,21 @@ export const listNeobanks = () => listWithLatest("neobank");
 export const listExchanges = () => listWithLatest("exchange");
 
 export async function getPlatformStats() {
+  // "Ratings" = the aggregate volume behind the scores (we hold anonymised store
+  // aggregates, not individual reviews) — sum the latest count per fintech×platform.
   const rows = await db.execute(sql`
     SELECT
       (SELECT count(*) FROM fintechs)::int AS fintechs,
-      (SELECT count(*) FROM reviews)::int AS reviews,
+      (SELECT coalesce(sum(cnt), 0)::bigint FROM (
+        SELECT DISTINCT ON (fintech_id, kind) review_count AS cnt
+        FROM metric_snapshots
+        WHERE country = 'ZZ' AND kind IN ('trustpilot','google_play','app_store') AND review_count IS NOT NULL
+        ORDER BY fintech_id, kind, snapshot_date DESC
+      ) t) AS ratings,
       (SELECT count(DISTINCT country) FROM metric_snapshots WHERE country <> 'ZZ')::int AS countries
   `);
   const r = (rows.rows as any[])[0] ?? {};
-  return { fintechs: Number(r.fintechs ?? 0), reviews: Number(r.reviews ?? 0), countries: Number(r.countries ?? 0) };
+  return { fintechs: Number(r.fintechs ?? 0), ratings: Number(r.ratings ?? 0), countries: Number(r.countries ?? 0) };
 }
 
 export async function getFintech(slug: string) {

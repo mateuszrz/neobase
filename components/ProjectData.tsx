@@ -1,5 +1,5 @@
 import type { ProjectSignals } from "@/lib/projects/data";
-import { Delta, fmt, flagEmoji } from "@/components/ui";
+import { Delta, fmt } from "@/components/ui";
 
 /* Project intelligence view: a brand × market signals matrix (latest rating,
  * sentiment, volume + Δ vs prior) and a recent-changes feed. Server component. */
@@ -9,9 +9,7 @@ const CHANGE_LABEL: Record<string, string> = { price: "Pricing", feature: "Featu
 function Cell({ m }: { m: ProjectSignals["brands"][number]["markets"][number] }) {
   return (
     <div className="row" style={{ gap: 10, padding: "8px 0", borderBottom: "1px solid var(--stone-border)", alignItems: "center", flexWrap: "wrap" }}>
-      <span style={{ width: 128, fontSize: 14 }}>
-        <span aria-hidden>{flagEmoji(m.country)}</span> {m.country}
-      </span>
+      <span style={{ width: 128, fontSize: 14, fontWeight: 500 }}>{m.country}</span>
       {m.rating != null ? (
         <>
           <span style={{ fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{m.rating.toFixed(2)} ★</span>
@@ -74,7 +72,7 @@ export function ProjectData({ signals }: { signals: ProjectSignals }) {
               <div key={i} style={{ paddingBottom: 14, borderBottom: i < changes.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
                 <div className="row" style={{ gap: 8, marginBottom: 4, alignItems: "center", flexWrap: "wrap" }}>
                   <strong>{c.name}</strong>
-                  <span className="muted" style={{ fontSize: 12 }}>{flagEmoji(c.country)} {c.country} · {c.toDate}</span>
+                  <span className="muted" style={{ fontSize: 12 }}>{c.country} · {c.toDate}</span>
                   {c.changeKinds.map((k) => (
                     <span key={k} className="pill pill-neutral" style={{ fontSize: 11 }}>{CHANGE_LABEL[k] ?? k}</span>
                   ))}
