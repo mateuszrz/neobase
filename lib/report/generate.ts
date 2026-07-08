@@ -11,7 +11,8 @@
 
 import { and, desc, eq, gte, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
-import { anthropic, crawlModel, isClaudeLive } from "@/lib/anthropic";
+import { anthropic, isClaudeLive } from "@/lib/anthropic";
+import { env } from "@/lib/env";
 import { gatherContext } from "@/lib/summary/generate";
 import { sampleNews } from "@/lib/news/sample";
 import { sampleSocialPosts } from "@/lib/social/sample";
@@ -90,13 +91,19 @@ function extractJson(text: string): any {
 }
 
 async function writeWithClaude(brand: string, brands: BrandData[]): Promise<Partial<Report>> {
-  const res = await anthropic().messages.create({
-    model: crawlModel(),
-    max_tokens: 2500,
-    system: REPORT_SYSTEM,
-    output_config: { effort: "low" },
-    messages: [{ role: "user", content: buildUserMessage(brand, brands) }],
-  });
+  // Haiku 4.5 by default: fast enough for a synchronous form POST. No `effort`
+  // (it 400s on Haiku) and no thinking. A hard 45s timeout with no retries caps
+  // the wall-clock so the request can never hang past the function budget — on
+  // timeout/error the caller falls back to the deterministic composer.
+  const res = await anthropic().messages.create(
+    {
+      model: env.ANTHROPIC_REPORT_MODEL,
+      max_tokens: 2500,
+      system: REPORT_SYSTEM,
+      messages: [{ role: "user", content: buildUserMessage(brand, brands) }],
+    },
+    { timeout: 45_000, maxRetries: 0 },
+  );
   const text = res.content.map((b) => (b.type === "text" ? b.text : "")).join("");
   return extractJson(text);
 }
@@ -213,7 +220,7 @@ export async function generateReport(brandInput: string, competitorInputs: strin
   if (isClaudeLive()) {
     try {
       partial = await writeWithClaude(brandName, brands);
-      model = crawlModel();
+      model = env.ANTHROPIC_REPORT_MODEL;
     } catch {
       partial = composeReport(brandName, brands); // network/parse failure → grounded fallback
       model = "composed";

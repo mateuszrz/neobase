@@ -12,6 +12,9 @@ export const metadata: Metadata = {
 };
 
 export const revalidate = 3600;
+// The submit action calls Claude synchronously — give the function headroom
+// beyond the default so a slow generation can't be killed mid-request.
+export const maxDuration = 60;
 
 export default async function TestReportPage({ searchParams }: { searchParams: Promise<{ slow?: string }> }) {
   const { slow } = await searchParams;

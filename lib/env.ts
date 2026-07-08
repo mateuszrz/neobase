@@ -28,6 +28,10 @@ export const env = {
   // Haiku 4.5 (claude-haiku-4-5) is a strong cheaper pick for this high-volume,
   // structured-extraction workload — set here to switch the whole crawl pipeline.
   ANTHROPIC_CRAWL_MODEL: process.env.ANTHROPIC_CRAWL_MODEL ?? "claude-opus-4-8",
+  // Model for the synchronous public "test our reports" generator. Haiku 4.5 is
+  // the fast/cheap pick for this latency-sensitive, templated-JSON workload —
+  // Opus would risk exceeding the serverless function timeout on the form POST.
+  ANTHROPIC_REPORT_MODEL: process.env.ANTHROPIC_REPORT_MODEL ?? "claude-haiku-4-5",
   // Apify actor used as the fetch fallback when a direct fetch() is empty/blocked.
   APIFY_CRAWLER_ACTOR: process.env.APIFY_CRAWLER_ACTOR ?? "apify/website-content-crawler",
   // Apify actors for social posts (set to go live; empty = sample-only).
