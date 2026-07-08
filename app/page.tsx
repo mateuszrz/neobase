@@ -24,8 +24,8 @@ export default async function Home() {
             Trustpilot and the app stores, segmented by country, updated daily.
           </p>
           <div className="row" style={{ marginTop: 28 }}>
-            <a className="btn btn-cyan" href="/neobanks/">Explore neobanks</a>
-            <a className="btn btn-ghost" href="/monitoring/">See monitoring</a>
+            <a className="btn btn-cyan" href="/test/">Test our reports — free</a>
+            <a className="btn btn-ghost" href="/neobanks/">Explore neobanks</a>
           </div>
           <div className="row" style={{ marginTop: 22, color: "var(--warm-gray)", fontSize: 13 }}>
             <span className="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></span>

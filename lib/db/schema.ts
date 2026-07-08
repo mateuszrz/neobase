@@ -439,6 +439,30 @@ export const jobQueue = pgTable(
   (t) => [index("job_queue_claim_idx").on(t.status, t.runAfter)],
 );
 
+// ─── Free "test our reports" lead magnet ─────────────────────────────────────
+// A public form (brand + competitor domains) generates a weekly competitive-
+// intelligence report, grounded in the tracked-fintech data we already hold.
+// The executive summary is shown free; the full report is unlocked by email —
+// this row IS the captured lead. `report` holds the generated structured JSON.
+
+export const reportRequests = pgTable(
+  "report_requests",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    brand: text("brand").notNull(), // raw typed brand, e.g. "ZEN.COM"
+    competitors: text("competitors").array().notNull().default(sql`ARRAY[]::text[]`), // raw typed competitor domains/names
+    brandFintechId: text("brand_fintech_id"), // matched tracked fintech (null = not tracked yet)
+    matchedIds: text("matched_ids").array().notNull().default(sql`ARRAY[]::text[]`), // all matched fintech ids
+    report: jsonb("report").notNull(), // generated structured report (see lib/report/types)
+    model: text("model"), // claude model id, or "composed" for the deterministic fallback
+    email: text("email"), // captured on unlock (null until then)
+    ip: text("ip"), // requester IP (from x-forwarded-for) — for abuse rate-limiting
+    unlockedAt: timestamp("unlocked_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("report_requests_created_idx").on(t.createdAt), index("report_requests_ip_idx").on(t.ip, t.createdAt)],
+);
+
 export type Fintech = typeof fintechs.$inferSelect;
 export type NewFintech = typeof fintechs.$inferInsert;
 export type Source = typeof sources.$inferSelect;
@@ -451,4 +475,5 @@ export type Subscription = typeof subscriptions.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type SocialPost = typeof socialPosts.$inferSelect;
 export type NewsItem = typeof newsItems.$inferSelect;
+export type ReportRequest = typeof reportRequests.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;
