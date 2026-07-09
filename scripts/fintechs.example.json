@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Revolut",
+    "id": "revolut",
+    "type": "neobank",
+    "country": "GB",
+    "website": "https://www.revolut.com",
+    "trustpilot": "revolut.com",
+    "googlePlay": "com.revolut.revolut",
+    "appStore": "932493382",
+    "blog": "https://www.revolut.com/news",
+    "description": "A global financial super-app offering currency exchange, crypto and everyday banking.",
+    "tags": ["multi-currency", "crypto", "premium"],
+    "founded": 2015,
+    "headquarters": "London, UK",
+    "socials": {
+      "linkedin": "https://linkedin.com/company/revolut",
+      "facebook": "https://facebook.com/revolutapp"
+    }
+  },
+  {
+    "name": "Bunq",
+    "country": "NL",
+    "website": "https://www.bunq.com",
+    "googlePlay": "com.bunq.android",
+    "appStore": "1021178150"
+  }
+]
