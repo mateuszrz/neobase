@@ -31,27 +31,51 @@ interface NewsRow {
   snippet: string | null;
 }
 
+/** DataForSEO timestamps look like "2026-06-14 10:00:00 +00:00" — normalise to ISO. */
+function parseTimestamp(ts: unknown): Date | null {
+  if (typeof ts !== "string" || !ts.trim()) return null;
+  const iso = ts.trim().replace(" ", "T").replace(/\s+\+/, "+").replace(/\s+-(?=\d\d:\d\d$)/, "-");
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function rowFromItem(it: any): NewsRow | null {
+  const title = it?.title;
+  if (typeof title !== "string" || !title.trim()) return null;
+  const url: string | null = typeof it?.url === "string" ? it.url : null;
+  return {
+    externalId: String(url ?? title),
+    url,
+    publishedAt: parseTimestamp(it?.timestamp ?? it?.time_published),
+    title: title.trim(),
+    publisher: it?.source ?? it?.domain ?? null,
+    snippet: typeof it?.snippet === "string" ? it.snippet : null,
+  };
+}
+
 function parseItems(result: any): NewsRow[] {
   const items: any[] = result?.items ?? [];
   const out: NewsRow[] = [];
   for (const it of items) {
+    // `top_stories` carousels nest the real articles under `items[].items[]`.
+    if (it?.type === "top_stories" && Array.isArray(it.items)) {
+      for (const sub of it.items) {
+        const row = rowFromItem(sub);
+        if (row) out.push(row);
+      }
+      continue;
+    }
     if (it?.type && it.type !== "news_search") continue;
-    const title = it?.title;
-    if (typeof title !== "string" || !title.trim()) continue;
-    const ts = it?.timestamp ?? it?.time_published ?? null;
-    const posted = ts ? new Date(ts) : null;
-    const url: string | null = it?.url ?? null;
-    out.push({
-      externalId: String(it?.url ?? title),
-      url,
-      publishedAt: posted && !Number.isNaN(posted.getTime()) ? posted : null,
-      title: title.trim(),
-      publisher: it?.source ?? it?.domain ?? null,
-      snippet: typeof it?.snippet === "string" ? it.snippet : null,
-    });
+    const row = rowFromItem(it);
+    if (row) out.push(row);
   }
   return out;
 }
+
+// Google/DataForSEO location criteria ids. ZZ (global) → US, the highest-volume
+// English market. Add per-market codes here when project (per-market) news lands.
+const LOCATION_CODE: Record<string, number> = { ZZ: 2840, US: 2840, GB: 2826 };
+const locationFor = (country: string): number => LOCATION_CODE[country.toUpperCase()] ?? 2840;
 
 /**
  * Fetch + upsert Google News for a brand query in one market.
@@ -63,8 +87,7 @@ export async function ingestNews(fintechId: string, brandQuery: string, country 
   const task: Record<string, unknown> = {
     keyword: brandQuery,
     language_code: "en",
-    location_name: country === "ZZ" ? "United Kingdom" : undefined,
-    location_code: undefined,
+    location_code: locationFor(country), // always set — DataForSEO requires a location
   };
   const res = await fetch(ENDPOINT, {
     method: "POST",
