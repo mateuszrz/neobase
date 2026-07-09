@@ -78,12 +78,21 @@ async function resolve(ft: { id: string; name: string; website: string | null; c
     search(env.APIFY_APPSTORE_ACTOR, { mode: "search", query: ft.name, maxResults: 6, country }).catch(() => []),
   ]);
 
-  // Google Play: prefer exact developer-domain match, else brand-token match.
+  // Google Play: exact developer-domain match, else the dev domain's brand label
+  // CONTAINS the token (getchip.uk ⊃ "chip"; rejects unrelated dev domains), else
+  // a plain brand-token match (untrusted).
+  const devLabel = (c: any): string => {
+    const d = regDomain(c.developerWebsite);
+    return d ? d.split(".")[0].toLowerCase() : "";
+  };
   let gp: Match["gp"] = null;
   const gpDomain = gpRes.find((c) => dom && regDomain(c.developerWebsite) === dom);
+  const gpDomainToken = gpRes.find((c) => token.length >= 4 && devLabel(c).includes(token));
   const gpToken = gpRes.find((c) => hit(c.developerWebsite) || hit(c.developer) || hit(c.title) || hit(c.appId));
-  const gpPick = gpDomain ?? gpToken;
-  if (gpPick) gp = { appId: String(gpPick.appId), developer: gpPick.developer ?? "", via: gpDomain ? "domain" : "token" };
+  const gpPick = gpDomain ?? gpDomainToken ?? gpToken;
+  if (gpPick) {
+    gp = { appId: String(gpPick.appId), developer: gpPick.developer ?? "", via: gpDomain ? "domain" : gpDomainToken ? "domain-token" : "token" };
+  }
 
   // App Store: no company URL in search → match brand token, and prefer a
   // candidate whose developer matches the Google-Play-verified developer.
@@ -112,7 +121,7 @@ console.log("\n");
 
 // Only domain-verified GP and GP-developer-verified AS matches are trusted for
 // auto-activation; brand-token-only matches are reported for manual review.
-const gpHigh = (r: Match) => r.gp?.via === "domain";
+const gpHigh = (r: Match) => r.gp?.via === "domain" || r.gp?.via === "domain-token";
 const asHigh = (r: Match) => r.as?.via === "gp-dev";
 
 let hi = 0;

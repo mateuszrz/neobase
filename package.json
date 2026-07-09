@@ -14,6 +14,7 @@
     "db:apply": "tsx scripts/apply-migration.ts",
     "db:studio": "drizzle-kit studio",
     "seed": "tsx scripts/seed-from-appjs.ts",
+    "fintechs:import": "tsx scripts/import-fintechs.ts",
     "pipeline:kickoff": "tsx scripts/run-local.ts kickoff",
     "pipeline:drain": "tsx scripts/run-local.ts drain",
     "apify:probe": "tsx scripts/apify-probe.ts",
