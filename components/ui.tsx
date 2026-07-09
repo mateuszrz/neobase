@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { FintechListItem, PlatformRating } from "@/lib/queries";
+import { BrandLogo } from "@/components/BrandLogo";
 
 /* ─── Brand / chrome ──────────────────────────────────────────────────────── */
 
@@ -152,11 +153,7 @@ export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?
   const href = `/${kind === "exchange" ? "exchange" : "fintech"}/${f.id}/`;
   return (
     <a className="fcard" href={href}>
-      {f.logoSvg ? (
-        <img className="flogo" src={f.logoSvg} alt="" loading="lazy" />
-      ) : (
-        <div className="flogo" aria-hidden />
-      )}
+      <BrandLogo src={f.logoSvg} name={f.name} size={44} />
       <div style={{ minWidth: 0, flex: 1 }}>
         <h3>{f.name}</h3>
         <p className="sub">
@@ -609,7 +606,7 @@ export function SocialFeed({
     <div className="stack-16">
       {posts.map((p, i) => (
         <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < posts.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
-          <Avatar src={logo} alt={`${name} logo`} />
+          <BrandLogo src={logo} name={name} size={36} radius={9} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="row" style={{ gap: 8, marginBottom: 6, alignItems: "center" }}>
               <strong style={{ fontSize: 14 }}>{name}</strong>
@@ -679,7 +676,7 @@ export function BlogList({
     <div className="stack-16">
       {items.map((p, i) => (
         <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
-          <Avatar src={logo} alt={`${name} logo`} />
+          <BrandLogo src={logo} name={name} size={36} radius={9} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
               {p.url ? (

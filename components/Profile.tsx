@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import { BrandLogo } from "@/components/BrandLogo";
 import {
   getFintech,
   getSeries,
@@ -86,7 +87,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {/* Header — identity only; ratings live in the hero below */}
         <div className="row" style={{ gap: 18, alignItems: "flex-start" }}>
-          {ft.logoSvg && <img className="flogo" style={{ width: 64, height: 64 }} src={ft.logoSvg} alt={`${ft.name} logo`} />}
+          <BrandLogo src={ft.logoSvg} name={ft.name} size={64} />
           <div style={{ flex: 1, minWidth: 240 }}>
             <p className="eyebrow" style={{ marginBottom: 7 }}>
               {ft.type === "exchange" ? "Crypto exchange" : "Neobank"}
