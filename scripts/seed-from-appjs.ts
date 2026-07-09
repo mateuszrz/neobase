@@ -35,6 +35,12 @@ function detUuid(input: string): string {
   return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20, 32)}`;
 }
 
+/** Fix malformed base64 data-URI logos from app.js (missing comma: `;base64PHN…`). */
+function normalizeLogo(v: unknown): string | null {
+  if (typeof v !== "string" || !v) return null;
+  return v.includes(";base64,") ? v : v.replace(";base64", ";base64,");
+}
+
 function iso2(v: unknown): string | null {
   return typeof v === "string" && v.length === 2 ? v.toUpperCase() : null;
 }
@@ -69,7 +75,7 @@ function buildEntity(
     type,
     name: String(raw.name ?? id),
     country: iso2(raw.country),
-    logoSvg: typeof raw.logoUrl === "string" ? raw.logoUrl : null,
+    logoSvg: normalizeLogo(raw.logoUrl),
     color: raw.color ?? null,
     website,
     founded: typeof raw.founded === "number" ? raw.founded : null,
