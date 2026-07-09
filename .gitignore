@@ -36,3 +36,6 @@ error.txt
 
 # Word lock/temp files
 ~$*
+
+# Source prompt doc (kept locally, not in repo)
+prompt.docx
