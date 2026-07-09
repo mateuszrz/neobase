@@ -30,6 +30,7 @@
     "blog:seed": "tsx scripts/seed-blog-sources.ts",
     "blog:test": "tsx scripts/blog-test.ts",
     "summary:generate": "tsx scripts/summary-generate.ts",
+    "sentiment:backfill": "tsx scripts/sentiment-backfill.ts",
     "report:test": "tsx scripts/report-test.ts",
     "project:demo": "tsx scripts/project-demo.ts",
     "sub:grant": "tsx scripts/grant-sub.ts"
