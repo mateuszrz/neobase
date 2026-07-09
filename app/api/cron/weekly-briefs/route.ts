@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { isAuthorizedCron } from "@/lib/http";
 import { isClaudeLive } from "@/lib/anthropic";
 import { generateSummary } from "@/lib/summary/generate";
+import { upsertSentimentIndex } from "@/lib/sentiment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,6 +44,8 @@ export async function GET(req: Request) {
     while (Date.now() - startedAt < budgetMs) {
       const i = next++;
       if (i >= ids.length) return;
+      // Refresh the composite sentiment index for this week (cheap, DB-only).
+      await upsertSentimentIndex(ids[i]).catch(() => null);
       try {
         await generateSummary(ids[i]);
         generated++;

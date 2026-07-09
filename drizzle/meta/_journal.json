@@ -71,6 +71,13 @@
       "when": 1783518210476,
       "tag": "0009_narrow_violations",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1783589496005,
+      "tag": "0010_graceful_tarot",
+      "breakpoints": true
     }
   ]
 }

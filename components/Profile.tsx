@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
+import { getSentimentIndex } from "@/lib/sentiment";
+import { SentimentIndexCard } from "@/components/SentimentIndex";
 import {
   getFintech,
   getSeries,
@@ -53,6 +55,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
     getBlogPosts(slug, ft.name),
     getAiSummary(slug, ft.name),
   ]);
+  const sentiment = await getSentimentIndex(slug);
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
     trustpilot: "Trustpilot",
@@ -119,6 +122,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {/* AI weekly brief — synthesised from recent coverage + rating/sentiment moves */}
         {brief.text && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
+
+        {/* NeoBase composite sentiment index — our own score, week-over-week */}
+        {sentiment && <SentimentIndexCard data={sentiment} />}
 
         {/* HERO — cross-platform ratings, the differentiator */}
         {platforms.length > 0 && (

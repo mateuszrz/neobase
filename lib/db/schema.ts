@@ -406,6 +406,33 @@ export const blogPosts = pgTable(
   ],
 );
 
+// ─── Composite sentiment index ──────────────────────────────────────────────
+// Our own weekly sentiment score per fintech: blends review sentiment (Trustpilot
+// + app stores, from the rating histogram) with news-article sentiment (Claude-
+// derived), each weighted by its data volume (evidence-based). One row per
+// (fintech, week) — the weekly job upserts it; the profile shows the score, the
+// week-over-week change and the trend.
+export const sentimentIndex = pgTable(
+  "sentiment_index",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    week: date("week").notNull(), // reference date for the week
+    composite: numeric("composite", { precision: 5, scale: 2 }).notNull(), // 0–100
+    reviewScore: numeric("review_score", { precision: 5, scale: 2 }),
+    newsScore: numeric("news_score", { precision: 5, scale: 2 }),
+    reviewVolume: bigint("review_volume", { mode: "number" }),
+    newsVolume: integer("news_volume"),
+    reviewWeight: numeric("review_weight", { precision: 4, scale: 3 }),
+    newsWeight: numeric("news_weight", { precision: 4, scale: 3 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("sentiment_index_key").on(t.fintechId, t.week)],
+);
+
 // ─── AI weekly brief ────────────────────────────────────────────────────────
 // A short Claude-written narrative per fintech, refreshed weekly from recent news
 // + rating/sentiment moves. One current row per (fintech, kind) — the weekly job
@@ -522,4 +549,5 @@ export type SocialPost = typeof socialPosts.$inferSelect;
 export type NewsItem = typeof newsItems.$inferSelect;
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type ReportRequest = typeof reportRequests.$inferSelect;
+export type SentimentIndexRow = typeof sentimentIndex.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;
