@@ -124,21 +124,20 @@ for (const r of records) {
   if (!r.name?.trim()) continue;
   const id = (r.id?.trim() || slugify(r.name)).toLowerCase();
   const website = r.website ? withScheme(r.website) : null;
-  const values = {
-    id,
-    type: r.type === "exchange" ? "exchange" : "neobank",
-    name: r.name.trim(),
-    country: iso2(r.country),
-    website,
-    description: r.description ?? null,
-    about: r.about ?? null,
-    tags: Array.isArray(r.tags) ? r.tags : null,
-    logoSvg: normalizeLogo(r.logoUrl),
-    founded: typeof r.founded === "number" ? r.founded : null,
-    headquarters: r.headquarters ?? null,
-    socials: r.socials && typeof r.socials === "object" ? r.socials : null,
-    updatedAt: new Date(),
-  };
+
+  // Partial upsert: only the fields present in the record are written, so
+  // re-importing a minimal record never nulls out existing profile data.
+  const provided: Record<string, unknown> = { id, name: r.name.trim(), updatedAt: new Date() };
+  if (r.type !== undefined) provided.type = r.type === "exchange" ? "exchange" : "neobank";
+  if (r.country !== undefined) provided.country = iso2(r.country);
+  if (r.website !== undefined) provided.website = website;
+  if (r.description !== undefined) provided.description = r.description;
+  if (r.about !== undefined) provided.about = r.about;
+  if (r.tags !== undefined) provided.tags = Array.isArray(r.tags) ? r.tags : null;
+  if (r.logoUrl !== undefined) provided.logoSvg = normalizeLogo(r.logoUrl);
+  if (r.founded !== undefined) provided.founded = typeof r.founded === "number" ? r.founded : null;
+  if (r.headquarters !== undefined) provided.headquarters = r.headquarters;
+  if (r.socials !== undefined) provided.socials = r.socials && typeof r.socials === "object" ? r.socials : null;
 
   // Which collection sources to create for this fintech.
   const trustpilot = r.trustpilot?.trim() || regDomain(website);
@@ -162,8 +161,8 @@ for (const r of records) {
 
   await db
     .insert(fintechs)
-    .values(values)
-    .onConflictDoUpdate({ target: fintechs.id, set: values });
+    .values(provided as typeof fintechs.$inferInsert)
+    .onConflictDoUpdate({ target: fintechs.id, set: provided });
   upserted++;
 
   for (const [kind, ref] of srcs) {
