@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { isAuthorizedCron } from "@/lib/http";
-import { ingestNews, isDataForSeoLive } from "@/lib/news/dataforseo";
+import { ingestNews, isDataForSeoLive, newsKeyword } from "@/lib/news/dataforseo";
 import { classifyNews } from "@/lib/news/sentiment";
 
 export const runtime = "nodejs";
@@ -28,14 +28,14 @@ export async function GET(req: Request) {
 
   // Stalest first: fintechs with no news yet, then the oldest-collected.
   const rows = await db.execute(sql`
-    SELECT f.id, f.name
+    SELECT f.id, f.name, f.type
     FROM fintechs f
     LEFT JOIN LATERAL (
       SELECT max(created_at) AS last FROM news_items n WHERE n.fintech_id = f.id
     ) m ON true
     ORDER BY m.last ASC NULLS FIRST
   `);
-  const fintechs = rows.rows as { id: string; name: string }[];
+  const fintechs = rows.rows as { id: string; name: string; type: string | null }[];
 
   let next = 0;
   let collected = 0;
@@ -48,7 +48,7 @@ export async function GET(req: Request) {
       if (i >= fintechs.length) return;
       const f = fintechs[i];
       try {
-        itemsUpserted += await ingestNews(f.id, f.name, "ZZ");
+        itemsUpserted += await ingestNews(f.id, newsKeyword(f.id, f.name, f.type), "ZZ");
         collected++;
         // Derive sentiment for the just-ingested (and any older un-scored) items.
         sentimentSet += await classifyNews(f.id).catch(() => 0);

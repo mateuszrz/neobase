@@ -78,6 +78,28 @@ const LOCATION_CODE: Record<string, number> = { ZZ: 2840, US: 2840, GB: 2826 };
 const locationFor = (country: string): number => LOCATION_CODE[country.toUpperCase()] ?? 2840;
 
 /**
+ * Build the Google-News query for a brand. Many brand names are common words
+ * (Wise, Chime, Current, Curve, Gemini, Jupiter…) that collide with unrelated
+ * coverage — a bare "Wise" returns obituaries and sports, "Gemini" returns
+ * Google's AI model. Biasing the query toward the company's sector fixes this
+ * with no regression on unambiguous brands (measured: "Revolut fintech" is even
+ * cleaner than "Revolut"). Exchanges get "crypto", everything else "fintech".
+ * Per-brand overrides (keyed by fintech id) win when a sector word isn't enough.
+ */
+const NEWS_QUERY_OVERRIDES: Record<string, string> = {
+  // Extreme collisions the sector word alone can't resolve — verified on live SERPs.
+  gemini: "Gemini crypto exchange", // vs Google's Gemini AI model
+  cheese: "Cheese neobank", // vs dairy / Bega Cheese / mac and cheese
+};
+
+export function newsKeyword(id: string, name: string, type?: string | null): string {
+  const override = NEWS_QUERY_OVERRIDES[id];
+  if (override) return override;
+  const sector = type === "exchange" ? "crypto" : "fintech";
+  return `${name} ${sector}`;
+}
+
+/**
  * Fetch + upsert Google News for a brand query in one market.
  * `country` is the ISO2 market (ZZ → a global/default query).
  */
