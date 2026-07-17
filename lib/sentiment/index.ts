@@ -27,6 +27,18 @@ const NEWS_WINDOW_DAYS = 30;
 const MENTION_WINDOW_DAYS = 30;
 const REVIEW_KINDS = ["trustpilot", "google_play", "app_store"] as const;
 
+// Importance factors — scale each source's evidence BEFORE normalising, so reviews
+// (the anchor) dominate and news/mentions carry deliberately lower weight.
+const REVIEW_FACTOR = 1;
+const NEWS_FACTOR = 0.5;
+const MENTION_FACTOR = 0.35;
+const TREND_FACTOR = 0.6; // week-over-week 1–2★ review-share momentum — a meaningful signal
+
+// 1–2★ trend: how sharply a week-over-week change in the bad-review share moves the
+// sub-score away from its review-score anchor. A +1pp rise ≈ −15 points on the trend
+// sub-score (≈ −4 on the composite at its weight); a falling share nudges it up.
+const TREND_K = 1500;
+
 // positive=100 / neutral=50 / negative=0 — shared by news and mention sentiment.
 const NEWS_VALUE: Record<string, number> = { positive: 100, neutral: 50, negative: 0 };
 
@@ -38,9 +50,33 @@ export interface SentimentComponents {
   newsVolume: number;
   mentionScore: number | null;
   mentionVolume: number;
+  trendScore: number | null;
   reviewWeight: number;
   newsWeight: number;
   mentionWeight: number;
+  trendWeight: number;
+}
+
+/** Summed 1–2★ share across platforms from the latest snapshot on/before a date. Null if no dist. */
+async function badReviewShareAt(fintechId: string, dateIso: string): Promise<number | null> {
+  const rows = await db.execute(sql`
+    SELECT DISTINCT ON (kind) raw->'dist' AS dist
+    FROM metric_snapshots
+    WHERE fintech_id = ${fintechId} AND country = 'ZZ'
+      AND kind IN ('trustpilot','google_play','app_store')
+      AND jsonb_typeof(raw->'dist') = 'object' AND snapshot_date <= ${dateIso}
+    ORDER BY kind, snapshot_date DESC
+  `);
+  let bad = 0;
+  let total = 0;
+  for (const r of rows.rows as any[]) {
+    const d = r.dist;
+    if (!d) continue;
+    const s = (k: string) => Number(d[k]) || 0;
+    bad += s("s1") + s("s2");
+    total += s("s1") + s("s2") + s("s3") + s("s4") + s("s5");
+  }
+  return total > 0 ? bad / total : null;
 }
 
 function num(v: unknown): number | null {
@@ -115,16 +151,36 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   }
   const mentionScore = mentionVolume > 0 ? mentionWeighted / mentionVolume : null;
 
-  // Evidence-based weights across the three sources, normalised to sum to 1.
-  const rE = reviewScore != null ? Math.min(1, reviewVolume / REVIEW_REF || (reviewDenom > 0 ? 0.15 : 0)) : 0;
-  const nE = newsScore != null ? Math.min(1, newsVolume / NEWS_REF) : 0;
-  const mE = mentionScore != null ? Math.min(1, mentionVolume / MENTION_REF) : 0;
-  const total = rE + nE + mE;
+  // 1–2★ review-share TREND: week-over-week change in the share of 1–2★ reviews.
+  // Anchored on the review score so NO movement is neutral (= reviewScore, no drag);
+  // a rising bad-review share pulls it below reviewScore (worsening), a falling share
+  // above it. Only actual week-over-week movement moves the number.
+  const badNow = await badReviewShareAt(fintechId, asOfDate);
+  const badPrev = await badReviewShareAt(fintechId, iso(new Date(asOf.getTime() - 7 * 86_400_000)));
+  let trendScore: number | null = null;
+  if (badNow != null && badPrev != null && reviewScore != null) {
+    const delta = badNow - badPrev; // positive = more 1–2★ reviews than last week
+    trendScore = Math.max(0, Math.min(100, reviewScore - delta * TREND_K));
+  }
+
+  // Evidence-based weights across the four sources, scaled by importance factors and
+  // normalised to sum to 1. Reviews anchor; news/mentions are deliberately lighter.
+  const rE = (reviewScore != null ? Math.min(1, reviewVolume / REVIEW_REF || (reviewDenom > 0 ? 0.15 : 0)) : 0) * REVIEW_FACTOR;
+  const nE = (newsScore != null ? Math.min(1, newsVolume / NEWS_REF) : 0) * NEWS_FACTOR;
+  const mE = (mentionScore != null ? Math.min(1, mentionVolume / MENTION_REF) : 0) * MENTION_FACTOR;
+  // Trend evidence rides on review volume (it's review-derived) and needs both weeks.
+  const tE = (trendScore != null ? Math.min(1, reviewVolume / REVIEW_REF || 0.5) : 0) * TREND_FACTOR;
+  const total = rE + nE + mE + tE;
   if (total === 0) return null;
   const reviewWeight = rE / total;
   const newsWeight = nE / total;
   const mentionWeight = mE / total;
-  const composite = reviewWeight * (reviewScore ?? 0) + newsWeight * (newsScore ?? 0) + mentionWeight * (mentionScore ?? 0);
+  const trendWeight = tE / total;
+  const composite =
+    reviewWeight * (reviewScore ?? 0) +
+    newsWeight * (newsScore ?? 0) +
+    mentionWeight * (mentionScore ?? 0) +
+    trendWeight * (trendScore ?? 0);
 
   return {
     composite: Math.round(composite * 100) / 100,
@@ -134,9 +190,11 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     newsVolume,
     mentionScore: mentionScore == null ? null : Math.round(mentionScore * 100) / 100,
     mentionVolume,
+    trendScore: trendScore == null ? null : Math.round(trendScore * 100) / 100,
     reviewWeight: Math.round(reviewWeight * 1000) / 1000,
     newsWeight: Math.round(newsWeight * 1000) / 1000,
     mentionWeight: Math.round(mentionWeight * 1000) / 1000,
+    trendWeight: Math.round(trendWeight * 1000) / 1000,
   };
 }
 
@@ -154,12 +212,14 @@ export async function upsertSentimentIndex(fintechId: string, week: Date = new D
       reviewScore: c.reviewScore == null ? null : String(c.reviewScore),
       newsScore: c.newsScore == null ? null : String(c.newsScore),
       mentionScore: c.mentionScore == null ? null : String(c.mentionScore),
+      trendScore: c.trendScore == null ? null : String(c.trendScore),
       reviewVolume: c.reviewVolume,
       newsVolume: c.newsVolume,
       mentionVolume: c.mentionVolume,
       reviewWeight: String(c.reviewWeight),
       newsWeight: String(c.newsWeight),
       mentionWeight: String(c.mentionWeight),
+      trendWeight: String(c.trendWeight),
     })
     .onConflictDoUpdate({
       target: [sentimentIndex.fintechId, sentimentIndex.week],
@@ -168,12 +228,14 @@ export async function upsertSentimentIndex(fintechId: string, week: Date = new D
         reviewScore: c.reviewScore == null ? null : String(c.reviewScore),
         newsScore: c.newsScore == null ? null : String(c.newsScore),
         mentionScore: c.mentionScore == null ? null : String(c.mentionScore),
+        trendScore: c.trendScore == null ? null : String(c.trendScore),
         reviewVolume: c.reviewVolume,
         newsVolume: c.newsVolume,
         mentionVolume: c.mentionVolume,
         reviewWeight: String(c.reviewWeight),
         newsWeight: String(c.newsWeight),
         mentionWeight: String(c.mentionWeight),
+        trendWeight: String(c.trendWeight),
         updatedAt: new Date(),
       },
     });
@@ -204,9 +266,11 @@ export interface SentimentIndexView {
     reviewScore: number | null;
     newsScore: number | null;
     mentionScore: number | null;
+    trendScore: number | null;
     reviewWeight: number;
     newsWeight: number;
     mentionWeight: number;
+    trendWeight: number;
     reviewVolume: number;
     newsVolume: number;
     mentionVolume: number;
@@ -236,9 +300,11 @@ export async function getSentimentIndex(fintechId: string): Promise<SentimentInd
       reviewScore: latest.reviewScore == null ? null : Number(latest.reviewScore),
       newsScore: latest.newsScore == null ? null : Number(latest.newsScore),
       mentionScore: latest.mentionScore == null ? null : Number(latest.mentionScore),
+      trendScore: latest.trendScore == null ? null : Number(latest.trendScore),
       reviewWeight: latest.reviewWeight == null ? 0 : Number(latest.reviewWeight),
       newsWeight: latest.newsWeight == null ? 0 : Number(latest.newsWeight),
       mentionWeight: latest.mentionWeight == null ? 0 : Number(latest.mentionWeight),
+      trendWeight: latest.trendWeight == null ? 0 : Number(latest.trendWeight),
       reviewVolume: latest.reviewVolume ?? 0,
       newsVolume: latest.newsVolume ?? 0,
       mentionVolume: latest.mentionVolume ?? 0,
