@@ -28,6 +28,7 @@
     "social:seed": "tsx scripts/seed-social-sources.ts",
     "social:test": "tsx scripts/social-test.ts",
     "news:test": "tsx scripts/news-test.ts",
+    "mentions:test": "tsx scripts/mentions-test.ts",
     "backfill:socialnews": "tsx scripts/backfill-social-news.ts",
     "blog:seed": "tsx scripts/seed-blog-sources.ts",
     "blog:test": "tsx scripts/blog-test.ts",

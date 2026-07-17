@@ -8,10 +8,11 @@ import { db, schema } from "@/lib/db";
 import { sampleSocialPosts, type SocialPostView } from "@/lib/social/sample";
 import { sampleNews, type NewsItemView, type NewsSentiment } from "@/lib/news/sample";
 import { sampleBlogPosts, type BlogPostView } from "@/lib/blog/sample";
+import { sampleMentions, type MentionView } from "@/lib/mentions/sample";
 import { gatherContext, getStoredSummary } from "@/lib/summary/generate";
 import { composeBrief } from "@/lib/summary/compose";
 
-const { fintechs, metricSnapshots, reviews, socialPosts, newsItems, blogPosts } = schema;
+const { fintechs, metricSnapshots, reviews, socialPosts, newsItems, blogPosts, mentions } = schema;
 
 export interface FintechListItem {
   id: string;
@@ -401,6 +402,47 @@ export async function getBlogPosts(
     };
   }
   return { posts: sampleBlogPosts(fintechId, name, limit), isSample: true };
+}
+
+/**
+ * Third-party mentions of the brand across X / LinkedIn / Facebook. Real search-
+ * ingested rows if any exist, otherwise a deterministic labelled SAMPLE.
+ */
+export async function getMentions(
+  fintechId: string,
+  name: string,
+  limit = 5,
+): Promise<{ items: MentionView[]; isSample: boolean }> {
+  const rows = await db
+    .select({
+      network: mentions.network,
+      authorName: mentions.authorName,
+      authorHandle: mentions.authorHandle,
+      text: mentions.text,
+      postedAt: mentions.postedAt,
+      sentiment: mentions.sentiment,
+      url: mentions.url,
+    })
+    .from(mentions)
+    .where(eq(mentions.fintechId, fintechId))
+    .orderBy(desc(mentions.postedAt))
+    .limit(limit);
+
+  if (rows.length) {
+    return {
+      isSample: false,
+      items: rows.map((r) => ({
+        network: (r.network === "linkedin" || r.network === "facebook" ? r.network : "x") as MentionView["network"],
+        authorName: r.authorName ?? "Someone",
+        authorHandle: r.authorHandle,
+        text: r.text ?? "",
+        postedAt: r.postedAt ? new Date(r.postedAt).toISOString() : new Date().toISOString(),
+        sentiment: (["positive", "neutral", "negative"].includes(r.sentiment ?? "") ? r.sentiment : "neutral") as MentionView["sentiment"],
+        url: r.url,
+      })),
+    };
+  }
+  return { items: sampleMentions(fintechId, name, limit), isSample: true };
 }
 
 export interface CountryRow {

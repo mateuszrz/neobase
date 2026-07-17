@@ -406,6 +406,38 @@ export const blogPosts = pgTable(
   ],
 );
 
+// Third-party MENTIONS — public posts by OTHER people about the brand, found by
+// searching each network for the brand (name / @handle). Distinct from social_posts
+// (the brand's own posts): here the author is a third party. Public social-listening
+// content, like news. Collected via search actors (X / LinkedIn / Facebook); the
+// profile shows a render-time sample until the live search runs.
+export const mentions = pgTable(
+  "mentions",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    network: text("network").notNull(), // x | linkedin | facebook
+    externalId: text("external_id").notNull(),
+    url: text("url"),
+    authorName: text("author_name"),
+    authorHandle: text("author_handle"),
+    postedAt: timestamp("posted_at", { withTimezone: true }),
+    text: text("text"),
+    likes: integer("likes"),
+    comments: integer("comments"),
+    shares: integer("shares"),
+    sentiment: text("sentiment"), // positive | neutral | negative toward the brand (derived)
+    raw: jsonb("raw"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("mentions_natural_key").on(t.fintechId, t.network, t.externalId),
+    index("mentions_feed_idx").on(t.fintechId, t.postedAt),
+  ],
+);
+
 // ─── Composite sentiment index ──────────────────────────────────────────────
 // Our own weekly sentiment score per fintech: blends review sentiment (Trustpilot
 // + app stores, from the rating histogram) with news-article sentiment (Claude-

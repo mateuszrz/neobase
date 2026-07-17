@@ -12,7 +12,7 @@ import {
   getPlatformSentimentSeries,
   getSocialPosts,
   getNews,
-  getBlogPosts,
+  getMentions,
   getAiSummary,
 } from "@/lib/queries";
 import {
@@ -23,7 +23,7 @@ import {
   AiBrief,
   SocialFeed,
   NewsList,
-  BlogList,
+  MentionsList,
   MiniStat,
   fmt,
   fmtMoney,
@@ -44,7 +44,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const ft = await getFintech(slug);
   if (!ft) notFound();
 
-  const [series, extras, platforms, distData, platformSent, social, news, blog, brief] = await Promise.all([
+  const [series, extras, platforms, distData, platformSent, social, news, mentions, brief] = await Promise.all([
     getSeries(slug),
     getProfileExtras(slug),
     getPlatformRatings(slug),
@@ -52,7 +52,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
     getPlatformSentimentSeries(slug),
     getSocialPosts(slug, ft.name),
     getNews(slug, ft.name),
-    getBlogPosts(slug, ft.name),
+    getMentions(slug, ft.name),
     getAiSummary(slug, ft.name),
   ]);
   const sentiment = await getSentimentIndex(slug);
@@ -193,7 +193,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {/* Public content signals — news / social / blog, two-up on wide screens.
             Each is sample-first until the live source is enabled. */}
-        {(news.items.length > 0 || social.posts.length > 0 || blog.posts.length > 0) && (
+        {(news.items.length > 0 || social.posts.length > 0 || mentions.items.length > 0) && (
           <div className="grid grid-2" style={{ marginTop: 20, alignItems: "start" }}>
             {news.items.length > 0 && (
               <div className="card">
@@ -223,17 +223,17 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
               </div>
             )}
 
-            {blog.posts.length > 0 && (
+            {mentions.items.length > 0 && (
               <div className="card">
                 <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-                  <h2 className="subheading">From the blog</h2>
-                  {blog.isSample ? (
-                    <span className="pill pill-neutral" title="Preview data — live blog feed coming soon">Sample</span>
+                  <h2 className="subheading">What people are saying</h2>
+                  {mentions.isSample ? (
+                    <span className="pill pill-neutral" title="Preview data — live mentions feed coming soon">Sample</span>
                   ) : (
-                    <span className="muted" style={{ fontSize: 12 }}>company posts</span>
+                    <span className="muted" style={{ fontSize: 12 }}>mentions on X, LinkedIn &amp; Facebook</span>
                   )}
                 </div>
-                <BlogList items={blog.posts} name={ft.name} logo={ft.logoSvg} />
+                <MentionsList items={mentions.items} />
               </div>
             )}
           </div>
