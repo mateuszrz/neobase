@@ -63,13 +63,14 @@ export function mentionQuery(name: string, network: MentionNetwork, handle: stri
   return `"${name}"`;
 }
 
-/** Actor input — shape is actor-specific, so branch per network. Verify against the
- *  chosen actor when going live (the field names below are the common defaults). */
-export function searchInput(network: MentionNetwork, query: string, maxItems = 12): Record<string, unknown> {
-  if (network === "x") return { searchTerms: [query], maxItems, sort: "Latest", tweetLanguage: "en" };
-  if (network === "linkedin") return { keywords: [query], maxPosts: maxItems, postedLimit: "past-month" };
-  // facebook search
-  return { searchQueries: [query], maxPosts: maxItems, proxyConfiguration: { useApifyProxy: true, apifyProxyGroups: ["RESIDENTIAL"] } };
+/** Actor input, branched per network — matches the shipped actors (verified 2026-07-17):
+ *  X apidojo/tweet-scraper, LinkedIn harvestapi/linkedin-post-search, Facebook
+ *  scrapeforge/facebook-search-posts. Revisit if you swap actors. */
+export function searchInput(network: MentionNetwork, query: string, maxItems = 25): Record<string, unknown> {
+  if (network === "x") return { searchTerms: [query], maxItems: Math.max(maxItems, 50), sort: "Latest", tweetLanguage: "en" };
+  if (network === "linkedin") return { searchQueries: [query], maxPosts: maxItems, postedLimit: "month", sortBy: "date" };
+  // facebook: scrapeforge/facebook-search-posts — single query string, post search
+  return { query, search_type: "posts", max_results: maxItems };
 }
 
 export interface NormalizedMention {
