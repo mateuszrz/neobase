@@ -1,8 +1,9 @@
 /**
- * Relevance gate for third-party mentions. Brand-name search is noisy — Reddit
- * matches "Revolut" against "revolution", LinkedIn surfaces tangential hiring
- * posts, common-word brands (Wise/Curve) pull unrelated chatter. A batched Haiku
- * call keeps only posts genuinely ABOUT the brand.
+ * Relevance + quality gate for third-party mentions. Brand-name search is noisy —
+ * Reddit matches "Revolut" against "revolution", common-word brands (Wise/Curve)
+ * pull unrelated chatter, and social surfaces are full of referral/affiliate spam.
+ * A batched Haiku call keeps only posts genuinely ABOUT the brand AND substantive
+ * (informative/opinion), dropping promotional/referral junk.
  *
  * Fail-open: without ANTHROPIC_API_KEY (or on error) everything passes, so a
  * missing key never silently drops real mentions.
@@ -12,10 +13,15 @@ import { anthropic, isClaudeLive } from "@/lib/anthropic";
 import { env } from "@/lib/env";
 
 const SYSTEM =
-  "You filter social posts for a brand monitor. For each numbered post, decide whether it is genuinely " +
-  "ABOUT the named company (a mention, review, question, complaint, or news about it) — NOT a coincidental " +
-  "word match (e.g. 'Revolut' vs 'revolution'), an unrelated topic, or spam. Respond with ONLY a JSON array " +
-  "of booleans, one per post in order: true = about the company, false = not.";
+  "You filter social posts for a brand monitor. Return ONLY posts that are BOTH (a) genuinely ABOUT the " +
+  "named company — a real opinion, experience, review, complaint, question, discussion, or news about it — " +
+  "and (b) substantive/informative.\n" +
+  "REJECT (false): coincidental word matches (e.g. 'Revolut' vs 'revolution'), unrelated topics, and " +
+  "PROMOTIONAL / SPAM / TRANSACTIONAL posts — referral or invite links ('get £100 using my link', 'my " +
+  "referral code'), affiliate or giveaway promos, borrow/lending requests (e.g. 'REQ €40 REPAY €65'), " +
+  "for-sale / marketplace / trade listings that merely accept the brand as a payment method, and pure " +
+  "self-promotion.\n" +
+  "Respond with ONLY a JSON array of booleans, one per numbered post in order: true = keep, false = drop.";
 
 /** Returns a keep-mask aligned to `texts`. All true if Claude is unavailable or errors. */
 export async function judgeRelevant(brand: string, texts: string[]): Promise<boolean[]> {
