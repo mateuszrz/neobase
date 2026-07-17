@@ -615,7 +615,13 @@ export function SocialFeed({
               </span>
               <span className="muted" style={{ fontSize: 12 }}>· {timeAgo(p.postedAt)}</span>
             </div>
-            <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>{p.text}</p>
+            <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>
+              {p.url ? (
+                <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{p.text}</a>
+              ) : (
+                p.text
+              )}
+            </p>
             <div className="row muted" style={{ gap: 18, fontSize: 12 }}>
               <span>♡ {fmt(p.likes)}</span>
               <span>💬 {fmt(p.comments)}</span>
