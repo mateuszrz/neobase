@@ -31,10 +31,22 @@ export const isSocialKind = (kind: string): boolean => kind in SOCIAL_KINDS;
 export const networkOf = (kind: string): SocialNetwork | null => SOCIAL_KINDS[kind] ?? null;
 export const kindFor = (network: SocialNetwork): string => `social_${network}`;
 
+/** Coerce a scalar to a count. Arrays/objects (e.g. LinkedIn's top-level `reactions: []`,
+ *  which `Number()` would silently turn into 0) are rejected so they don't mask the real
+ *  nested `engagement.*` counts. */
 function num(v: unknown): number | null {
-  if (v == null) return null;
+  if (v == null || typeof v === "object") return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
+}
+
+/** First value in the list that coerces to a real count (skips arrays/objects/NaN). */
+function firstNum(...vals: unknown[]): number | null {
+  for (const v of vals) {
+    const n = num(v);
+    if (n != null) return n;
+  }
+  return null;
 }
 
 export function actorFor(network: SocialNetwork): string {
@@ -72,18 +84,25 @@ export interface NormalizedPost {
 }
 
 export function normalizeSocialPost(item: Record<string, any>, i: number): NormalizedPost {
+  // Some actors (harvestapi LinkedIn) nest engagement counts under `engagement` and
+  // return the post date as an object `{date, timestamp, …}` rather than a string.
+  const eng = item.engagement && typeof item.engagement === "object" ? item.engagement : {};
   const text = item.text ?? item.content ?? item.postText ?? item.message ?? null;
-  const url = item.url ?? item.postUrl ?? item.link ?? null;
-  const dateStr = item.date ?? item.postedAt ?? item.time ?? item.timestamp ?? null;
-  const posted = dateStr ? new Date(dateStr) : null;
+  const url = item.url ?? item.postUrl ?? item.link ?? item.linkedinUrl ?? item.shareLinkedinUrl ?? item.permalink ?? null;
+  const rawDate =
+    item.date ?? item.time ?? item.timestamp ?? item.publishedAt ??
+    (item.postedAt && typeof item.postedAt === "object" ? item.postedAt.date ?? item.postedAt.timestamp : item.postedAt) ??
+    null;
+  const posted = rawDate != null ? new Date(rawDate) : null;
   return {
-    externalId: String(item.id ?? item.postId ?? item.urn ?? url ?? `idx-${i}`),
+    externalId: String(item.id ?? item.postId ?? item.urn ?? item.shareUrn ?? url ?? `idx-${i}`),
     url: typeof url === "string" ? url : null,
     postedAt: posted && !Number.isNaN(posted.getTime()) ? posted : null,
     text: typeof text === "string" ? text : null,
-    likes: num(item.likes ?? item.reactions ?? item.numLikes ?? item.likesCount),
-    comments: num(item.comments ?? item.numComments ?? item.commentsCount),
-    shares: num(item.shares ?? item.reposts ?? item.numShares ?? item.sharesCount),
+    // Prefer nested engagement.* (LinkedIn); fall back to flat fields (Facebook).
+    likes: firstNum(eng.likes, eng.reactions, item.likes, item.numLikes, item.likesCount),
+    comments: firstNum(eng.comments, item.numComments, item.commentsCount, item.comments),
+    shares: firstNum(eng.shares, item.shares, item.reposts, item.numShares, item.sharesCount),
   };
 }
 
