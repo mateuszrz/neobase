@@ -613,7 +613,9 @@ export function SocialFeed({
               <span style={{ fontSize: 11, fontWeight: 600, color: NET_COLOR[p.network] ?? "var(--stone-muted)" }}>
                 {NET_LABEL[p.network] ?? p.network}
               </span>
-              <span className="muted" style={{ fontSize: 12 }}>· {timeAgo(p.postedAt)}</span>
+              <span className="muted" style={{ fontSize: 12 }}>
+                · {timeAgo(p.postedAt)} · {new Date(p.postedAt).toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" })}
+              </span>
             </div>
             <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>
               {p.url ? (
