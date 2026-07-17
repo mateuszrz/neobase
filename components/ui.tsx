@@ -619,7 +619,7 @@ export function SocialFeed({
             </div>
             <p style={{ margin: "0 0 10px", lineHeight: 1.6 }}>
               {p.url ? (
-                <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{p.text}</a>
+                <a href={p.url} className="post-link" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{p.text}</a>
               ) : (
                 p.text
               )}
@@ -688,7 +688,7 @@ export function BlogList({
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
               {p.url ? (
-                <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{p.title}</a>
+                <a href={p.url} className="post-link" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{p.title}</a>
               ) : (
                 p.title
               )}
@@ -709,10 +709,10 @@ export function AiBrief({ text, isSample, updatedAt }: { text: string; isSample:
   return (
     <div
       className="card"
-      style={{ marginTop: 24, borderLeft: "3px solid var(--cyan-signal)", background: "var(--stone-canvas)" }}
+      style={{ borderLeft: "3px solid var(--cyan-signal)", background: "var(--stone-canvas)" }}
     >
       <div className="spread" style={{ marginBottom: 10, alignItems: "center" }}>
-        <span className="eyebrow" style={{ margin: 0, color: "var(--cyan-edge)" }}>✦ AI brief</span>
+        <span className="eyebrow" style={{ margin: 0, color: "var(--cyan-edge)" }}>✦ Sentiment Overview</span>
         {isSample ? (
           <span className="pill pill-neutral" title="Preview — refreshed weekly once live">Sample</span>
         ) : (

@@ -55,7 +55,7 @@ function Component({ label, score }: { label: string; score: number | null }) {
 export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
   const { latest, deltaWoW, series } = data;
   return (
-    <div className="card" style={{ marginTop: 20, borderLeft: "3px solid var(--cyan-signal)" }}>
+    <div className="card" style={{ borderLeft: "3px solid var(--cyan-signal)" }}>
       <div className="spread" style={{ marginBottom: 14, alignItems: "baseline" }}>
         <h2 className="subheading">Sentiment index</h2>
         <span className="muted" style={{ fontSize: 12 }}>our score · updated weekly</span>

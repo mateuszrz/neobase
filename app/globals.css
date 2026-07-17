@@ -142,6 +142,17 @@ img {
   padding: 72px 0;
 }
 
+/* Quiet link: inherits colour but reveals it's clickable on hover (used for
+   social-post and news-headline links, whose text would otherwise look plain). */
+.post-link {
+  text-decoration: none;
+  cursor: pointer;
+}
+.post-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .stack-8 > * + * {
   margin-top: 8px;
 }

@@ -120,11 +120,13 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {ft.description && <p className="lead" style={{ marginTop: 20, maxWidth: 760 }}>{ft.description}</p>}
 
-        {/* AI weekly brief — synthesised from recent coverage + rating/sentiment moves */}
-        {brief.text && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
-
-        {/* NeoBase composite sentiment index — our own score, week-over-week */}
-        {sentiment && <SentimentIndexCard data={sentiment} />}
+        {/* Sentiment overview (AI narrative) + composite sentiment index, side by side */}
+        {(brief.text || sentiment) && (
+          <div className="grid grid-2" style={{ marginTop: 24, alignItems: "stretch" }}>
+            {brief.text && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
+            {sentiment && <SentimentIndexCard data={sentiment} />}
+          </div>
+        )}
 
         {/* HERO — cross-platform ratings, the differentiator */}
         {platforms.length > 0 && (
