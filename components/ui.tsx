@@ -741,6 +741,55 @@ export function MentionsList({
   );
 }
 
+/** MiCA / ESMA CASP licence status for an exchange — the EU regulatory trust signal. */
+export function MicaLicence({
+  mica,
+  name,
+}: {
+  mica: { licensed: boolean; provider: string | null; legalEntity: string | null; country: string | null; regulator: string | null; services: string[] };
+  name: string;
+}) {
+  if (mica.licensed) {
+    return (
+      <div className="card" style={{ borderLeft: "3px solid #16a34a" }}>
+        <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
+          <h2 className="subheading">MiCA licence</h2>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a" }}>✓ Licensed</span>
+        </div>
+        <p className="muted" style={{ margin: "0 0 14px", fontSize: 13, lineHeight: 1.6 }}>
+          Authorised under the EU’s MiCA regulation{mica.legalEntity ? ` (held by ${mica.legalEntity})` : ""} — regulated by{" "}
+          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{mica.regulator}</strong> in {mica.country}. Passportable across the EU/EEA.
+        </p>
+        {mica.services.length > 0 && (
+          <>
+            <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 8 }}>
+              Licensed services
+            </div>
+            <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+              {mica.services.map((s) => (
+                <span key={s} className="badge">{s}</span>
+              ))}
+            </div>
+          </>
+        )}
+        <p className="muted" style={{ margin: "14px 0 0", fontSize: 11 }}>Source: ESMA MiCA register.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="card" style={{ borderLeft: "3px solid var(--neg)" }}>
+      <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
+        <h2 className="subheading">MiCA licence</h2>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--neg)" }}>✕ Not licensed</span>
+      </div>
+      <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>
+        {name} is not listed in the EU’s ESMA MiCA register of authorised crypto-asset service providers, so it may not be permitted to serve EU/EEA customers after the MiCA transition.
+      </p>
+      <p className="muted" style={{ margin: "14px 0 0", fontSize: 11 }}>Source: ESMA MiCA register.</p>
+    </div>
+  );
+}
+
 // ─── AI weekly brief ─────────────────────────────────────────────────────────
 
 export function AiBrief({ text, isSample, updatedAt }: { text: string; isSample: boolean; updatedAt: Date | null }) {

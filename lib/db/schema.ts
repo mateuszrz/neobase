@@ -59,6 +59,8 @@ export const fintechs = pgTable(
     subsidiaries: jsonb("subsidiaries"),
     history: jsonb("history"),
     faqs: jsonb("faqs"),
+    // MiCA/ESMA CASP registry match (nullable; null = not found in the register).
+    caspProviderId: bigint("casp_provider_id", { mode: "number" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
@@ -468,6 +470,28 @@ export const sentimentIndex = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("sentiment_index_key").on(t.fintechId, t.week)],
+);
+
+// ─── MiCA / ESMA CASP registry ──────────────────────────────────────────────
+// The EU register of crypto-asset service providers licensed under MiCA (from
+// ESMA, ~280 rows). Seeded from a CSV; powers the "MiCA licence" panel on
+// exchange profiles and (later) a searchable public registry page.
+export const caspProviders = pgTable(
+  "casp_providers",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    provider: text("provider").notNull(), // brand / provider name
+    legalEntity: text("legal_entity"),
+    country: text("country").notNull(), // country of the licence
+    regulator: text("regulator").notNull(), // national competent authority (e.g. BaFin)
+    services: text("services").array(), // MiCA services (Custody, Trading platform, …)
+    website: text("website"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("casp_providers_key").on(t.provider, t.country),
+    index("casp_providers_country_idx").on(t.country),
+  ],
 );
 
 // ─── AI weekly brief ────────────────────────────────────────────────────────
