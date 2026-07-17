@@ -70,7 +70,13 @@ export function handleFrom(socials: unknown, network: SocialNetwork): string | n
  */
 export function socialInput(network: SocialNetwork, handle: string, maxPosts = 12): Record<string, unknown> {
   if (network === "linkedin") return { targetUrls: [handle], maxPosts };
-  return { startUrls: [{ url: handle }], resultsLimit: maxPosts };
+  // Facebook: Meta blocks datacenter proxies (empty datasets / not_available),
+  // so the FB actor needs residential proxy to return posts.
+  return {
+    startUrls: [{ url: handle }],
+    resultsLimit: maxPosts,
+    proxyConfiguration: { useApifyProxy: true, apifyProxyGroups: ["RESIDENTIAL"] },
+  };
 }
 
 export interface NormalizedPost {
