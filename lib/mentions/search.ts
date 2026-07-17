@@ -95,6 +95,20 @@ export interface NormalizedMention {
   shares: number | null;
 }
 
+/** Parse a date value that may be an ISO string OR a unix timestamp in seconds
+ *  (Facebook) or milliseconds. Returns null if unparseable. */
+function toDate(v: unknown): Date | null {
+  if (v == null || typeof v === "object") return null;
+  if (typeof v === "number" || /^\d{9,13}$/.test(String(v).trim())) {
+    let n = Number(v);
+    if (n < 1e12) n *= 1000; // 10-digit unix seconds → ms
+    const d = new Date(n);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(v as string);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export function normalizeMention(item: Record<string, any>, i: number): NormalizedMention {
   const author = item.author && typeof item.author === "object" ? item.author : {};
   const user = item.user && typeof item.user === "object" ? item.user : {};
@@ -102,10 +116,10 @@ export function normalizeMention(item: Record<string, any>, i: number): Normaliz
   const text = item.text ?? item.content ?? item.message ?? item.postText ?? item.full_text ?? null;
   const url = item.url ?? item.postUrl ?? item.link ?? item.tweetUrl ?? item.linkedinUrl ?? item.permalink ?? null;
   const rawDate =
-    item.createdAt ?? item.date ?? item.time ?? item.timestamp ?? item.publishedAt ?? item.postedAt ??
-    (item.postedAt && typeof item.postedAt === "object" ? item.postedAt.date ?? item.postedAt.timestamp : null) ??
+    item.createdAt ?? item.date ?? item.time ?? item.timestamp ?? item.publishedAt ??
+    (item.postedAt && typeof item.postedAt === "object" ? item.postedAt.date ?? item.postedAt.timestamp : item.postedAt) ??
     null;
-  const posted = rawDate != null && typeof rawDate !== "object" ? new Date(rawDate) : null;
+  const posted = toDate(rawDate);
   const authorName = author.name ?? author.fullName ?? user.name ?? item.authorName ?? item.userName ?? item.username ?? null;
   const authorHandle = author.userName ?? author.screen_name ?? user.username ?? item.screenName ?? item.handle ?? null;
   return {

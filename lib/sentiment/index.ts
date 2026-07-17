@@ -19,12 +19,15 @@ import { db, schema } from "@/lib/db";
 
 const { sentimentIndex } = schema;
 
-// Tunables — reference volumes for "full evidence", and the news lookback.
+// Tunables — reference volumes for "full evidence", and the trailing window.
 const REVIEW_REF = 1000; // review count that counts as full review-side evidence
 const NEWS_REF = 6; // article count that counts as full news-side evidence
+const MENTION_REF = 15; // substantive mention count that counts as full mention-side evidence
 const NEWS_WINDOW_DAYS = 30;
+const MENTION_WINDOW_DAYS = 30;
 const REVIEW_KINDS = ["trustpilot", "google_play", "app_store"] as const;
 
+// positive=100 / neutral=50 / negative=0 — shared by news and mention sentiment.
 const NEWS_VALUE: Record<string, number> = { positive: 100, neutral: 50, negative: 0 };
 
 export interface SentimentComponents {
@@ -33,8 +36,11 @@ export interface SentimentComponents {
   reviewVolume: number;
   newsScore: number | null;
   newsVolume: number;
+  mentionScore: number | null;
+  mentionVolume: number;
   reviewWeight: number;
   newsWeight: number;
+  mentionWeight: number;
 }
 
 function num(v: unknown): number | null {
@@ -90,14 +96,35 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   }
   const newsScore = newsVolume > 0 ? newsWeighted / newsVolume : null;
 
-  // Evidence-based weights.
+  // Mention side: third-party mention sentiment (toward the brand) over the window.
+  const mStart = new Date(asOf.getTime() - MENTION_WINDOW_DAYS * 86_400_000);
+  const men = await db.execute(sql`
+    SELECT sentiment, count(*)::int AS n
+    FROM mentions
+    WHERE fintech_id = ${fintechId} AND sentiment IN ('positive','neutral','negative')
+      AND coalesce(posted_at, created_at) >= ${iso(mStart)}
+      AND coalesce(posted_at, created_at) <= ${asOf.toISOString()}
+    GROUP BY sentiment
+  `);
+  let mentionWeighted = 0;
+  let mentionVolume = 0;
+  for (const r of men.rows as any[]) {
+    const n = num(r.n) ?? 0;
+    mentionWeighted += (NEWS_VALUE[r.sentiment] ?? 50) * n;
+    mentionVolume += n;
+  }
+  const mentionScore = mentionVolume > 0 ? mentionWeighted / mentionVolume : null;
+
+  // Evidence-based weights across the three sources, normalised to sum to 1.
   const rE = reviewScore != null ? Math.min(1, reviewVolume / REVIEW_REF || (reviewDenom > 0 ? 0.15 : 0)) : 0;
   const nE = newsScore != null ? Math.min(1, newsVolume / NEWS_REF) : 0;
-  const total = rE + nE;
+  const mE = mentionScore != null ? Math.min(1, mentionVolume / MENTION_REF) : 0;
+  const total = rE + nE + mE;
   if (total === 0) return null;
   const reviewWeight = rE / total;
   const newsWeight = nE / total;
-  const composite = reviewWeight * (reviewScore ?? 0) + newsWeight * (newsScore ?? 0);
+  const mentionWeight = mE / total;
+  const composite = reviewWeight * (reviewScore ?? 0) + newsWeight * (newsScore ?? 0) + mentionWeight * (mentionScore ?? 0);
 
   return {
     composite: Math.round(composite * 100) / 100,
@@ -105,8 +132,11 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     reviewVolume,
     newsScore: newsScore == null ? null : Math.round(newsScore * 100) / 100,
     newsVolume,
+    mentionScore: mentionScore == null ? null : Math.round(mentionScore * 100) / 100,
+    mentionVolume,
     reviewWeight: Math.round(reviewWeight * 1000) / 1000,
     newsWeight: Math.round(newsWeight * 1000) / 1000,
+    mentionWeight: Math.round(mentionWeight * 1000) / 1000,
   };
 }
 
@@ -123,10 +153,13 @@ export async function upsertSentimentIndex(fintechId: string, week: Date = new D
       composite: String(c.composite),
       reviewScore: c.reviewScore == null ? null : String(c.reviewScore),
       newsScore: c.newsScore == null ? null : String(c.newsScore),
+      mentionScore: c.mentionScore == null ? null : String(c.mentionScore),
       reviewVolume: c.reviewVolume,
       newsVolume: c.newsVolume,
+      mentionVolume: c.mentionVolume,
       reviewWeight: String(c.reviewWeight),
       newsWeight: String(c.newsWeight),
+      mentionWeight: String(c.mentionWeight),
     })
     .onConflictDoUpdate({
       target: [sentimentIndex.fintechId, sentimentIndex.week],
@@ -134,10 +167,13 @@ export async function upsertSentimentIndex(fintechId: string, week: Date = new D
         composite: String(c.composite),
         reviewScore: c.reviewScore == null ? null : String(c.reviewScore),
         newsScore: c.newsScore == null ? null : String(c.newsScore),
+        mentionScore: c.mentionScore == null ? null : String(c.mentionScore),
         reviewVolume: c.reviewVolume,
         newsVolume: c.newsVolume,
+        mentionVolume: c.mentionVolume,
         reviewWeight: String(c.reviewWeight),
         newsWeight: String(c.newsWeight),
+        mentionWeight: String(c.mentionWeight),
         updatedAt: new Date(),
       },
     });
@@ -167,10 +203,13 @@ export interface SentimentIndexView {
     composite: number;
     reviewScore: number | null;
     newsScore: number | null;
+    mentionScore: number | null;
     reviewWeight: number;
     newsWeight: number;
+    mentionWeight: number;
     reviewVolume: number;
     newsVolume: number;
+    mentionVolume: number;
     week: string;
   };
   deltaWoW: number | null; // composite change vs the prior stored week
@@ -196,10 +235,13 @@ export async function getSentimentIndex(fintechId: string): Promise<SentimentInd
       composite: Number(latest.composite),
       reviewScore: latest.reviewScore == null ? null : Number(latest.reviewScore),
       newsScore: latest.newsScore == null ? null : Number(latest.newsScore),
+      mentionScore: latest.mentionScore == null ? null : Number(latest.mentionScore),
       reviewWeight: latest.reviewWeight == null ? 0 : Number(latest.reviewWeight),
       newsWeight: latest.newsWeight == null ? 0 : Number(latest.newsWeight),
+      mentionWeight: latest.mentionWeight == null ? 0 : Number(latest.mentionWeight),
       reviewVolume: latest.reviewVolume ?? 0,
       newsVolume: latest.newsVolume ?? 0,
+      mentionVolume: latest.mentionVolume ?? 0,
       week: String(latest.week),
     },
     deltaWoW: prev ? Math.round((Number(latest.composite) - Number(prev.composite)) * 100) / 100 : null,

@@ -82,9 +82,10 @@ export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
         </div>
       </div>
 
-      <div className="row" style={{ gap: 24, marginTop: 18, alignItems: "flex-start" }}>
+      <div className="row" style={{ gap: 24, marginTop: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
         <Component label={`Reviews · ${new Intl.NumberFormat("en").format(latest.reviewVolume)} ratings`} score={latest.reviewScore} />
         <Component label="News" score={latest.newsScore} />
+        <Component label="Mentions" score={latest.mentionScore} />
       </div>
     </div>
   );
