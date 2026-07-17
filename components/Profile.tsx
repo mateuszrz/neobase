@@ -80,9 +80,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const hasSentTrend = sentDates.size >= 2;
 
   return (
-    <main className="section" style={{ paddingTop: 24 }}>
+    <main className="section" style={{ paddingTop: 12 }}>
       <div className="wrap">
-        <p style={{ fontSize: 13, marginBottom: 16 }}>
+        <p style={{ fontSize: 13, marginBottom: 12 }}>
           <a href={ft.type === "exchange" ? "/exchanges/" : "/neobanks/"} style={{ color: "var(--cyan-edge)" }}>
             ← {ft.type === "exchange" ? "Exchanges" : "Neobanks"}
           </a>
