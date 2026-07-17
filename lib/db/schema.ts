@@ -455,10 +455,13 @@ export const sentimentIndex = pgTable(
     composite: numeric("composite", { precision: 5, scale: 2 }).notNull(), // 0–100
     reviewScore: numeric("review_score", { precision: 5, scale: 2 }),
     newsScore: numeric("news_score", { precision: 5, scale: 2 }),
+    mentionScore: numeric("mention_score", { precision: 5, scale: 2 }),
     reviewVolume: bigint("review_volume", { mode: "number" }),
     newsVolume: integer("news_volume"),
+    mentionVolume: integer("mention_volume"),
     reviewWeight: numeric("review_weight", { precision: 4, scale: 3 }),
     newsWeight: numeric("news_weight", { precision: 4, scale: 3 }),
+    mentionWeight: numeric("mention_weight", { precision: 4, scale: 3 }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
