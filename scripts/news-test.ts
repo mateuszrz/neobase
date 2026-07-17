@@ -10,15 +10,15 @@
 import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
-import { ingestNews } from "../lib/news/dataforseo.ts";
+import { ingestNews, newsKeyword } from "../lib/news/dataforseo.ts";
 
 const fintechId = process.argv[2] ?? "revolut";
 let brandQuery = process.argv[3];
 const country = process.argv[4] ?? "ZZ";
 
 if (!brandQuery) {
-  const [ft] = await db.select({ name: schema.fintechs.name }).from(schema.fintechs).where(eq(schema.fintechs.id, fintechId)).limit(1);
-  brandQuery = ft?.name ?? fintechId;
+  const [ft] = await db.select({ name: schema.fintechs.name, type: schema.fintechs.type }).from(schema.fintechs).where(eq(schema.fintechs.id, fintechId)).limit(1);
+  brandQuery = ft ? newsKeyword(fintechId, ft.name, ft.type) : fintechId;
 }
 
 const n = await ingestNews(fintechId, brandQuery, country);

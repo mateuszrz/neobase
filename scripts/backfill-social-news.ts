@@ -15,15 +15,15 @@ import "dotenv/config";
 import { isNotNull } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
 import { handleFrom, ingestSocial } from "../lib/social/apify.ts";
-import { ingestNews, isDataForSeoLive } from "../lib/news/dataforseo.ts";
+import { ingestNews, isDataForSeoLive, newsKeyword } from "../lib/news/dataforseo.ts";
 import { classifyNews } from "../lib/news/sentiment.ts";
 
 const CONCURRENCY = 4;
 
-type Row = { id: string; name: string; socials: unknown };
+type Row = { id: string; name: string; type: string | null; socials: unknown };
 
 const rows: Row[] = await db
-  .select({ id: schema.fintechs.id, name: schema.fintechs.name, socials: schema.fintechs.socials })
+  .select({ id: schema.fintechs.id, name: schema.fintechs.name, type: schema.fintechs.type, socials: schema.fintechs.socials })
   .from(schema.fintechs)
   .where(isNotNull(schema.fintechs.socials));
 
@@ -48,7 +48,7 @@ async function one(r: Row) {
   }
   if (isDataForSeoLive()) {
     try {
-      const n = await ingestNews(r.id, r.name, "ZZ");
+      const n = await ingestNews(r.id, newsKeyword(r.id, r.name, r.type), "ZZ");
       totals.news += n;
       const s = await classifyNews(r.id);
       totals.sentiment += s;
