@@ -44,9 +44,9 @@ export const env = {
   DATAFORSEO_LOGIN: process.env.DATAFORSEO_LOGIN ?? "",
   DATAFORSEO_PASSWORD: process.env.DATAFORSEO_PASSWORD ?? "",
 
-  // Search actors for third-party brand MENTIONS (empty = sample-only).
+  // Search actors for third-party brand MENTIONS (empty = sample-only). Reddit
+  // mentions use a free RSS feed — no actor needed.
   APIFY_X_SEARCH_ACTOR: process.env.APIFY_X_SEARCH_ACTOR ?? "",
-  APIFY_LINKEDIN_SEARCH_ACTOR: process.env.APIFY_LINKEDIN_SEARCH_ACTOR ?? "",
   APIFY_FACEBOOK_SEARCH_ACTOR: process.env.APIFY_FACEBOOK_SEARCH_ACTOR ?? "",
 
   PADDLE_API_KEY: process.env.PADDLE_API_KEY ?? "",

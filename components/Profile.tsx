@@ -230,7 +230,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                   {mentions.isSample ? (
                     <span className="pill pill-neutral" title="Preview data — live mentions feed coming soon">Sample</span>
                   ) : (
-                    <span className="muted" style={{ fontSize: 12 }}>mentions on X, LinkedIn &amp; Facebook</span>
+                    <span className="muted" style={{ fontSize: 12 }}>mentions on X, Reddit &amp; Facebook</span>
                   )}
                 </div>
                 <MentionsList items={mentions.items} />

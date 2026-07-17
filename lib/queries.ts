@@ -432,7 +432,7 @@ export async function getMentions(
     return {
       isSample: false,
       items: rows.map((r) => ({
-        network: (r.network === "linkedin" || r.network === "facebook" ? r.network : "x") as MentionView["network"],
+        network: (r.network === "reddit" || r.network === "facebook" ? r.network : "x") as MentionView["network"],
         authorName: r.authorName ?? "Someone",
         authorHandle: r.authorHandle,
         text: r.text ?? "",

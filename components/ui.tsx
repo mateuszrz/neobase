@@ -564,8 +564,8 @@ function timeAgo(iso: string): string {
   return `${Math.round(days / 30)}mo ago`;
 }
 
-const NET_LABEL: Record<string, string> = { linkedin: "LinkedIn", facebook: "Facebook", x: "X" };
-const NET_COLOR: Record<string, string> = { linkedin: "#0a66c2", facebook: "#1877f2", x: "var(--ink-black)" };
+const NET_LABEL: Record<string, string> = { linkedin: "LinkedIn", facebook: "Facebook", x: "X", reddit: "Reddit" };
+const NET_COLOR: Record<string, string> = { linkedin: "#0a66c2", facebook: "#1877f2", x: "var(--ink-black)", reddit: "#ff4500" };
 
 /** Publisher favicon via Google's favicon service (falls back to a globe). */
 export function faviconUrl(domain: string, size = 64): string {
