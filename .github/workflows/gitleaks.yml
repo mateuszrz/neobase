@@ -1,0 +1,22 @@
+name: gitleaks
+
+# Skanowanie sekretów (klucze API, tokeny, hasła) przy każdym push i PR.
+# gitleaks-action jest darmowy dla kont osobistych i repozytoriów publicznych.
+# (Dla organizacji wymagany byłby sekret GITLEAKS_LICENSE.)
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # pełna historia — wykrywa też sekrety z przeszłych commitów
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
