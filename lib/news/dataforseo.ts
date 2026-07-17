@@ -86,7 +86,11 @@ const locationFor = (country: string): number => LOCATION_CODE[country.toUpperCa
  * cleaner than "Revolut"). Exchanges get "crypto", everything else "fintech".
  * Per-brand overrides (keyed by fintech id) win when a sector word isn't enough.
  */
-const NEWS_QUERY_OVERRIDES: Record<string, string> = {};
+const NEWS_QUERY_OVERRIDES: Record<string, string> = {
+  // Extreme collisions the sector word alone can't resolve — verified on live SERPs.
+  gemini: "Gemini crypto exchange", // vs Google's Gemini AI model
+  cheese: "Cheese neobank", // vs dairy / Bega Cheese / mac and cheese
+};
 
 export function newsKeyword(id: string, name: string, type?: string | null): string {
   const override = NEWS_QUERY_OVERRIDES[id];
