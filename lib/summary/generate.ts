@@ -55,6 +55,15 @@ export async function gatherContext(fintechId: string): Promise<BriefContext> {
     sentimentDir = d > 1.5 ? "improving" : d < -1.5 ? "softening" : "steady";
   }
 
+  // NeoBase composite sentiment index — latest week + prior week for the WoW move.
+  const si = await db.execute(sql`
+    SELECT composite FROM sentiment_index WHERE fintech_id = ${fintechId} ORDER BY week DESC LIMIT 2
+  `);
+  const siRows = si.rows as any[];
+  const composite = num(siRows[0]?.composite);
+  const prevComposite = num(siRows[1]?.composite);
+  const compositeDeltaWoW = composite != null && prevComposite != null ? Math.round((composite - prevComposite) * 10) / 10 : null;
+
   // Recent news (real rows only).
   const news = await db
     .select({ title: newsItems.title, sentiment: newsItems.sentiment })
@@ -68,14 +77,36 @@ export async function gatherContext(fintechId: string): Promise<BriefContext> {
     ratingCount,
     platformCount: rows.length,
     sentimentDir,
+    composite,
+    compositeDeltaWoW,
     news: news.map((n) => ({ title: n.title, sentiment: n.sentiment ?? "neutral" })),
   };
 }
 
 const SYSTEM =
-  "You write a neutral, factual 2–3 sentence weekly brief on a fintech for a competitive-intelligence " +
-  "directory. Ground every claim in the supplied data (ratings, sentiment direction, recent headlines). " +
-  "No hype, no advice, no invented facts. Plain prose, under 60 words.";
+  "You write the 'Sentiment Overview' for a fintech on a competitive-intelligence directory: a sharp, " +
+  "specific read of how the brand is perceived right now. Synthesise the supplied signals into an insight " +
+  "rather than listing them — weave together the cross-platform review standing and its recent direction, " +
+  "the NeoBase sentiment index (0–100) and its week-over-week move, and the tone and concrete themes of " +
+  "recent headlines. Name specific drivers (a headline theme, a rating level, a shift) and flag any " +
+  "divergence between customer and media sentiment. Neutral analyst voice: no hype, no advice, no invented " +
+  "facts, every claim grounded in the supplied data. 2–3 sentences, 45–75 words. Do not repeat the brand " +
+  "name more than once.";
+
+/** Render the context as a readable signal block (beats a raw JSON dump). */
+function briefData(ctx: BriefContext): string {
+  const lines: string[] = [];
+  if (ctx.avgRating != null)
+    lines.push(`Review rating: ${ctx.avgRating.toFixed(1)}/5 across ${ctx.platformCount} platform(s) from ${new Intl.NumberFormat("en").format(ctx.ratingCount)} ratings.`);
+  if (ctx.sentimentDir) lines.push(`Review-sentiment direction (recent weeks): ${ctx.sentimentDir}.`);
+  if (ctx.composite != null)
+    lines.push(`NeoBase sentiment index: ${ctx.composite.toFixed(0)}/100${ctx.compositeDeltaWoW != null ? ` (${ctx.compositeDeltaWoW >= 0 ? "+" : ""}${ctx.compositeDeltaWoW.toFixed(1)} vs last week)` : ""}.`);
+  if (ctx.news.length) {
+    lines.push("Recent headlines (sentiment toward the brand in brackets):");
+    for (const n of ctx.news) lines.push(`  - [${n.sentiment}] ${n.title}`);
+  }
+  return lines.length ? lines.join("\n") : "No public signals available yet.";
+}
 
 async function writeWithClaude(name: string, ctx: BriefContext): Promise<string> {
   // Haiku by default; no `effort` (it 400s on Haiku); short hard timeout + no
@@ -85,7 +116,7 @@ async function writeWithClaude(name: string, ctx: BriefContext): Promise<string>
       model: env.ANTHROPIC_BRIEF_MODEL,
       max_tokens: 300,
       system: SYSTEM,
-      messages: [{ role: "user", content: `Fintech: ${name}\nData:\n${JSON.stringify(ctx, null, 2)}` }],
+      messages: [{ role: "user", content: `Fintech: ${name}\n\n${briefData(ctx)}` }],
     },
     { timeout: 20_000, maxRetries: 0 },
   );

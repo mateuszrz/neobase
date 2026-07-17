@@ -13,6 +13,8 @@ export interface BriefContext {
   ratingCount: number;
   platformCount: number;
   sentimentDir: SentimentDir | null;
+  composite: number | null; // NeoBase sentiment index 0–100 (latest week)
+  compositeDeltaWoW: number | null; // week-over-week move in the index
   news: { title: string; sentiment: string }[];
 }
 
@@ -33,7 +35,14 @@ export function composeBrief(name: string, ctx: BriefContext): string {
     parts.push(`${name} is still building its public rating profile.`);
   }
 
-  if (ctx.sentimentDir) parts.push(`${cap(DIR_PHRASE[ctx.sentimentDir])}.`);
+  if (ctx.composite != null) {
+    const d = ctx.compositeDeltaWoW;
+    const move =
+      d == null ? "" : d >= 0.5 ? `, up ${d.toFixed(1)} week over week` : d <= -0.5 ? `, down ${Math.abs(d).toFixed(1)} week over week` : ", little changed week over week";
+    parts.push(`Its NeoBase sentiment index reads ${ctx.composite.toFixed(0)}/100${move}.`);
+  } else if (ctx.sentimentDir) {
+    parts.push(`${cap(DIR_PHRASE[ctx.sentimentDir])}.`);
+  }
 
   if (ctx.news.length) {
     const pos = ctx.news.filter((n) => n.sentiment === "positive").length;
