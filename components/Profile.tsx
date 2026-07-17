@@ -151,7 +151,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
               <div className="card">
                 <div className="spread" style={{ marginBottom: 14 }}>
                   <h2 className="subheading">Rating distribution</h2>
-                  <span className="muted" style={{ fontSize: 12 }}>{DIST_SOURCE_LABEL[distData.source] ?? distData.source}</span>
+                  <span className="muted" style={{ fontSize: 12 }}>
+                    {distData.sources.length === 3
+                      ? "All platforms"
+                      : distData.sources.map((s) => DIST_SOURCE_LABEL[s] ?? s).join(" · ")}
+                  </span>
                 </div>
                 <RatingDistribution dist={distData.dist} />
               </div>

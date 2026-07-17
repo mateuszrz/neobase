@@ -213,32 +213,41 @@ export async function getPlatformRatings(fintechId: string): Promise<PlatformRat
 
 export interface RatingDist {
   dist: { s1: number; s2: number; s3: number; s4: number; s5: number };
-  source: string; // trustpilot | google_play | app_store
+  sources: string[]; // platforms summed into the distribution (trustpilot | google_play | app_store)
 }
 
 /**
- * Best available 1–5★ distribution from a recent snapshot, preferring Trustpilot,
- * then Google Play, then App Store — so mobile-only fintechs still get a
- * distribution even without a Trustpilot presence.
+ * Aggregate 1–5★ distribution across ALL platforms: the latest snapshot per
+ * source (Trustpilot, Google Play, App Store) summed star-by-star, so the chart
+ * reflects total review volume rather than a single store.
  */
 export async function getRatingDistribution(fintechId: string): Promise<RatingDist | null> {
   const rows = await db.execute(sql`
-    SELECT kind, raw->'dist' AS dist
+    SELECT DISTINCT ON (kind) kind, raw->'dist' AS dist
     FROM metric_snapshots
     WHERE fintech_id = ${fintechId} AND country = 'ZZ'
+      AND kind IN ('trustpilot','google_play','app_store')
       AND jsonb_typeof(raw->'dist') = 'object'
       AND snapshot_date >= current_date - interval '14 days'
-    ORDER BY (CASE kind WHEN 'trustpilot' THEN 0 WHEN 'google_play' THEN 1 WHEN 'app_store' THEN 2 ELSE 3 END),
-             snapshot_date DESC
-    LIMIT 1
+    ORDER BY kind, snapshot_date DESC
   `);
-  const r = (rows.rows as any[])[0];
-  if (!r?.dist) return null;
-  const d = r.dist;
-  return {
-    source: r.kind,
-    dist: { s1: Number(d.s1) || 0, s2: Number(d.s2) || 0, s3: Number(d.s3) || 0, s4: Number(d.s4) || 0, s5: Number(d.s5) || 0 },
-  };
+  const list = rows.rows as any[];
+  const dist = { s1: 0, s2: 0, s3: 0, s4: 0, s5: 0 };
+  const sources: string[] = [];
+  const order = ["trustpilot", "google_play", "app_store"];
+  for (const r of list) {
+    const d = r.dist;
+    if (!d) continue;
+    dist.s1 += Number(d.s1) || 0;
+    dist.s2 += Number(d.s2) || 0;
+    dist.s3 += Number(d.s3) || 0;
+    dist.s4 += Number(d.s4) || 0;
+    dist.s5 += Number(d.s5) || 0;
+    sources.push(r.kind);
+  }
+  if (!sources.length) return null;
+  sources.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  return { dist, sources };
 }
 
 export async function getRecentReviews(fintechId: string, limit = 10) {

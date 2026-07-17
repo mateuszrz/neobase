@@ -84,7 +84,7 @@ export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
 
       <div className="row" style={{ gap: 24, marginTop: 18, alignItems: "flex-start" }}>
         <Component label={`Reviews · ${new Intl.NumberFormat("en").format(latest.reviewVolume)} ratings`} score={latest.reviewScore} />
-        <Component label={`News · ${latest.newsVolume} article${latest.newsVolume === 1 ? "" : "s"}`} score={latest.newsScore} />
+        <Component label="News" score={latest.newsScore} />
       </div>
     </div>
   );
