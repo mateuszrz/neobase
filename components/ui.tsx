@@ -564,8 +564,8 @@ function timeAgo(iso: string): string {
   return `${Math.round(days / 30)}mo ago`;
 }
 
-const NET_LABEL: Record<string, string> = { linkedin: "LinkedIn", facebook: "Facebook" };
-const NET_COLOR: Record<string, string> = { linkedin: "#0a66c2", facebook: "#1877f2" };
+const NET_LABEL: Record<string, string> = { linkedin: "LinkedIn", facebook: "Facebook", x: "X" };
+const NET_COLOR: Record<string, string> = { linkedin: "#0a66c2", facebook: "#1877f2", x: "var(--ink-black)" };
 
 /** Publisher favicon via Google's favicon service (falls back to a globe). */
 export function faviconUrl(domain: string, size = 64): string {
@@ -695,6 +695,45 @@ export function BlogList({
             </p>
             <p className="muted" style={{ margin: "0 0 6px", fontSize: 12 }}>{name} · {timeAgo(p.publishedAt)}</p>
             {p.snippet && <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>{p.snippet}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Third-party mentions of the brand (X / LinkedIn / Facebook) — author-led,
+ *  with a sentiment dot and a link to the original post. */
+export function MentionsList({
+  items,
+}: {
+  items: { network: string; authorName: string; authorHandle: string | null; text: string; postedAt: string; sentiment: string; url: string | null }[];
+}) {
+  return (
+    <div className="stack-16">
+      {items.map((m, i) => (
+        <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
+          <div
+            style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--stone-border)", color: "var(--warm-gray)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 600, flex: "0 0 auto" }}
+            aria-hidden
+          >
+            {(m.authorName || "?").slice(0, 1).toUpperCase()}
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="row" style={{ gap: 8, marginBottom: 6, alignItems: "center", flexWrap: "wrap" }}>
+              <strong style={{ fontSize: 14 }}>{m.authorName}</strong>
+              {m.authorHandle && <span className="muted" style={{ fontSize: 12 }}>{m.authorHandle}</span>}
+              <span style={{ fontSize: 11, fontWeight: 600, color: NET_COLOR[m.network] ?? "var(--stone-muted)" }}>{NET_LABEL[m.network] ?? m.network}</span>
+              <span title={m.sentiment} style={{ width: 7, height: 7, borderRadius: "50%", background: SENT_COLOR[m.sentiment] ?? "var(--stone-muted)" }} />
+              <span className="muted" style={{ fontSize: 12 }}>· {timeAgo(m.postedAt)}</span>
+            </div>
+            <p style={{ margin: 0, lineHeight: 1.6 }}>
+              {m.url ? (
+                <a href={m.url} className="post-link" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>{m.text}</a>
+              ) : (
+                m.text
+              )}
+            </p>
           </div>
         </div>
       ))}
