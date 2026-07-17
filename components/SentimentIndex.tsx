@@ -1,8 +1,10 @@
 import type { SentimentIndexView } from "@/lib/sentiment";
 import { Delta } from "@/components/ui";
 
-/* NeoBase composite sentiment index: the 0–100 score, week-over-week change, a
- * review/news breakdown, and a weekly trend sparkline. Server component. */
+/* NeoBase composite sentiment index: the 0–100 score, week-over-week change,
+ * and a weekly trend sparkline. Server component. The methodology (which
+ * sources feed the score and their weights) is deliberately not shown on the
+ * public brand page. */
 
 function Spark({ points }: { points: { week: string; composite: number }[] }) {
   if (points.length < 2) return null;
@@ -34,30 +36,13 @@ function Spark({ points }: { points: { week: string; composite: number }[] }) {
   );
 }
 
-function Component({ label, score, weight }: { label: string; score: number | null; weight: number }) {
-  return (
-    <div style={{ flex: 1, minWidth: 150 }}>
-      <div className="spread" style={{ marginBottom: 5 }}>
-        <span className="muted" style={{ fontSize: 12 }}>{label}</span>
-        <span style={{ fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
-          {score == null ? "—" : score.toFixed(0)}
-          <span className="muted"> · {Math.round(weight * 100)}% weight</span>
-        </span>
-      </div>
-      <div className="meter">
-        <span style={{ width: `${score == null ? 0 : Math.max(0, Math.min(100, score))}%` }} />
-      </div>
-    </div>
-  );
-}
-
 export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
   const { latest, deltaWoW, series } = data;
   return (
     <div className="card" style={{ marginTop: 20, borderLeft: "3px solid var(--cyan-signal)" }}>
       <div className="spread" style={{ marginBottom: 14, alignItems: "baseline" }}>
         <h2 className="subheading">Sentiment index</h2>
-        <span className="muted" style={{ fontSize: 12 }}>our score · reviews + news · weekly</span>
+        <span className="muted" style={{ fontSize: 12 }}>our score · updated weekly</span>
       </div>
 
       <div className="row" style={{ gap: 24, alignItems: "flex-end", flexWrap: "wrap" }}>
@@ -79,11 +64,6 @@ export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
         <div style={{ flex: 1, minWidth: 200 }}>
           <Spark points={series} />
         </div>
-      </div>
-
-      <div className="row" style={{ gap: 24, marginTop: 18, alignItems: "flex-start" }}>
-        <Component label={`Reviews · ${new Intl.NumberFormat("en").format(latest.reviewVolume)} ratings`} score={latest.reviewScore} weight={latest.reviewWeight} />
-        <Component label={`News · ${latest.newsVolume} article${latest.newsVolume === 1 ? "" : "s"}`} score={latest.newsScore} weight={latest.newsWeight} />
       </div>
     </div>
   );
