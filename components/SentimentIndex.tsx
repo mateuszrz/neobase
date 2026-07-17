@@ -2,9 +2,9 @@ import type { SentimentIndexView } from "@/lib/sentiment";
 import { Delta } from "@/components/ui";
 
 /* NeoBase composite sentiment index: the 0–100 score, week-over-week change,
- * and a weekly trend sparkline. Server component. The methodology (which
- * sources feed the score and their weights) is deliberately not shown on the
- * public brand page. */
+ * a weekly trend sparkline, and the review/news sub-score bars. Server
+ * component. The *methodology* — how the sub-scores are weighted into the
+ * composite — is deliberately not shown on the public brand page (no weights). */
 
 function Spark({ points }: { points: { week: string; composite: number }[] }) {
   if (points.length < 2) return null;
@@ -36,6 +36,22 @@ function Spark({ points }: { points: { week: string; composite: number }[] }) {
   );
 }
 
+/* A source sub-score bar. Shows the score, but NOT its weight in the composite
+ * (that weighting is the methodology we don't expose publicly). */
+function Component({ label, score }: { label: string; score: number | null }) {
+  return (
+    <div style={{ flex: 1, minWidth: 150 }}>
+      <div className="spread" style={{ marginBottom: 5 }}>
+        <span className="muted" style={{ fontSize: 12 }}>{label}</span>
+        <span style={{ fontSize: 12, fontVariantNumeric: "tabular-nums" }}>{score == null ? "—" : score.toFixed(0)}</span>
+      </div>
+      <div className="meter">
+        <span style={{ width: `${score == null ? 0 : Math.max(0, Math.min(100, score))}%` }} />
+      </div>
+    </div>
+  );
+}
+
 export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
   const { latest, deltaWoW, series } = data;
   return (
@@ -64,6 +80,11 @@ export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
         <div style={{ flex: 1, minWidth: 200 }}>
           <Spark points={series} />
         </div>
+      </div>
+
+      <div className="row" style={{ gap: 24, marginTop: 18, alignItems: "flex-start" }}>
+        <Component label={`Reviews · ${new Intl.NumberFormat("en").format(latest.reviewVolume)} ratings`} score={latest.reviewScore} />
+        <Component label={`News · ${latest.newsVolume} article${latest.newsVolume === 1 ? "" : "s"}`} score={latest.newsScore} />
       </div>
     </div>
   );
