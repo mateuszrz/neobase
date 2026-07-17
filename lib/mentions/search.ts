@@ -14,18 +14,29 @@ import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { apify } from "@/lib/apify";
 import { env } from "@/lib/env";
+import { judgeRelevant } from "./relevance";
 import type { MentionNetwork } from "./sample";
 
 const { fintechs, mentions } = schema;
 
-export const MENTION_NETWORKS: MentionNetwork[] = ["x", "linkedin", "facebook"];
+/** Drop off-topic rows via the relevance gate, then upsert the rest. Returns kept count. */
+async function upsertRelevant(fintechId: string, network: MentionNetwork, brand: string, rows: NormalizedMention[], raws: unknown[]): Promise<number> {
+  const withText = rows.map((m, i) => ({ m, raw: raws[i] })).filter(({ m }) => m.text);
+  const keep = await judgeRelevant(brand, withText.map(({ m }) => m.text as string));
+  let upserted = 0;
+  for (let i = 0; i < withText.length; i++) {
+    if (!keep[i]) continue;
+    await upsertMention(fintechId, network, withText[i].m, withText[i].raw);
+    upserted++;
+  }
+  return upserted;
+}
 
+export const MENTION_NETWORKS: MentionNetwork[] = ["x", "facebook", "reddit"];
+
+/** Apify search actor for a network. Reddit uses a free RSS feed (no actor). */
 export function mentionActorFor(network: MentionNetwork): string {
-  return network === "x"
-    ? env.APIFY_X_SEARCH_ACTOR
-    : network === "linkedin"
-      ? env.APIFY_LINKEDIN_SEARCH_ACTOR
-      : env.APIFY_FACEBOOK_SEARCH_ACTOR;
+  return network === "x" ? env.APIFY_X_SEARCH_ACTOR : network === "facebook" ? env.APIFY_FACEBOOK_SEARCH_ACTOR : "";
 }
 
 function num(v: unknown): number | null {
@@ -63,12 +74,11 @@ export function mentionQuery(name: string, network: MentionNetwork, handle: stri
   return `"${name}"`;
 }
 
-/** Actor input, branched per network — matches the shipped actors (verified 2026-07-17):
- *  X apidojo/tweet-scraper, LinkedIn harvestapi/linkedin-post-search, Facebook
- *  scrapeforge/facebook-search-posts. Revisit if you swap actors. */
+/** Apify actor input, branched per network — matches the shipped actors (verified
+ *  2026-07-17): X apidojo/tweet-scraper, Facebook scrapeforge/facebook-search-posts.
+ *  (Reddit uses RSS, not an actor.) Revisit if you swap actors. */
 export function searchInput(network: MentionNetwork, query: string, maxItems = 25): Record<string, unknown> {
   if (network === "x") return { searchTerms: [query], maxItems: Math.max(maxItems, 50), sort: "Latest", tweetLanguage: "en" };
-  if (network === "linkedin") return { searchQueries: [query], maxPosts: maxItems, postedLimit: "month", sortBy: "date" };
   // facebook: scrapeforge/facebook-search-posts — single query string, post search
   return { query, search_type: "posts", max_results: maxItems };
 }
@@ -143,28 +153,79 @@ export async function upsertMention(
     });
 }
 
+// ─── Reddit (free RSS, no Apify) ────────────────────────────────────────────
+
+function decodeEntities(s: string): string {
+  return s
+    .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"')
+    .replace(/&#0?39;|&#x27;/gi, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&amp;/g, "&"); // last, so &amp;lt; → &lt; → < isn't double-decoded
+}
+function xmlTag(block: string, name: string): string | null {
+  const m = block.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)</${name}>`, "i"));
+  return m ? m[1] : null;
+}
+
+/** Parse Reddit's Atom search feed into normalised mentions. */
+function parseRedditFeed(xml: string): NormalizedMention[] {
+  const out: NormalizedMention[] = [];
+  const entries = xml.split(/<entry>/i).slice(1).map((s) => s.split(/<\/entry>/i)[0]);
+  for (const [i, e] of entries.entries()) {
+    const title = xmlTag(e, "title");
+    const author = xmlTag(e, "name"); // <author><name>/u/user</name>
+    const published = xmlTag(e, "published") ?? xmlTag(e, "updated");
+    const href = e.match(/<link[^>]*href="([^"]+)"/i)?.[1] ?? null;
+    const id = xmlTag(e, "id");
+    if (!title) continue;
+    const handle = author ? author.replace(/^\/?u\//, "") : null;
+    const posted = published ? new Date(published) : null;
+    out.push({
+      externalId: id ?? href ?? `reddit-${i}`,
+      url: href,
+      authorName: handle ? `u/${handle}` : null,
+      authorHandle: handle,
+      postedAt: posted && !Number.isNaN(posted.getTime()) ? posted : null,
+      // The post title is the mention — clean and reliable (the RSS <content> is
+      // a messy "submitted by …" boilerplate blob, so we skip it).
+      text: decodeEntities(title),
+      likes: null,
+      comments: null,
+      shares: null,
+    });
+  }
+  return out;
+}
+
+async function ingestReddit(fintechId: string, name: string, _limit: number): Promise<number> {
+  // Fetch a wider net (25, newest) and let the relevance gate cut the noise —
+  // brand-name search on Reddit is noisy ("Revolut" vs "revolution").
+  const url = `https://www.reddit.com/search.rss?q=${encodeURIComponent(`"${name}"`)}&sort=new&limit=25`;
+  const res = await fetch(url, { headers: { "user-agent": "neobase-mentions/1.0 (+https://neobase.co)" } });
+  if (!res.ok) throw new Error(`reddit ${res.status}: ${(await res.text()).slice(0, 120)}`);
+  const rows = parseRedditFeed(await res.text());
+  return upsertRelevant(fintechId, "reddit", name, rows, rows.map(() => ({ source: "reddit-rss" })));
+}
+
 /**
  * Synchronous single-brand mention ingest for one network (waits for the run).
  * For the weekly job at scale, mirror the async social webhook path instead.
  */
 export async function ingestMentions(fintechId: string, network: MentionNetwork, limit = 12): Promise<number> {
-  const actor = mentionActorFor(network);
-  if (!actor) return 0; // dormant — no search actor configured for this network
-
   const [ft] = await db.select({ name: fintechs.name, socials: fintechs.socials }).from(fintechs).where(eq(fintechs.id, fintechId)).limit(1);
   if (!ft) throw new Error(`no such fintech: ${fintechId}`);
+
+  if (network === "reddit") return ingestReddit(fintechId, ft.name, limit);
+
+  const actor = mentionActorFor(network);
+  if (!actor) return 0; // dormant — no search actor configured for this network
   const query = mentionQuery(ft.name, network, handleFrom(ft.socials, network));
 
   const client = apify();
   const run = await client.actor(actor).call(searchInput(network, query, limit), { waitSecs: 180 });
   const { items } = await client.dataset(run.defaultDatasetId).listItems({ limit, clean: true });
 
-  let upserted = 0;
-  for (const [i, raw] of (items as Record<string, any>[]).entries()) {
-    const m = normalizeMention(raw, i);
-    if (!m.text) continue;
-    await upsertMention(fintechId, network, m, raw);
-    upserted++;
-  }
-  return upserted;
+  const raws = items as Record<string, any>[];
+  const rows = raws.map((raw, i) => normalizeMention(raw, i));
+  return upsertRelevant(fintechId, network, ft.name, rows, raws);
 }

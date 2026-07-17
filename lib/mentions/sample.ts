@@ -9,7 +9,7 @@
 
 import { rng } from "@/lib/rng";
 
-export type MentionNetwork = "x" | "linkedin" | "facebook";
+export type MentionNetwork = "x" | "facebook" | "reddit";
 
 export interface MentionView {
   network: MentionNetwork;
@@ -37,7 +37,7 @@ const TEMPLATES: { t: (n: string) => string; s: MentionView["sentiment"] }[] = [
   { t: (n) => `If you're comparing neobanks in 2026, ${n} keeps coming up in every conversation I have.`, s: "neutral" },
 ];
 
-const NETS: MentionNetwork[] = ["x", "x", "linkedin", "facebook"];
+const NETS: MentionNetwork[] = ["x", "x", "reddit", "facebook"];
 
 /** Deterministic sample mentions (most recent first) for a fintech. */
 export function sampleMentions(fintechId: string, name: string, count = 5): MentionView[] {
@@ -50,7 +50,8 @@ export function sampleMentions(fintechId: string, name: string, count = 5): Ment
     const network = r.pick(NETS);
     const tpl = r.pick(TEMPLATES);
     const author = r.pick(AUTHORS);
-    const handle = network === "x" ? `@${author.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12)}` : null;
+    const slug = author.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12);
+    const handle = network === "x" ? `@${slug}` : network === "reddit" ? `u/${slug}` : null;
     out.push({
       network,
       authorName: author,
