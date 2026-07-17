@@ -49,9 +49,16 @@ export function handleFrom(socials: unknown, network: SocialNetwork): string | n
   return typeof v === "string" && v.trim() ? v.trim() : null;
 }
 
-/** Actor input for a handle. Actor-specific, but this shape is widely accepted. */
-export function socialInput(handle: string, maxPosts = 12): Record<string, unknown> {
-  return { startUrls: [{ url: handle }], maxPosts };
+/**
+ * Actor input for a handle — shape is actor-specific, so we branch per network to
+ * match the two actors we ship with. Swapping actors means revisiting this:
+ *  - LinkedIn: harvestapi/linkedin-profile-posts — `targetUrls: string[]` + `maxPosts`,
+ *    no cookies/login (handles /company/… and /in/… URLs).
+ *  - Facebook: apify/facebook-posts-scraper — `startUrls: [{url}]` + `resultsLimit`.
+ */
+export function socialInput(network: SocialNetwork, handle: string, maxPosts = 12): Record<string, unknown> {
+  if (network === "linkedin") return { targetUrls: [handle], maxPosts };
+  return { startUrls: [{ url: handle }], resultsLimit: maxPosts };
 }
 
 export interface NormalizedPost {
@@ -120,7 +127,7 @@ export async function ingestSocial(fintechId: string, network: SocialNetwork, li
   if (!handle) throw new Error(`no ${network} handle in fintechs.socials for "${fintechId}"`);
 
   const client = apify();
-  const run = await client.actor(actor).call(socialInput(handle, limit), { waitSecs: 180 });
+  const run = await client.actor(actor).call(socialInput(network, handle, limit), { waitSecs: 180 });
   const { items } = await client.dataset(run.defaultDatasetId).listItems({ limit, clean: true });
 
   let upserted = 0;

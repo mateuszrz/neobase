@@ -45,7 +45,7 @@ export async function startSocialSource(s: SocialSourceRow, day: string): Promis
     .returning({ id: ingestRuns.id });
   if (!inserted.length) return "skipped";
 
-  const { runId, datasetId } = await startActorRun(actor, socialInput(handle), {
+  const { runId, datasetId } = await startActorRun(actor, socialInput(network, handle), {
     runKey,
     sourceId: s.id,
     fintechId: s.fintechId,
