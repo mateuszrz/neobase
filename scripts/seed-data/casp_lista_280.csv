@@ -1,0 +1,281 @@
+﻿#,Dostawca (Provider),Podmiot prawny (Legal entity),Kraj (Country),Regulator,Uslugi MiCA (Services),Strona www
+1,21bitcoin,FIOR Digital GmbH,Austria,FMA,Custody; Crypto<->cash; Transfers,www.21bitcoin.app
+2,Acheron | Acheron Trading,Acheron Europe B.V.,Netherlands,AFM,Custody; Order execution; Advice; Portfolio mgmt; Transfers,www.acherontrading.com
+3,AK JENSEN NORWAY AS,,Norway,Finanstilsynet,Order routing; Portfolio mgmt,www.akj.com
+4,Alaric Securities,Alaric Securities OOD,Bulgaria,FSC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Advice; Portfolio mgmt; Transfers,alaricsecurities.com
+5,ALPHACAP,ALPHACAP DIGITAL ASSETS SAS,France,AMF,Custody; Advice; Portfolio mgmt; Transfers,alphacap.fr
+6,AlphaRoute,SIA AlphaRoute,Latvia,Latvijas Banka,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Placing; Transfers,www.kangaexchange.eu
+7,Altarius Asset Management Limited,,Malta,MFSA,Order routing; Portfolio mgmt,www.altariusgroup.com
+8,Altlift s.r.o.,,Czechia,CNB,Order execution; Order routing; Advice,n/a
+9,Amdax B.V. | Amdax Group | Novelist,Amdax B.V.,Netherlands,AFM,Custody; Order execution; Portfolio mgmt; Transfers,www.amdax.com/nl
+10,AMINA EU,AMINA (Austria) AG,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Portfolio mgmt; Transfers,eu.aminagroup.com
+11,AnCeKa Vermoegensbetreuungs Aktiengesellschaft,,Germany,BaFin,Order routing; Advice; Portfolio mgmt,www.anceka.de
+12,APLO,APLO SAS,France,AMF,Custody; Crypto<->cash; Order execution; Transfers,www.aplo.io
+13,Ari10 | Ari10 NL | WEB3 Technology B.V.,WEB3 Technology B.V.,Netherlands,AFM,Custody; Crypto<->cash; Crypto<->crypto; Transfers,ari10.com/en
+14,AS LHV Pank,,Estonia,EFSA,Custody; Order routing,www.lhv.ee
+15,AvianLabs Netherlands B.V.,,Netherlands,AFM,Crypto<->cash; Crypto<->crypto; Transfers,sling.money
+16,B2C2,B2C2 Europe Sarl,Luxembourg,CSSF,Crypto<->cash; Crypto<->crypto; Order execution,www.b2c2.com
+17,Baader Bank AG,Baader Bank Aktiengesellschaft,Germany,BaFin,Order execution,www.baaderbank.de
+18,Backpack EU,"""Trek Technologies"" SIA",Latvia,Latvijas Banka,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,eu.backpack.exchange
+19,Baden-Wuerttembergische Wertpapierboerse GmbH,,Germany,BaFin,Trading platform,www.bsdex.de/de
+20,Banca Sella,BANCA SELLA,Italy,CONSOB,Custody; Transfers,www.sella.it
+21,Bank Frick AG,,Liechtenstein,FMA,Custody; Order execution; Transfers,www.bankfrick.li/en
+22,Bankhaus Scheich Wertpapierspezialist AG,,Germany,BaFin,Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Advice; Portfolio mgmt,www.bankhaus-scheich.de
+23,Banking Circle,Banking Circle S.A.,Luxembourg,CSSF,Crypto<->cash; Crypto<->crypto; Transfers,bankingcircle.com
+24,BANQUE DELUBAC,BANQUE DELUBAC ET CIE,France,AMF,Custody; Crypto<->cash; Order execution; Advice; Portfolio mgmt; Transfers,www.delubac.com
+25,BBVA,Banco Bilbao Vizcaya Argentaria S.A.,Spain,CNMV,Custody; Order execution; Transfers,www.bbva.es
+26,Belayer,Belayer OOD,Bulgaria,FSC,Custody; Order execution; Portfolio mgmt,www.belayer.bg
+27,Bequant,Bequant Pro Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,bequant.pro
+28,Bit2Me,Bitcoinforme S.L.,Spain,CNMV,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,bit2me.com
+29,BITCOIN STORE,DIGITAL ASSETS d.o.o.,Croatia,HANFA,Custody; Crypto<->cash; Crypto<->crypto; Placing; Order routing; Transfers,www.bitstore.net
+30,Bitcoin Suisse (Europe) AG,,Liechtenstein,FMA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.bitcoinsuisse.com
+31,BITCOINMAT,FINTECH SK s. r. o.,Slovakia,NBS,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,bitcoinmat.sk
+32,bitFlyer EUROPE,bitFlyer EUROPE S.A.,Luxembourg,CSSF,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,bitflyer.com/en-eu
+33,BitGo Europe GmbH,,Germany,BaFin,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.bitgo.de
+34,Bitmymoney B.V.,,Netherlands,AFM,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.bitmymoney.com
+35,Bitonic B.V.,,Netherlands,AFM,Custody; Crypto<->cash; Order execution; Transfers,bitonic.nl/en
+36,Bitpanda,Bitpanda GmbH,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,www.bitpanda.com
+37,Bitpanda,BP23 CA Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.bitpanda.com
+38,Bitpanda Asset Management GmbH,,Germany,BaFin,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.bitpanda.com
+39,BITSTACK,BITSTACK DIGITAL ASSETS SAS,France,AMF,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,bitstack-app.com
+40,BitStaete B.V.,,Netherlands,AFM,Portfolio mgmt,bitstaete.nl
+41,Bitstamp,Bitstamp Europe S.A.,Luxembourg,CSSF,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.bitstamp.net
+42,Bittimaatti,Bittimaatti Oy,Finland,FIN-FSA,Crypto<->cash,bittimaatti.fi
+43,Bitvavo B.V.,,Netherlands,AFM,Custody; Trading platform; Transfers,bitvavo.com/nl
+44,BlockBen,BlockBen SIA,Latvia,Latvijas Banka,Custody; Crypto<->cash; Crypto<->crypto; Placing; Transfers,blockben.com/en
+45,Blockchain.com,Blue Cube (Malta) Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.blockchain.com
+46,Blockrise,Blockrise Capital B.V.,Netherlands,AFM,Custody; Order execution; Portfolio mgmt; Transfers,www.blockrise.com/en
+47,BLOX B.V.,,Netherlands,AFM,Custody; Crypto<->cash; Transfers,weareblox.com
+48,BLUE EMI,UAB BLUE EMI LT,Lithuania,LSC,Custody,blueemi.com
+49,Boerse Stuttgart Digital Custody GmbH,,Germany,BaFin,Custody; Transfers,www.bsdigital.com
+50,Bpifrance Investissement,,France,AMF,Advice,www.bpifrance.fr
+51,Bridge,Bridge Building S.A.,Luxembourg,CSSF,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.bridge.xyz
+52,BTC Direct Europe B.V.,,Netherlands,AFM,Crypto<->cash; Crypto<->crypto; Transfers,my.btcdirect.eu
+53,Bullish Europe GmbH,,Germany,BaFin,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,bullish.com/home-de
+54,BV & P Vermoegen AG,,Germany,BaFin,Order routing; Portfolio mgmt,www.bvp-vermoegen.de
+55,BVNK,System Pay Services (Malta) Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,bvnk.com
+56,Bybit,Bybit EU GmbH,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Placing; Transfers,www.bybit.eu
+57,CACEIS BANK,,France,AMF,Custody; Order routing; Transfers,www.caceis.com
+58,CAIXABANK,CAIXABANK S.A.,Spain,CNMV,Custody; Order execution; Order routing; Transfers,caixabank.es
+59,Calamatta Cuschieri Investment Services Limited,,Malta,MFSA,Custody; Order execution,cc.com.mt
+60,capital.com,CAPITAL VAULT LTD,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution,www.capital.com
+61,CECABANK,CECABANK S.A.,Spain,CNMV,Custody; Order routing; Transfers,www.cecabank.es
+62,Celsion Bank AG,,Liechtenstein,FMA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.celsion-finance.com
+63,Change,Change Securities B.V.,Netherlands,AFM,Custody; Crypto<->cash; Order execution,www.changeinvest.com
+64,CheckSig,CHECKSIG S.R.L. SOCIETA BENEFIT,Italy,CONSOB,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.checksig.com
+65,CIRCLE,CIRCLE INTERNET FINANCIAL EUROPE SAS,France,AMF,Custody; Transfers,www.circle.com/en
+66,ClearBank Europe B.V.,ClearBank Europe N.V.,Netherlands,AFM,Order execution; Order routing; Transfers,clear.bank
+67,Clearstream,Clearstream Banking S.A.,Luxembourg,CSSF,Custody,www.clearstream.com
+68,Coinbase,Coinbase Luxembourg S.A.,Luxembourg,CSSF,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,coinbase.com
+69,Coinfinity,Coinfinity GmbH,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Advice; Transfers,coinfinity.co
+70,CoinFlip,OLLIV ITALIA S.R.L.,Italy,CONSOB,Crypto<->cash,coinflip.tech/it-IT
+71,Coingate,UAB Decentralized,Lithuania,LSC,Custody; Crypto<->cash; Crypto<->crypto; Transfers,coingate.com
+72,COINHOUSE,COINHOUSE SAS,France,AMF,Custody; Crypto<->cash; Order execution; Advice; Portfolio mgmt; Transfers,www.coinhouse.com
+73,CoinJar,CoinJar Europe Limited,Ireland,CBI,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.coinjar.com
+74,COINMATE a.s.,,Czechia,CNB,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Transfers,coinmate.io/cs
+75,Coinmerce B.V.,Coinmerce B.V.,Netherlands,AFM,Custody; Crypto<->cash; Crypto<->crypto; Transfers,coinmerce.io
+76,Coinmotion,Coinmotion Oy,Finland,FIN-FSA,Custody; Crypto<->cash; Order execution; Transfers,coinmotion.com
+77,COINSHARES ASSET MANAGEMENT,,France,AMF,Advice; Portfolio mgmt,coinshares.com
+78,COLLECT & EXCHANGE CY LTD,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Transfers,collectnexchange.cy
+79,COMETH,COMETH SAS,France,AMF,Custody; Crypto<->crypto; Transfers,cometh.io
+80,Commerzbank Aktiengesellschaft,,Germany,BaFin,Custody; Transfers,www.commerzbank.com
+81,COMPLYCRYPTO DEPOSITORY EU LIMITED,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.complycrypto.eu
+82,CONCEDUS GmbH,,Germany,BaFin,Order routing; Advice,concedus.com
+83,Confirmo Limited,,Ireland,CBI,Crypto<->cash; Crypto<->crypto; Transfers,confirmo.eu
+84,Conio,CONIO S.R.L.,Italy,CONSOB,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Transfers,www.conio.com
+85,CRIPTAN,"CRIPTAN TRADE, S.L.",Spain,CNMV,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.criptan.com
+86,CROSSMINT,CROSSMINT EUROPE S.L.,Spain,CNMV,Custody; Crypto<->cash; Transfers,www.crossmint.com
+87,Crypto Finance (Deutschland) GmbH,,Germany,BaFin,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.crypto-finance.com/germany/de
+88,CRYPTO-AM,MEREAU FINANCE SAS,France,AMF,Advice; Portfolio mgmt,crypto-assets-management.com
+89,Crypto.com,Foris DAX MT Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,crypto.com
+90,Cryptonow,Cryptonow GmbH,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.cryptonow.at
+91,Cryptosmart,CRYPTOSMART S.P.A.,Italy,CONSOB,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Transfers,cryptosmart.it
+92,Cryptovoucher,"Fintegence, s.r.o.",Slovakia,NBS,Custody; Crypto<->cash; Transfers,cryptovoucher.io
+93,D2X,D2X Group N.V.,Netherlands,AFM,Custody,d2x.com
+94,DADAT,DADAT Krypto GmbH,Austria,FMA,Order execution,www.dad.at
+95,Damex,Damex Digital LTD,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.damex.io
+96,DASK CAPITAL,S.K. DASK KRYPTO LTD,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.daskcapital.io
+97,DCS | HappyCoins,Digital Currency Services B.V.,Netherlands,AFM,Custody; Crypto<->cash; Transfers,happycoins.com
+98,DEBLOCK,DEBLOCK SAS,France,AMF,Crypto<->cash; Crypto<->crypto; Order execution,deblock.com
+99,Decubate B.V.,,Netherlands,AFM,Custody; Order execution; Placing,www.decubate.com
+100,DekaBank Deutsche Girozentrale,,Germany,BaFin,Custody; Crypto<->cash; Order execution; Transfers,www.deka.de/deka-gruppe
+101,DESKOIN,DESKOIN SAS,France,AMF,Custody; Crypto<->cash; Order execution; Advice; Transfers,www.deskoin.com
+102,Deutsche WertpapierService Bank AG (dwpbank),Deutsche WertpapierService Bank AG,Germany,BaFin,Order execution,dwpbank.de
+103,Dietrich & Richter Private Asset Management AG,,Germany,BaFin,Advice; Portfolio mgmt,www.drpam.de
+104,DLT Securities GmbH,,Germany,BaFin,Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Advice; Portfolio mgmt,www.dlt-finance.com
+105,Donau-Iller-Bank eG,,Germany,BaFin,Order execution,www.donau-iller-bank.de
+106,DonauCapital Wertpapier GmbH,,Germany,BaFin,Order routing,www.donaucapital.de
+107,DUE,DUE NETWORK S.L.,Spain,CNMV,Crypto<->cash; Crypto<->crypto,www.opendue.com
+108,DZ BANK AG Deutsche Zentral-Genossenschaftsbank,,Germany,BaFin,Custody; Order execution; Transfers,www.dzbank.de
+109,eToro,eToro (Europe) Ltd,Cyprus,CySEC,Custody; Crypto<->cash; Order execution; Order routing; Advice; Portfolio mgmt; Transfers,www.etoro.com
+110,ELECTROCOIN,ELECTROCOIN Ltd for services,Croatia,HANFA,Custody; Crypto<->cash; Crypto<->crypto,electrocoin.eu/hr
+111,EU Internet Ventures | EUIV | BNXA,EU Internet Ventures B.V.,Netherlands,AFM,Crypto<->cash; Crypto<->crypto; Transfers,banxa.com
+112,EUWAX AG,,Germany,BaFin,Crypto<->cash; Crypto<->crypto; Order execution,www.euwax-ag.de
+113,Everest,Everest Network Limited,Malta,MFSA,Custody; Order execution; Placing; Order routing; Transfers,www.everest.org
+114,FalconX,FalconX Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.falconx.io
+115,Fels wealth GmbH,,Germany,BaFin,Order execution; Order routing; Advice; Portfolio mgmt,followmymoney.de
+116,Fiat Republic Netherlands B.V.,,Netherlands,AFM,Custody; Transfers,fiatrepublic.com
+117,FIDUS Finanz AG,,Germany,BaFin,Order execution; Order routing; Advice; Portfolio mgmt,fidus-ag.de
+118,FINCTEK,FINCTEK UE SAS,France,AMF,Custody; Crypto<->cash; Order execution; Placing; Transfers,finctek.com
+119,Finst B.V.,,Netherlands,AFM,Custody; Order execution; Order routing; Transfers,finst.com
+120,FIPTO,FIPTO PI SAS,France,AMF,Custody; Crypto<->cash; Order execution; Transfers,www.fipto.com
+121,Firefish,Firefish Europe s.r.o,Slovakia,NBS,Custody; Crypto<->cash; Crypto<->crypto; Transfers,firefish.io
+122,FIRI AS,,Norway,Finanstilsynet,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,firi.com/no
+123,flatexDEGIRO Bank AG,,Germany,BaFin,Order execution,www.flatexdegiro.com
+124,flatexDEGIRO Bank AG,360 Treasury Systems AG,Germany,BaFin,Trading platform,www.360t.com
+125,Floin AG,,Liechtenstein,FMA,Custody; Crypto<->cash; Crypto<->crypto; Placing; Transfers,floin.com
+126,FLOWDESK EUROPE,FLOWDESK EUROPE SAS,France,AMF,Custody; Crypto<->cash; Order execution; Transfers,www.flowdesk.co
+127,FUMBI,"FUMBI, s.r.o.",Slovakia,NBS,Custody; Crypto<->cash; Crypto<->crypto; Advice; Portfolio mgmt; Transfers,fumbi.network/sk
+128,Gate,Gate Technology Limited,Malta,MFSA,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.gate.com/en-eu
+129,GCEX | GC Exchange,GC Exchange A/S,Denmark,Finanstilsynet,Crypto<->cash; Crypto<->crypto; Order execution; Transfers,gc.exchange
+130,Gemini,Gemini Intergalactic EU Ltd,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,www.gemini.com
+131,"GG Digital, a.s.",,Czechia,CNB,Custody; Crypto<->cash; Crypto<->crypto; Advice; Transfers,www.goldengate.cz
+132,GOIN,GOin SAS,France,AMF,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Advice; Portfolio mgmt; Transfers,goin-invest.com
+133,Hannoversche Volksbank eG,,Germany,BaFin,Order execution,www.hannoversche-volksbank.de
+134,Hauck Aufhaeuser Digital Custody GmbH,,Germany,BaFin,Custody; Transfers,www.hal-privatbank.com
+135,Hercle,HERCLE S.R.L.,Italy,CONSOB,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.hercle.financial
+136,HEXARQ,HEXARQ SAS,France,AMF,Custody; Crypto<->cash; Order execution; Transfers,www.hexarq.com
+137,Hidden Road,,Netherlands,AFM,Crypto<->cash; Crypto<->crypto; Order execution,hiddenroad.com
+138,Hodli,HODLIE S.R.L.,Italy,CONSOB,Custody; Portfolio mgmt,hodli.com
+139,Huddlestock GmbH,,Germany,BaFin,Order routing,www.huddlestock.com
+140,Hyphe Markets GmbH,,Germany,BaFin,Crypto<->cash,hyphe.com
+141,ICEBLOCK,ICEBLOCK SAS,France,AMF,Custody; Portfolio mgmt; Transfers,www.iceblockinvestments.com
+142,IG Europe GmbH,,Germany,BaFin,Custody; Crypto<->cash; Crypto<->crypto; Order execution,www.ig.com/de
+143,ILAVO GROUP a.s.,,Czechia,CNB,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.ilavo.cz/cs
+144,Ilirika,ILIRIKA borzno posrednika hia d.d.,Slovenia,ATVP,Custody; Order execution; Order routing; Portfolio mgmt,www.ilirika.si
+145,IN KAPITAL,IN KAPITAL d.o.o.,Croatia,HANFA,Crypto<->cash,www.inkapital.hr
+146,Incrementum,INCREMENTUM d.o.o.,Slovenia,ATVP,Custody; Advice; Portfolio mgmt,incrementum.si
+147,Interactive Brokers Ireland Limited,,Ireland,CBI,Order routing,www.interactivebrokers.ie
+148,Invity Finance s.r.o.,,Czechia,CNB,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.invity.io
+149,"IP wBTCb solutions, s.r.o.",,Czechia,CNB,Custody; Crypto<->cash; Crypto<->crypto; Transfers,bit.plus
+150,ISF Institut Deutsch-Schweizer Finanzdienstleistungen GmbH,,Germany,BaFin,Order routing,www.isf-institut.de
+151,J2TX Ltd,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Advice; Portfolio mgmt; Transfers,www.j2tx.com
+152,"Joh. Berenberg, Gossler & Co. KG",,Germany,BaFin,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.berenberg.de
+153,K33 MARKETS as,,Norway,Finanstilsynet,Custody; Order execution; Transfers,www.k33.com
+154,KBC,KBC Bank NV,Belgium,NBB,Custody; Order execution; Transfers,www.kbc.com
+155,KEYROCK,KEYROCK FR SAS,France,AMF,Custody; Crypto<->cash; Order execution; Transfers,keyrock.com
+156,"Kraken Digital Asset Exchange (""Kraken"")",Payward Europe Solutions Limited,Ireland,CBI,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Portfolio mgmt; Transfers,www.kraken.com
+157,"Kraken, Kraken Digital Asset Exchange",Payward Global Solutions Limited,Ireland,CBI,Trading platform,www.kraken.com
+158,KRIPTOMAT,Bitblock Ltd. for Services,Croatia,HANFA,Crypto<->cash,kriptomat.hr
+159,KRYPTO KNIGHT,Krypto Knight Ltd,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.krypto-knight.com
+160,KuCoin EU,KuCoin EU Exchange GmbH,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Placing; Transfers,www.kucoin.eu
+161,KUTXABANK,KUTXABANK S.A.,Spain,CNMV,Custody; Order routing; Transfers,portal.kutxabank.es/cs
+162,Kvarn X,Kvarn Capital Oy,Finland,FIN-FSA,Custody; Order execution; Order routing; Transfers,www.kvarnx.com
+163,Lang & Schwarz TradeCenter AG & Co. KG,,Germany,BaFin,Crypto<->cash; Crypto<->crypto,www.ls-tc.de/de
+164,Legend Trading,Legend Financial Ireland Limited,Ireland,CBI,Crypto<->cash; Crypto<->crypto,www.legendtrading.com
+165,Legion,Legion Malta Limited,Malta,MFSA,Custody; Placing; Order routing; Transfers,legion.cc
+166,LEONOD,LEONOD SARL,France,AMF,Crypto<->cash,app.bullbitcoin.com
+167,LGT Bank AG,,Liechtenstein,FMA,Custody; Order execution; Order routing; Transfers,www.lgt.com/li-en
+168,Lightspark Payments Europe AS,,Estonia,EFSA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,eu.lightspark.com
+169,Lightyear Europe AS,,Estonia,EFSA,Custody; Order execution; Order routing,lightyear.com
+170,Lunar Block,Lunar Block A/S,Denmark,Finanstilsynet,Custody; Order execution,www.lunar.app
+171,Madison Six | crypto4me,Madison Six j. s. a.,Slovakia,NBS,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,madisonsix.com
+172,MEATAL GEAR,METAL GEAR SAS,France,AMF,Custody; Crypto<->cash; Order execution; Transfers,metalgear.xyz
+173,MERIA,MERIA SAS,France,AMF,Custody; Crypto<->cash; Order execution; Advice; Portfolio mgmt; Transfers,www.meria.com
+174,MINOS GLOBAL,"MINOS GLOBAL, S.L.",Spain,CNMV,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,n/a
+175,MipSoftware s.r.o.,,Czechia,CNB,Custody; Order execution; Transfers,coinero.cz
+176,MLP Banking AG,,Germany,BaFin,Order execution,www.mlp.de
+177,Monflo,Monflo B.V.,Netherlands,AFM,Custody; Order execution; Transfers,www.monflo.com
+178,MoonPay Europe B.V.,,Netherlands,AFM,Crypto<->cash; Crypto<->crypto; Transfers,www.moonpay.com
+179,MP Developers s.r.o.,,Czechia,CNB,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Order execution,www.anycoin.cz
+180,Myntkaup,Myntkaup ehf.,Iceland,Central Bank of Iceland,Custody; Crypto<->cash; Crypto<->crypto; Transfers,myntkaup.is
+181,Myriad Capital,UAB Micar assets,Lithuania,LSC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,myriadcapital.lt
+182,N26 Bank SE,,Germany,BaFin,Order routing,n26.com
+183,NAGA X,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Advice; Portfolio mgmt; Transfers,www.nagax.com/eu
+184,Neverless,Neverless SIA,Latvia,Latvijas Banka,Custody; Crypto<->cash; Crypto<->crypto; Portfolio mgmt; Transfers,neverless.com
+185,Newrails,"Newrails, UAB",Lithuania,LSC,Custody; Transfers,www.newrails.xyz
+186,Nexdesk,Nexdesk SIA,Latvia,Latvijas Banka,Custody; Order execution; Transfers,nexdesk.io
+187,Noemon Finance Ltd,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Advice; Portfolio mgmt,www.noemon.finance
+188,NOEMON TECH LTD,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Advice; Portfolio mgmt; Transfers,www.noemon.tech
+189,NorthCrypto,NorthCrypto Oy,Finland,FIN-FSA,Custody; Order execution; Order routing; Transfers,www.northcrypto.com
+190,Northstake ApS,,Denmark,Finanstilsynet,Custody; Order execution; Transfers,www.northstake.dk
+191,Okazio,Okazio s.r.o.,Slovakia,NBS,Custody; Order execution; Advice; Portfolio mgmt; Transfers,okazio.sk
+192,OKX,OKX Europe Limited,Malta,MFSA,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Portfolio mgmt; Transfers,www.okx.com
+193,Olmipay,Olmipay Limited,Malta,MFSA,Custody; Order execution; Placing; Order routing; Transfers,Olmipay.com
+194,One Trading Exchange B.V.,,Netherlands,AFM,Custody; Trading platform,www.onetrading.com
+195,OP Digital,OP Digital Services Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.openpayd.com
+196,OPENBANK,OPEN BANK S.A.,Spain,CNMV,Custody; Order execution,www.openbank.es
+197,Orcabay,Orcabay d.o.o.,Slovenia,ATVP,Order execution; Advice,orcabay.io
+198,Paybis,"SIA ""Paybis Europe""",Latvia,Latvijas Banka,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Advice; Transfers,paybis.com
+199,Payhound,Payhound Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Transfers,www.payhound.com
+200,PAYMIUM,PAYMIUM SAS,France,AMF,Custody; Trading platform; Crypto<->cash; Order execution; Transfers,www.paymium.com
+201,PAYTOP (Triple-A),PAYTOP SAS,France,AMF,Custody; Crypto<->cash; Transfers,www.paytop.com
+202,PELICAN EXCHANGE EUROPE (CY) LTD,,Cyprus,CySEC,Order execution; Order routing; Advice; Portfolio mgmt,www.pelicaneu.com
+203,Penning,Penning Financial Services ApS,Denmark,Finanstilsynet,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Portfolio mgmt; Transfers,www.penning.io
+204,Pluso a.s.,,Czechia,CNB,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.pluso.cz
+205,Plutos Vermoegensverwaltung AG,,Germany,BaFin,Portfolio mgmt,www.plutos.de
+206,PROSEGUR CRYPTO,PROSEGUR CUSTODIA DE ACTIVOS DIGITALES,Spain,CNMV,Custody; Order routing; Transfers,www.prosegurcrypto.com
+207,Push / Aave Push,Push Virtual Assets Ireland Limited,Ireland,CBI,Crypto<->cash; Crypto<->crypto,push.co
+208,QWARKS,QWARKS SAS,France,AMF,Custody; Crypto<->cash; Order execution; Portfolio mgmt; Transfers,www.qwarks.fr
+209,Raiffeisenbank Kreis Kelheim eG,,Germany,BaFin,Order execution,www.rbkk.de
+210,Ramp Network,Ramp Swaps (Ireland) Limited,Ireland,CBI,Crypto<->cash,rampnetwork.com
+211,RCUBE ASSET MANAGEMENT,,France,AMF,Advice; Portfolio mgmt,rcube.com
+212,RELAI,RELAI EU SASU,France,AMF,Crypto<->cash,relai.app
+213,RENTA 4,RENTA 4 BANCO S.A.,Spain,CNMV,Custody; Order routing; Transfers,www.r4.com
+214,Revolut,Revolut Digital Assets (Europe) Ltd,Cyprus,CySEC,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Placing; Transfers,www.revolut.com/en-CY/crypto
+215,RIV-Digital,RIV-DIGITAL S.R.L.,Italy,CONSOB,Crypto<->cash; Crypto<->crypto; Placing,riv-digital.it
+216,Robinhood,Robinhood Europe UAB,Lithuania,LSC,Custody; Order execution; Order routing; Transfers,www.robinhood.com
+217,Ronin EM Ltd,,Cyprus,CySEC,Custody; Order execution; Order routing; Transfers,em.ron.in
+218,RUFIJI,RUFIJI CAPITAL SAS,France,AMF,Custody; Order execution; Advice; Portfolio mgmt; Transfers,www.rufiji.capital
+219,RULEMATCH,RULEMATCH Europe AG,Liechtenstein,FMA,Custody; Trading platform; Transfers,www.rulematch.com/europe
+220,Safello AB,,Sweden,Finansinspektionen,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.safello.com
+221,Scalable Capital Bank GmbH,,Germany,BaFin,Advice,www.scalable.capital
+222,Simple Coin s.r.o.,,Czechia,CNB,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.simplecoin.eu
+223,Simplex,Nuvei Liquidity UAB,Lithuania,LSC,Custody; Crypto<->cash; Crypto<->crypto; Transfers,simplex.com
+224,sino Aktiengesellschaft,,Germany,BaFin,Order routing,www.sino.de
+225,"Skrill, NETELLER",Paysafe Payment Solutions Limited,Ireland,CBI,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.skrill.com
+226,Smartbroker AG,,Germany,BaFin,Order routing,www.smartbrokerplus.de/de-de
+227,SOCIETE GENERALE - FORGE,,France,AMF,Custody; Transfers,www.sgforge.com
+228,Socios.com,Socios Europe Services Limited,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Placing; Transfers,www.socios.com
+229,Stable Mint Ltd.,,Malta,MFSA,Custody; Transfers,stablemint.io
+230,Standard Chartered,Standard Chartered Luxembourg S.A.,Luxembourg,CSSF,Custody; Transfers,www.sc.com
+231,STOKR,STOKR S.A.,Luxembourg,CSSF,Custody; Transfers,stokr.io
+232,StoneX,StoneX Digital International Limited,Ireland,CBI,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Transfers,www.stonex.com
+233,Strike,Zap (Strike) Europe Limited,Malta,MFSA,Custody; Crypto<->cash; Order execution; Transfers,strike.me/en-GB
+234,Sutor Bank GmbH,,Germany,BaFin,Order execution,www.sutorbank.de
+235,SWISSBORG,BLOCKNODES SAS,France,AMF,Custody; Order execution; Placing; Advice; Portfolio mgmt; Transfers,swissborg.com
+236,Swissquote,Swissquote Bank Europe SA,Luxembourg,CSSF,Custody; Order execution; Transfers,www.swissquote.com/en-lu/private
+237,Sygnum Europe,Sygnum Europe AG,Liechtenstein,FMA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.sygnum.com/eu
+238,Tangany GmbH,,Germany,BaFin,Custody; Transfers,www.tangany.com
+239,TEROXX DIGITAL ASSET LTD,,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Advice; Portfolio mgmt; Transfers,www.teroxx.com
+240,Tesseract,Tesseract Investment Oy,Finland,FIN-FSA,Custody; Order routing; Advice; Portfolio mgmt; Transfers,tesseract.fi
+241,Trade Republic Bank GmbH,,Germany,BaFin,Custody; Order execution; Order routing; Transfers,traderepublic.com
+242,Traders Place GmbH & Co. KGaA,,Germany,BaFin,Order routing,tradersplace.de
+243,Tradevest,Tradevest Digital Assets GmbH,Germany,BaFin,Custody; Transfers,www.tradevest.ai
+244,Tradevest Markets AG,,Germany,BaFin,Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Advice; Portfolio mgmt,www.tradevest.ai/de
+245,Tradias GmbH,,Germany,BaFin,Crypto<->cash; Crypto<->crypto; Order execution; Placing; Transfers,www.tradias.de
+246,Trading 212,Trading 212 Markets Ltd,Cyprus,CySEC,Custody; Crypto<->cash; Order execution; Order routing,www.trading212.com
+247,Trading.com,Trading.com Markets EU Ltd,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Order routing; Portfolio mgmt,www.trading.com/eu
+248,Tradu,Stratos Europe Ltd,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto,www.tradu.com/eu
+249,TRIA BRIDGE,TRIA BRIDGE LIMITED (ex Tokenomica Bridge Ltd),Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Advice; Portfolio mgmt; Transfers,triabridge.com
+250,Twino,AS TWINO Investments,Latvia,Latvijas Banka,Custody; Crypto<->cash; Crypto<->crypto; Order execution,www.twino.eu/en
+251,TYR MARKETS AS,,Norway,Finanstilsynet,Custody; Crypto<->cash; Crypto<->crypto; Transfers,www.tyrmarkets.net/no
+252,Unlimit Crypto Ltd (ex Stable Defi Ltd),Unlimit Crypto Ltd,Cyprus,CySEC,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,www.crypto.unlimit.com
+253,V-Bank AG,,Germany,BaFin,Custody; Order execution; Transfers,www.v-bank.com
+254,Validvent,Validvent Technology GmbH,Austria,FMA,Advice,validvent.com
+255,Vermoegensbutler GmbH,,Germany,BaFin,Order routing; Advice,www.vermoegensbutler.de
+256,Virtu Financial Ireland Limited,,Ireland,CBI,Crypto<->cash; Crypto<->crypto,www.virtu.com
+257,Vivid Money B.V.,,Netherlands,AFM,Custody; Order routing,vivid.money
+258,Volksbank Heiden eG,,Germany,BaFin,Order execution,www.vbheiden.de
+259,Volksbank Mittlerer Schwarzwald eG,,Germany,BaFin,Order execution,www.voba-msw.de
+260,Volksbank Raiffeisenbank Bayern Mitte eG,,Germany,BaFin,Order execution; Order routing,www.vr-bayernmitte.de
+261,Volksbank Raiffeisenbank Wuerzburg eG,,Germany,BaFin,Order execution,www.vr-bank-wuerzburg.de
+262,VR Bank Suedpfalz eG,,Germany,BaFin,Order execution,www.vrbank-suedpfalz.de
+263,VR TeilhaberBank Metropolregion Nuernberg eG,,Germany,BaFin,Order execution,www.vr-teilhaberbank.de
+264,VR-Bank Rottal-Inn eG,,Germany,BaFin,Order execution,www.vrbk.de
+265,"wBTCb.cz, s.r.o.",,Czechia,CNB,Crypto<->cash,bit.plus
+266,Webot,Pionew Ireland Limited,Ireland,CBI,Custody; Trading platform; Crypto<->cash; Transfers,www.webot.com/eu
+267,Webull | Webull Europe,Webull Securities (Europe) B.V.,Netherlands,AFM,Custody; Order routing,www.webull.eu
+268,Westerwald Bank eG Volks- und Raiffeisenbank,,Germany,BaFin,Order execution,www.westerwaldbank.de
+269,White Tech Ltd,WHITE TECH d.o.o.,Croatia,HANFA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,whitely.hr/hr
+270,WhiteBIT EU,WB-Shields Innovations GmbH,Austria,FMA,Custody; Crypto<->cash; Crypto<->crypto; Placing; Transfers,whitebit.eu
+271,wSw PortfolioManagement AG,,Germany,BaFin,Order routing,www.wsw-pm.de
+272,Wyden Capital AG,,Liechtenstein,FMA,Portfolio mgmt,www.wydencapital.com/en
+273,Xcoins,CF Technologies Ltd,Malta,MFSA,Custody; Crypto<->cash; Crypto<->crypto; Transfers,xcoins.com/en
+274,XTB Limited,,Cyprus,CySEC,Custody; Order execution; Order routing,www.xtb.com/cy
+275,Young Platform,YOUNG PLATFORM S.P.A.,Italy,CONSOB,Custody; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Advice; Portfolio mgmt; Transfers,youngplatform.com
+276,ZBX,Zillion Bits Limited,Malta,MFSA,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Order execution; Placing; Order routing; Transfers,www.zbx.com
+277,Zebedee Europe B.V.,,Netherlands,AFM,Custody; Crypto<->cash; Transfers,zbd.gg
+278,zerohash europe,zerohash europe B.V.,Netherlands,AFM,Custody; Trading platform; Crypto<->cash; Crypto<->crypto; Transfers,zerohash.com/eu
+279,ZEUS Anstalt fuer Vermoegensverwaltung,,Liechtenstein,FMA,Portfolio mgmt,www.zeus-management.li/en
+280,Zodia,Zodia Custody (Europe) S.A.,Luxembourg,CSSF,Custody; Transfers,zodia-custody.com

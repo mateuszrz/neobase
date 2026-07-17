@@ -13,6 +13,7 @@ import {
   getSocialPosts,
   getNews,
   getMentions,
+  getMicaStatus,
   getAiSummary,
 } from "@/lib/queries";
 import {
@@ -24,6 +25,7 @@ import {
   SocialFeed,
   NewsList,
   MentionsList,
+  MicaLicence,
   MiniStat,
   fmt,
   fmtMoney,
@@ -55,6 +57,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
     getMentions(slug, ft.name),
     getAiSummary(slug, ft.name),
   ]);
+  const mica = ft.type === "exchange" ? await getMicaStatus(slug) : null;
   const sentiment = await getSentimentIndex(slug);
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
@@ -119,6 +122,13 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         </div>
 
         {ft.description && <p className="lead" style={{ marginTop: 20, maxWidth: 760 }}>{ft.description}</p>}
+
+        {/* MiCA / ESMA licence status — a headline trust signal for exchanges */}
+        {mica && (
+          <div style={{ marginTop: 24 }}>
+            <MicaLicence mica={mica} name={ft.name} />
+          </div>
+        )}
 
         {/* Sentiment overview (AI narrative) + composite sentiment index, side by side */}
         {(brief.text || sentiment) && (

@@ -12,7 +12,7 @@ import { sampleMentions, type MentionView } from "@/lib/mentions/sample";
 import { gatherContext, getStoredSummary } from "@/lib/summary/generate";
 import { composeBrief } from "@/lib/summary/compose";
 
-const { fintechs, metricSnapshots, reviews, socialPosts, newsItems, blogPosts, mentions } = schema;
+const { fintechs, metricSnapshots, reviews, socialPosts, newsItems, blogPosts, mentions, caspProviders } = schema;
 
 export interface FintechListItem {
   id: string;
@@ -443,6 +443,41 @@ export async function getMentions(
     };
   }
   return { items: sampleMentions(fintechId, name, limit), isSample: true };
+}
+
+export interface MicaStatus {
+  licensed: boolean;
+  provider: string | null;
+  legalEntity: string | null;
+  country: string | null;
+  regulator: string | null;
+  services: string[];
+}
+
+/** MiCA/ESMA CASP registry status for a fintech (matched at seed time). */
+export async function getMicaStatus(fintechId: string): Promise<MicaStatus> {
+  const [row] = await db
+    .select({
+      caspId: fintechs.caspProviderId,
+      provider: caspProviders.provider,
+      legalEntity: caspProviders.legalEntity,
+      country: caspProviders.country,
+      regulator: caspProviders.regulator,
+      services: caspProviders.services,
+    })
+    .from(fintechs)
+    .leftJoin(caspProviders, eq(fintechs.caspProviderId, caspProviders.id))
+    .where(eq(fintechs.id, fintechId))
+    .limit(1);
+  if (!row || row.caspId == null) return { licensed: false, provider: null, legalEntity: null, country: null, regulator: null, services: [] };
+  return {
+    licensed: true,
+    provider: row.provider,
+    legalEntity: row.legalEntity,
+    country: row.country,
+    regulator: row.regulator,
+    services: row.services ?? [],
+  };
 }
 
 export interface CountryRow {
