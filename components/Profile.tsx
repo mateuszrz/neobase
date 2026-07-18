@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
 import { micaFaqs } from "@/lib/mica/reference";
+import { normalizeTags } from "@/lib/tags";
 import { getSentimentIndex } from "@/lib/sentiment";
 import { SentimentIndexCard } from "@/components/SentimentIndex";
 import {
@@ -28,6 +29,7 @@ import {
   MentionsList,
   MicaLicence,
   FaqSection,
+  flagEmoji,
   MiniStat,
   fmt,
   fmtMoney,
@@ -74,6 +76,15 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const totalRatings = platforms.reduce((s, p) => s + (p.count ?? 0), 0);
 
   const tags: string[] = Array.isArray(ft.tags) ? ft.tags : [];
+  const tagChips = normalizeTags(tags, ft.type === "exchange" ? "exchange" : "neobank");
+  const regionName = (() => {
+    try {
+      const dn = new Intl.DisplayNames(["en"], { type: "region" });
+      return (cc: string) => dn.of(cc) ?? cc;
+    } catch {
+      return (cc: string) => cc;
+    }
+  })();
   const faqs: { q: string; a: string }[] = Array.isArray(ft.faqs) ? (ft.faqs as any) : [];
   // Exchanges get auto-generated MiCA Q&A prepended to the curated FAQ.
   const allFaqs = mica ? [...micaFaqs(ft.name, mica), ...faqs] : faqs;
@@ -115,10 +126,12 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                 </>
               )}
             </p>
-            {tags.length > 0 && (
-              <div className="row" style={{ gap: 6, marginTop: 12 }}>
-                {tags.slice(0, 8).map((t) => (
-                  <span key={t} className="badge">{t}</span>
+            {tagChips.length > 0 && (
+              <div className="row" style={{ gap: 6, marginTop: 12, flexWrap: "wrap" }}>
+                {tagChips.map((c) => (
+                  <a key={c.slug} href={`/best/${c.slug}/`} className="badge" style={{ textDecoration: "none" }} title={`Best ${c.chip.toLowerCase()} →`}>
+                    {c.chip}
+                  </a>
                 ))}
               </div>
             )}
@@ -140,6 +153,23 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             {brief.text && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
             {sentiment && <SentimentIndexCard data={sentiment} />}
           </div>
+        )}
+
+        {/* Where the brand operates — markets with flags */}
+        {availableIn.length > 0 && (
+          <section style={{ marginTop: 28 }}>
+            <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
+              <h2 className="subheading">Where {ft.name} operates</h2>
+              <span className="muted" style={{ fontSize: 12 }}>{availableIn.length} markets</span>
+            </div>
+            <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+              {availableIn.map((cc) => (
+                <span key={cc} className="badge" style={{ fontSize: 12 }}>
+                  <span aria-hidden>{flagEmoji(cc)}</span> {regionName(cc)}
+                </span>
+              ))}
+            </div>
+          </section>
         )}
 
         {/* HERO — cross-platform ratings, the differentiator */}
