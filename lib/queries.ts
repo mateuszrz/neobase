@@ -22,13 +22,26 @@ export interface FintechListItem {
   tags: string[] | null;
   rating: number | null;
   reviewCount: number | null;
+  sentiment: number | null; // our composite sentiment score (only populated when ranked by it)
 }
 
-/** Latest global Trustpilot rating per fintech, joined via LATERAL. */
-async function listWithLatest(type: "neobank" | "exchange" | null, limit?: number): Promise<FintechListItem[]> {
+/**
+ * Latest Trustpilot rating + our composite sentiment per fintech (LATERAL joins).
+ * `rankBy` picks the ordering: "rating" (TrustScore) or "sentiment" (our score);
+ * the `sentiment` field is only surfaced when ranking by it.
+ */
+async function listWithLatest(
+  type: "neobank" | "exchange" | null,
+  limit?: number,
+  rankBy: "rating" | "sentiment" = "rating",
+): Promise<FintechListItem[]> {
+  const order =
+    rankBy === "sentiment"
+      ? sql`ORDER BY si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC`
+      : sql`ORDER BY m.rating DESC NULLS LAST, f.name ASC`;
   const rows = await db.execute(sql`
     SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.tags,
-           m.rating, m.review_count AS "reviewCount"
+           m.rating, m.review_count AS "reviewCount", si.composite AS sentiment
     FROM fintechs f
     LEFT JOIN LATERAL (
       SELECT rating, review_count
@@ -37,8 +50,11 @@ async function listWithLatest(type: "neobank" | "exchange" | null, limit?: numbe
       ORDER BY snapshot_date DESC
       LIMIT 1
     ) m ON true
+    LEFT JOIN LATERAL (
+      SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1
+    ) si ON true
     ${type ? sql`WHERE f.type = ${type}` : sql``}
-    ORDER BY m.rating DESC NULLS LAST, f.name ASC
+    ${order}
     ${limit ? sql`LIMIT ${limit}` : sql``}
   `);
   return (rows.rows as any[]).map((r) => ({
@@ -49,14 +65,15 @@ async function listWithLatest(type: "neobank" | "exchange" | null, limit?: numbe
     tags: r.tags,
     rating: r.rating == null ? null : Number(r.rating),
     reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
+    sentiment: rankBy === "sentiment" && r.sentiment != null ? Number(r.sentiment) : null,
   }));
 }
 
 export const getTopNeobanks = (limit = 12) => listWithLatest("neobank", limit);
-export const getTopExchanges = (limit = 8) => listWithLatest("exchange", limit);
+export const getTopExchanges = (limit = 8) => listWithLatest("exchange", limit, "sentiment");
 export const getAllFintechs = () => listWithLatest(null);
 export const listNeobanks = () => listWithLatest("neobank");
-export const listExchanges = () => listWithLatest("exchange");
+export const listExchanges = () => listWithLatest("exchange", undefined, "sentiment");
 
 export async function getPlatformStats() {
   // "Ratings" = the aggregate volume behind the scores (we hold anonymised store
