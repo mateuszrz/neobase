@@ -49,3 +49,20 @@ export const regulatorName = (abbr: string): string => REGULATORS[abbr] ?? abbr;
 
 /** MiCA passporting: a CASP licensed in one member state can serve the whole EU/EEA. */
 export const EU_EEA_COUNTRIES = 30;
+
+/** Country name → ISO-3166 alpha-2 for the EU/EEA members that appear in the register. */
+export const COUNTRY_ISO: Record<string, string> = {
+  Austria: "AT", Belgium: "BE", Bulgaria: "BG", Croatia: "HR", Cyprus: "CY",
+  Czechia: "CZ", Denmark: "DK", Estonia: "EE", Finland: "FI", France: "FR",
+  Germany: "DE", Greece: "GR", Hungary: "HU", Iceland: "IS", Ireland: "IE",
+  Italy: "IT", Latvia: "LV", Liechtenstein: "LI", Lithuania: "LT", Luxembourg: "LU",
+  Malta: "MT", Netherlands: "NL", Norway: "NO", Poland: "PL", Portugal: "PT",
+  Romania: "RO", Slovakia: "SK", Slovenia: "SI", Spain: "ES", Sweden: "SE",
+};
+
+/** Emoji flag for a country name (🌍 if unmapped). */
+export function countryFlag(name: string): string {
+  const iso = COUNTRY_ISO[name];
+  if (!iso) return "🌍";
+  return String.fromCodePoint(...[...iso].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
+}
