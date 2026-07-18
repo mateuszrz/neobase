@@ -500,6 +500,50 @@ export async function getMicaStatus(fintechId: string): Promise<MicaStatus> {
   };
 }
 
+export interface BestRow {
+  id: string;
+  name: string;
+  country: string | null;
+  logoSvg: string | null;
+  sentiment: number | null;
+  rating: number | null;
+  reviewCount: number | null;
+  tags: string[] | null;
+}
+
+/** Fintechs of a type whose tags overlap `match`, ranked by our sentiment score. */
+export async function getBestForTag(match: string[], group: "neobank" | "exchange", limit = 60): Promise<BestRow[]> {
+  const rows = await db.execute(sql`
+    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.tags,
+           si.composite AS sentiment, m.rating, m.review_count AS "reviewCount"
+    FROM fintechs f
+    LEFT JOIN LATERAL (SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1) si ON true
+    LEFT JOIN LATERAL (
+      SELECT rating, review_count FROM metric_snapshots ms
+      WHERE ms.fintech_id = f.id AND ms.kind = 'trustpilot' AND ms.country = 'ZZ'
+      ORDER BY snapshot_date DESC LIMIT 1
+    ) m ON true
+    WHERE f.type = ${group} AND f.tags && ARRAY[${sql.join(match.map((m) => sql`${m}`), sql`, `)}]::text[]
+    ORDER BY si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC
+    LIMIT ${limit}
+  `);
+  return (rows.rows as any[]).map((r) => ({
+    id: r.id, name: r.name, country: r.country, logoSvg: r.logoSvg,
+    sentiment: r.sentiment == null ? null : Number(r.sentiment),
+    rating: r.rating == null ? null : Number(r.rating),
+    reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
+    tags: r.tags ?? null,
+  }));
+}
+
+/** Count of fintechs matching each raw tag (for the rankings index). */
+export async function getTagCounts(): Promise<Map<string, number>> {
+  const rows = await db.execute(sql`SELECT type, unnest(tags) AS tag, count(*)::int AS n FROM fintechs GROUP BY type, tag`);
+  const m = new Map<string, number>();
+  for (const r of rows.rows as any[]) m.set(`${r.type}:${r.tag}`, Number(r.n));
+  return m;
+}
+
 export interface MicaRegistryRow {
   id: number;
   provider: string;

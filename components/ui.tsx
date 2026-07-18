@@ -17,6 +17,7 @@ export function Nav() {
         </a>
         <a className="nav-link nav-hide-sm" href="/neobanks/">Neobanks</a>
         <a className="nav-link nav-hide-sm" href="/exchanges/">Exchanges</a>
+        <a className="nav-link nav-hide-sm" href="/best/">Rankings</a>
         <a className="nav-link nav-hide-sm" href="/about/">About</a>
         <a className="btn btn-ghost nav-hide-sm" href="/test/">Test our reports</a>
         <a className="btn btn-cyan" href="/monitoring/">Get monitoring</a>
