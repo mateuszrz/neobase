@@ -162,7 +162,11 @@ export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?
           {f.reviewCount != null && ` · ${fmt(f.reviewCount)} reviews`}
         </p>
       </div>
-      {f.rating != null && <span className="pill pill-score">★ {f.rating.toFixed(1)}</span>}
+      {f.sentiment != null ? (
+        <span className="pill pill-score" title="NeoBase sentiment score">◆ {f.sentiment.toFixed(0)}</span>
+      ) : (
+        f.rating != null && <span className="pill pill-score">★ {f.rating.toFixed(1)}</span>
+      )}
     </a>
   );
 }

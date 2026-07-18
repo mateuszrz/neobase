@@ -16,7 +16,7 @@ export default async function ExchangesPage() {
         <p className="eyebrow" style={{ marginBottom: 12 }}>Directory</p>
         <h1 className="h-sm">Crypto exchanges</h1>
         <p className="lead" style={{ marginTop: 10, marginBottom: 16 }}>
-          {list.length} exchanges ranked by TrustScore.
+          {list.length} exchanges ranked by NeoBase sentiment score.
         </p>
         <p style={{ marginBottom: 28 }}>
           <a href="/exchanges/mica/" className="btn btn-ghost">🇪🇺 MiCA licence registry →</a>
