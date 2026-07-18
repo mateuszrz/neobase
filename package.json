@@ -30,7 +30,7 @@
     "news:test": "tsx scripts/news-test.ts",
     "mentions:test": "tsx scripts/mentions-test.ts",
     "casp:seed": "tsx scripts/seed-casp.ts",
-    "tags:enrich": "tsx scripts/enrich-exchange-tags.ts",
+    "tags:enrich": "tsx scripts/enrich-tags.ts",
     "backfill:socialnews": "tsx scripts/backfill-social-news.ts",
     "blog:seed": "tsx scripts/seed-blog-sources.ts",
     "blog:test": "tsx scripts/blog-test.ts",
