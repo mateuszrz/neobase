@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { FintechListItem, PlatformRating } from "@/lib/queries";
 import { BrandLogo } from "@/components/BrandLogo";
+import { micaService, regulatorName, EU_EEA_COUNTRIES } from "@/lib/mica/reference";
 
 /* ─── Brand / chrome ──────────────────────────────────────────────────────── */
 
@@ -741,52 +742,97 @@ export function MentionsList({
   );
 }
 
-/** MiCA / ESMA CASP licence status for an exchange — the EU regulatory trust signal. */
+function MicaRow({ label, value }: { label: string; value: ReactNode }) {
+  if (value == null || value === "") return null;
+  return (
+    <div className="spread" style={{ fontSize: 13, padding: "9px 0", borderBottom: "1px solid var(--stone-border)", gap: 16, alignItems: "baseline" }}>
+      <span className="muted" style={{ flex: "0 0 auto" }}>{label}</span>
+      <span style={{ fontWeight: 500, textAlign: "right", minWidth: 0 }}>{value}</span>
+    </div>
+  );
+}
+
+/**
+ * MiCA / ESMA CASP licence panel for an exchange — the EU regulatory trust
+ * signal, expanded: a plain-language answer, the licence detail table, and each
+ * licensed MiCA service with a description. Data from the ESMA register.
+ */
 export function MicaLicence({
   mica,
   name,
 }: {
-  mica: { licensed: boolean; provider: string | null; legalEntity: string | null; country: string | null; regulator: string | null; services: string[] };
+  mica: { licensed: boolean; provider: string | null; legalEntity: string | null; country: string | null; regulator: string | null; services: string[]; website: string | null };
   name: string;
 }) {
-  if (mica.licensed) {
+  if (!mica.licensed) {
     return (
-      <div className="card" style={{ borderLeft: "3px solid #16a34a" }}>
+      <section className="card" style={{ borderLeft: "3px solid var(--neg)" }}>
         <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
-          <h2 className="subheading">MiCA licence</h2>
-          <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a" }}>✓ Licensed</span>
+          <h2 className="subheading">Does {name} have a MiCA licence?</h2>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--neg)", flex: "0 0 auto" }}>✕ Not authorised</span>
         </div>
-        <p className="muted" style={{ margin: "0 0 14px", fontSize: 13, lineHeight: 1.6 }}>
-          Authorised under the EU’s MiCA regulation{mica.legalEntity ? ` (held by ${mica.legalEntity})` : ""} — regulated by{" "}
-          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{mica.regulator}</strong> in {mica.country}. Passportable across the EU/EEA.
+        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7 }}>
+          <strong>No.</strong> {name} is not listed in the EU’s ESMA register of authorised crypto-asset service providers (CASPs).
+          The MiCA transition period ended on 1 July 2026, so without a MiCA authorisation it may not be permitted to serve
+          clients in the EU/EEA. Users in Europe should check the official ESMA register before trading.
         </p>
-        {mica.services.length > 0 && (
-          <>
-            <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 8 }}>
-              Licensed services
-            </div>
-            <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
-              {mica.services.map((s) => (
-                <span key={s} className="badge">{s}</span>
-              ))}
-            </div>
-          </>
-        )}
         <p className="muted" style={{ margin: "14px 0 0", fontSize: 11 }}>Source: ESMA MiCA register.</p>
-      </div>
+      </section>
     );
   }
+
+  const regFull = regulatorName(mica.regulator ?? "");
+  const web = (mica.website ?? "").replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
   return (
-    <div className="card" style={{ borderLeft: "3px solid var(--neg)" }}>
+    <section className="card" style={{ borderLeft: "3px solid #16a34a" }}>
       <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
-        <h2 className="subheading">MiCA licence</h2>
-        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--neg)" }}>✕ Not licensed</span>
+        <h2 className="subheading">Does {name} have a MiCA licence?</h2>
+        <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a", flex: "0 0 auto" }}>✓ Authorised · MiCA CASP</span>
       </div>
-      <p className="muted" style={{ margin: 0, fontSize: 13, lineHeight: 1.6 }}>
-        {name} is not listed in the EU’s ESMA MiCA register of authorised crypto-asset service providers, so it may not be permitted to serve EU/EEA customers after the MiCA transition.
+      <p style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.7 }}>
+        <strong>Yes.</strong> {name}{mica.legalEntity ? ` (legal entity ${mica.legalEntity})` : ""} holds a MiCA crypto-asset
+        service provider (CASP) authorisation — regulated by <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{regFull}</strong>{" "}
+        in {mica.country}, listed in the official ESMA register. Through MiCA passporting it may legally serve clients across the
+        EU/EEA ({EU_EEA_COUNTRIES} countries).
       </p>
-      <p className="muted" style={{ margin: "14px 0 0", fontSize: 11 }}>Source: ESMA MiCA register.</p>
-    </div>
+
+      <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
+        Licence details
+      </div>
+      <MicaRow label="Status" value={<span style={{ color: "#16a34a", fontWeight: 600 }}>✓ Authorised (MiCA CASP)</span>} />
+      <MicaRow label="Legal entity" value={mica.legalEntity ?? mica.provider} />
+      <MicaRow label="Home regulator" value={regFull} />
+      <MicaRow label="Country of authorisation" value={mica.country} />
+      <MicaRow label="Official website" value={web ? <a href={`https://${web}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan-edge)" }}>{web}</a> : null} />
+      <MicaRow label="Source" value="ESMA MiCA register" />
+
+      {mica.services.length > 0 && (
+        <>
+          <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, margin: "18px 0 10px" }}>
+            Licensed crypto services ({mica.services.length})
+          </div>
+          <div className="stack-8">
+            {mica.services.map((tok) => {
+              const s = micaService(tok);
+              return (
+                <div key={tok} className="row" style={{ gap: 10, alignItems: "flex-start" }}>
+                  <span
+                    style={{ flex: "0 0 auto", width: 22, height: 22, borderRadius: 6, background: "var(--sky-wash)", color: "var(--cyan-edge)", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}
+                    aria-hidden
+                  >
+                    {s.letter}
+                  </span>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{s.name}</div>
+                    {s.desc && <div className="muted" style={{ fontSize: 12, lineHeight: 1.5 }}>{s.desc}</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </section>
   );
 }
 

@@ -452,6 +452,7 @@ export interface MicaStatus {
   country: string | null;
   regulator: string | null;
   services: string[];
+  website: string | null;
 }
 
 /** MiCA/ESMA CASP registry status for a fintech (matched at seed time). */
@@ -464,12 +465,13 @@ export async function getMicaStatus(fintechId: string): Promise<MicaStatus> {
       country: caspProviders.country,
       regulator: caspProviders.regulator,
       services: caspProviders.services,
+      website: caspProviders.website,
     })
     .from(fintechs)
     .leftJoin(caspProviders, eq(fintechs.caspProviderId, caspProviders.id))
     .where(eq(fintechs.id, fintechId))
     .limit(1);
-  if (!row || row.caspId == null) return { licensed: false, provider: null, legalEntity: null, country: null, regulator: null, services: [] };
+  if (!row || row.caspId == null) return { licensed: false, provider: null, legalEntity: null, country: null, regulator: null, services: [], website: null };
   return {
     licensed: true,
     provider: row.provider,
@@ -477,7 +479,49 @@ export async function getMicaStatus(fintechId: string): Promise<MicaStatus> {
     country: row.country,
     regulator: row.regulator,
     services: row.services ?? [],
+    website: row.website,
   };
+}
+
+export interface MicaRegistryRow {
+  id: number;
+  provider: string;
+  legalEntity: string | null;
+  country: string;
+  regulator: string;
+  services: string[];
+  website: string | null;
+  fintechId: string | null; // set if NeoBase tracks this provider
+  sentiment: number | null; // our latest composite sentiment score, if tracked
+}
+
+/**
+ * Full MiCA/ESMA CASP register (280 providers) joined to our tracked fintechs +
+ * their latest sentiment score. Ordered by our sentiment (tracked/licensed
+ * leaders first), then name — powers the searchable public registry page.
+ */
+export async function getMicaRegistry(): Promise<MicaRegistryRow[]> {
+  const rows = await db.execute(sql`
+    SELECT c.id, c.provider, c.legal_entity AS "legalEntity", c.country, c.regulator, c.services, c.website,
+           f.id AS "fintechId", si.composite AS sentiment
+    FROM casp_providers c
+    LEFT JOIN fintechs f ON f.casp_provider_id = c.id
+    LEFT JOIN LATERAL (
+      SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1
+    ) si ON true
+    ORDER BY si.composite DESC NULLS LAST, c.provider ASC
+  `);
+  return (rows.rows as any[]).map((r) => ({
+    id: Number(r.id),
+    provider: r.provider,
+    legalEntity: r.legalEntity ?? null,
+    country: r.country,
+    regulator: r.regulator,
+    services: Array.isArray(r.services) ? r.services : [],
+    website: r.website ?? null,
+    fintechId: r.fintechId ?? null,
+    sentiment: r.sentiment == null ? null : Number(r.sentiment),
+  }));
 }
 
 export interface CountryRow {
