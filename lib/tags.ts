@@ -35,6 +35,9 @@ export const TAGS: TagDef[] = [
   { slug: "staking-earn", chip: "Staking", title: "Best exchanges for staking & earn", blurb: "Exchanges with staking and yield products.", group: "exchange", match: ["staking", "earn", "high-yield", "smart-yield", "lending"] },
   { slug: "nft-platforms", chip: "NFTs", title: "Best exchanges for NFTs", blurb: "Exchanges with NFT marketplaces.", group: "exchange", match: ["nft"] },
   { slug: "copy-trading", chip: "Copy trading", title: "Best exchanges for copy trading", blurb: "Exchanges with social/copy-trading features.", group: "exchange", match: ["copy-trading"] },
+  { slug: "low-fee-exchanges", chip: "Low fees", title: "Best low-fee crypto exchanges", blurb: "Exchanges with the lowest trading fees.", group: "exchange", match: ["low-fees", "no-fees"] },
+  { slug: "for-beginners", chip: "Beginners", title: "Best crypto exchanges for beginners", blurb: "Easy, approachable exchanges for first-time users.", group: "exchange", match: ["beginner-friendly", "beginners"] },
+  { slug: "defi-web3", chip: "DeFi & Web3", title: "Best exchanges for DeFi & Web3", blurb: "Exchanges with DeFi access and Web3 wallets.", group: "exchange", match: ["defi", "dex", "web3-wallet"] },
 ];
 
 const BY_SLUG = new Map(TAGS.map((t) => [t.slug, t]));
