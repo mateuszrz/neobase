@@ -770,7 +770,7 @@ export function MicaLicence({
 }) {
   if (!mica.licensed) {
     return (
-      <section className="card" style={{ borderLeft: "3px solid var(--neg)" }}>
+      <section className="card" style={{ borderLeft: "3px solid var(--neg)", background: "#fdf4f1" }}>
         <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
           <h2 className="subheading">Does {name} have a MiCA licence?</h2>
           <span style={{ fontSize: 12, fontWeight: 600, color: "var(--neg)", flex: "0 0 auto" }}>✕ Not authorised</span>
@@ -788,7 +788,7 @@ export function MicaLicence({
   const regFull = regulatorName(mica.regulator ?? "");
   const web = (mica.website ?? "").replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
   return (
-    <section className="card" style={{ borderLeft: "3px solid #16a34a" }}>
+    <section className="card" style={{ borderLeft: "3px solid #16a34a", background: "#f3faf4" }}>
       <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
         <h2 className="subheading">Does {name} have a MiCA licence?</h2>
         <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a", flex: "0 0 auto" }}>✓ Authorised · MiCA CASP</span>
@@ -811,11 +811,11 @@ export function MicaLicence({
       <MicaRow label="Source" value="ESMA MiCA register" />
 
       {mica.services.length > 0 && (
-        <>
-          <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, margin: "18px 0 10px" }}>
+        <details style={{ marginTop: 16, borderTop: "1px solid var(--stone-border)", paddingTop: 12 }}>
+          <summary style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, cursor: "pointer", color: "var(--warm-gray)" }}>
             Licensed crypto services ({mica.services.length})
-          </div>
-          <div className="stack-8">
+          </summary>
+          <div className="stack-8" style={{ marginTop: 12 }}>
             {mica.services.map((tok) => {
               const s = micaService(tok);
               return (
@@ -834,23 +834,49 @@ export function MicaLicence({
               );
             })}
           </div>
-        </>
+        </details>
       )}
 
-      <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, margin: "18px 0 4px" }}>
-        Where you can use {name} · EU/EEA passporting ({EU_EEA_COUNTRIES})
-      </div>
-      <p className="muted" style={{ fontSize: 12, margin: "0 0 10px", lineHeight: 1.5 }}>
-        A MiCA authorisation passports across the whole EU/EEA, so {name} may legally serve clients in:
-      </p>
-      <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
-        {EU_EEA_MEMBERS.map((c) => (
-          <span key={c} className="badge" style={{ fontSize: 12 }}>
-            <span aria-hidden>{countryFlag(c)}</span> {c}
-          </span>
+      <details style={{ marginTop: 12, borderTop: "1px solid var(--stone-border)", paddingTop: 12 }}>
+        <summary style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, cursor: "pointer", color: "var(--warm-gray)" }}>
+          Where you can use {name} · EU/EEA passporting ({EU_EEA_COUNTRIES})
+        </summary>
+        <p className="muted" style={{ fontSize: 12, margin: "10px 0 10px", lineHeight: 1.5 }}>
+          A MiCA authorisation passports across the whole EU/EEA, so {name} may legally serve clients in:
+        </p>
+        <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+          {EU_EEA_MEMBERS.map((c) => (
+            <span key={c} className="badge" style={{ fontSize: 12 }}>
+              <span aria-hidden>{countryFlag(c)}</span> {c}
+            </span>
+          ))}
+        </div>
+      </details>
+    </section>
+  );
+}
+
+/** FAQ accordion + FAQPage structured data (JSON-LD) for SEO rich results. */
+export function FaqSection({ items }: { items: { q: string; a: string }[] }) {
+  if (!items.length) return null;
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  };
+  return (
+    <div style={{ marginTop: 40, maxWidth: 780 }}>
+      <h2 className="subheading" style={{ marginBottom: 8 }}>Frequently asked questions</h2>
+      <div>
+        {items.map((f, i) => (
+          <details key={i} style={{ borderBottom: "1px solid var(--stone-border)" }}>
+            <summary style={{ fontWeight: 500, cursor: "pointer", padding: "13px 0", lineHeight: 1.4 }}>{f.q}</summary>
+            <p className="muted" style={{ margin: "0 0 14px", lineHeight: 1.7 }}>{f.a}</p>
+          </details>
         ))}
       </div>
-    </section>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
+    </div>
   );
 }
 
