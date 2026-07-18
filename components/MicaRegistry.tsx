@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { MicaRegistryRow } from "@/lib/queries";
+import { countryFlag } from "@/lib/mica/reference";
 
 /* Searchable MiCA/ESMA CASP registry, ranked by our composite sentiment score.
  * Client component — instant search/filter over the full (~280) provider list. */
@@ -55,7 +56,7 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
         />
         <select value={country} onChange={(e) => setCountry(e.target.value)} style={selStyle} aria-label="Country">
           <option value="">All countries</option>
-          {countries.map((c) => <option key={c} value={c}>{c}</option>)}
+          {countries.map((c) => <option key={c} value={c}>{countryFlag(c)} {c}</option>)}
         </select>
         <select value={regulator} onChange={(e) => setRegulator(e.target.value)} style={selStyle} aria-label="Regulator">
           <option value="">All regulators</option>
@@ -114,7 +115,9 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
                       <span className="muted">—</span>
                     )}
                   </td>
-                  <td style={{ padding: "10px" }}>{r.country}</td>
+                  <td style={{ padding: "10px", whiteSpace: "nowrap" }}>
+                    <span aria-hidden style={{ marginRight: 6 }}>{countryFlag(r.country)}</span>{r.country}
+                  </td>
                   <td style={{ padding: "10px" }}>{r.regulator}</td>
                   <td style={{ padding: "10px" }}>
                     {tradingPlatform && (

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { FintechListItem, PlatformRating } from "@/lib/queries";
 import { BrandLogo } from "@/components/BrandLogo";
-import { micaService, regulatorName, EU_EEA_COUNTRIES } from "@/lib/mica/reference";
+import { micaService, regulatorName, countryFlag, EU_EEA_COUNTRIES } from "@/lib/mica/reference";
 
 /* ─── Brand / chrome ──────────────────────────────────────────────────────── */
 
@@ -806,7 +806,7 @@ export function MicaLicence({
       <MicaRow label="Status" value={<span style={{ color: "#16a34a", fontWeight: 600 }}>✓ Authorised (MiCA CASP)</span>} />
       <MicaRow label="Legal entity" value={mica.legalEntity ?? mica.provider} />
       <MicaRow label="Home regulator" value={regFull} />
-      <MicaRow label="Country of authorisation" value={mica.country} />
+      <MicaRow label="Country of authorisation" value={mica.country ? <><span aria-hidden>{countryFlag(mica.country)}</span> {mica.country}</> : null} />
       <MicaRow label="Official website" value={web ? <a href={`https://${web}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan-edge)" }}>{web}</a> : null} />
       <MicaRow label="Source" value="ESMA MiCA register" />
 
