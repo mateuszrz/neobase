@@ -47,8 +47,18 @@ export const REGULATORS: Record<string, string> = {
 /** Full regulator name for an abbreviation, falling back to the abbreviation itself. */
 export const regulatorName = (abbr: string): string => REGULATORS[abbr] ?? abbr;
 
+/**
+ * The EU/EEA member states a MiCA licence passports into (EU-27 + the three EEA
+ * states Iceland, Liechtenstein, Norway) — the same set for every authorised CASP.
+ */
+export const EU_EEA_MEMBERS: string[] = [
+  "Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czechia", "Denmark", "Estonia", "Finland", "France",
+  "Germany", "Greece", "Hungary", "Iceland", "Ireland", "Italy", "Latvia", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Malta", "Netherlands", "Norway", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden",
+];
+
 /** MiCA passporting: a CASP licensed in one member state can serve the whole EU/EEA. */
-export const EU_EEA_COUNTRIES = 30;
+export const EU_EEA_COUNTRIES = EU_EEA_MEMBERS.length;
 
 /** Country name → ISO-3166 alpha-2 for the EU/EEA members that appear in the register. */
 export const COUNTRY_ISO: Record<string, string> = {
