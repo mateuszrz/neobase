@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { FintechListItem, PlatformRating } from "@/lib/queries";
 import { BrandLogo } from "@/components/BrandLogo";
-import { micaService, regulatorName, countryFlag, EU_EEA_COUNTRIES } from "@/lib/mica/reference";
+import { micaService, regulatorName, countryFlag, EU_EEA_COUNTRIES, EU_EEA_MEMBERS } from "@/lib/mica/reference";
 
 /* ─── Brand / chrome ──────────────────────────────────────────────────────── */
 
@@ -836,6 +836,20 @@ export function MicaLicence({
           </div>
         </>
       )}
+
+      <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, margin: "18px 0 4px" }}>
+        Where you can use {name} · EU/EEA passporting ({EU_EEA_COUNTRIES})
+      </div>
+      <p className="muted" style={{ fontSize: 12, margin: "0 0 10px", lineHeight: 1.5 }}>
+        A MiCA authorisation passports across the whole EU/EEA, so {name} may legally serve clients in:
+      </p>
+      <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
+        {EU_EEA_MEMBERS.map((c) => (
+          <span key={c} className="badge" style={{ fontSize: 12 }}>
+            <span aria-hidden>{countryFlag(c)}</span> {c}
+          </span>
+        ))}
+      </div>
     </section>
   );
 }
