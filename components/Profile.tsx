@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
+import { micaFaqs } from "@/lib/mica/reference";
 import { getSentimentIndex } from "@/lib/sentiment";
 import { SentimentIndexCard } from "@/components/SentimentIndex";
 import {
@@ -26,6 +27,7 @@ import {
   NewsList,
   MentionsList,
   MicaLicence,
+  FaqSection,
   MiniStat,
   fmt,
   fmtMoney,
@@ -73,6 +75,8 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
   const tags: string[] = Array.isArray(ft.tags) ? ft.tags : [];
   const faqs: { q: string; a: string }[] = Array.isArray(ft.faqs) ? (ft.faqs as any) : [];
+  // Exchanges get auto-generated MiCA Q&A prepended to the curated FAQ.
+  const allFaqs = mica ? [...micaFaqs(ft.name, mica), ...faqs] : faqs;
   const licenses: string[] = Array.isArray(ft.licenses) ? (ft.licenses as any) : [];
   const availableIn: string[] = Array.isArray(ft.availableIn) ? (ft.availableIn as any) : [];
   const hasResponsiveness = extras?.responseRate != null || extras?.responseTime != null;
@@ -271,20 +275,8 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         )}
 
-        {/* FAQs */}
-        {faqs.length > 0 && (
-          <div style={{ marginTop: 40, maxWidth: 760 }}>
-            <h2 className="subheading" style={{ marginBottom: 16 }}>FAQ</h2>
-            <div className="stack-16">
-              {faqs.slice(0, 6).map((f, i) => (
-                <div key={i}>
-                  <p style={{ fontWeight: 500, margin: "0 0 4px" }}>{f.q}</p>
-                  <p className="muted" style={{ margin: 0 }}>{f.a}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* FAQ — accordion + FAQPage structured data (MiCA Q&A for exchanges) */}
+        <FaqSection items={allFaqs} />
 
         <p className="muted" style={{ marginTop: 40, fontSize: 12 }}>
           Ratings &amp; sentiment aggregated from Trustpilot, Google Play and App Store — anonymised store
