@@ -155,7 +155,7 @@ export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?
   const href = `/${kind === "exchange" ? "exchange" : "fintech"}/${f.id}/`;
   return (
     <a className="fcard" href={href}>
-      <BrandLogo src={f.logoSvg} name={f.name} size={44} />
+      <BrandLogo src={f.logoSvg} website={f.website} name={f.name} size={44} />
       <div style={{ minWidth: 0, flex: 1 }}>
         <h3>{f.name}</h3>
         <p className="sub">
@@ -603,16 +603,18 @@ export function SocialFeed({
   posts,
   name,
   logo,
+  website,
 }: {
   posts: { network: string; text: string; postedAt: string; likes: number; comments: number; shares: number; url: string | null }[];
   name: string;
   logo?: string | null;
+  website?: string | null;
 }) {
   return (
     <div className="stack-16">
       {posts.map((p, i) => (
         <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < posts.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
-          <BrandLogo src={logo} name={name} size={36} radius={9} />
+          <BrandLogo src={logo} website={website} name={name} size={36} radius={9} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="row" style={{ gap: 8, marginBottom: 6, alignItems: "center" }}>
               <strong style={{ fontSize: 14 }}>{name}</strong>
@@ -681,16 +683,18 @@ export function BlogList({
   items,
   name,
   logo,
+  website,
 }: {
   items: { title: string; url: string | null; publishedAt: string; snippet: string }[];
   name: string;
   logo?: string | null;
+  website?: string | null;
 }) {
   return (
     <div className="stack-16">
       {items.map((p, i) => (
         <div key={i} className="row" style={{ gap: 12, alignItems: "flex-start", paddingBottom: 16, borderBottom: i < items.length - 1 ? "1px solid var(--stone-border)" : "none" }}>
-          <BrandLogo src={logo} name={name} size={36} radius={9} />
+          <BrandLogo src={logo} website={website} name={name} size={36} radius={9} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ margin: "0 0 4px", fontWeight: 500, lineHeight: 1.4 }}>
               {p.url ? (
