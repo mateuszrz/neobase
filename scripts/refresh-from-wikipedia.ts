@@ -29,14 +29,24 @@ const CONC = 5;
 if (!isClaudeLive()) { console.log("ANTHROPIC_API_KEY not set"); process.exit(1); }
 
 const UA = "NeoBaseBot/1.0 (https://neobase.co; data refresh)";
+async function searchPageId(q: string): Promise<{ pageid: number; title: string } | null> {
+  const s = await fetch(
+    `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srlimit=1&srsearch=${encodeURIComponent(q)}`,
+    { headers: { "User-Agent": UA } },
+  ).then((r) => r.json() as any);
+  const hit = s?.query?.search?.[0];
+  return hit ? { pageid: hit.pageid, title: hit.title } : null;
+}
 async function wiki(name: string, type: string, website: string | null): Promise<string> {
   const hint = type === "exchange" ? "cryptocurrency exchange" : "neobank digital bank fintech";
   try {
-    const s = await fetch(
-      `https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&srlimit=1&srsearch=${encodeURIComponent(`${name} ${hint}`)}`,
-      { headers: { "User-Agent": UA } },
-    ).then((r) => r.json() as any);
-    const hit = s?.query?.search?.[0];
+    // Hinted search first (disambiguates common words); fall back to name-only,
+    // then to the domain — many brands have an article the hinted query misses.
+    const host = (website ?? "").replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
+    const hit =
+      (await searchPageId(`${name} ${hint}`)) ??
+      (await searchPageId(name)) ??
+      (host ? await searchPageId(host) : null);
     if (!hit) return "";
     const e = await fetch(
       `https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro&explaintext&redirects=1&pageids=${hit.pageid}`,
