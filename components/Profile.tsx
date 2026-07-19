@@ -85,7 +85,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
       return (cc: string) => cc;
     }
   })();
-  const faqs: { q: string; a: string }[] = Array.isArray(ft.faqs) ? (ft.faqs as any) : [];
+  // Curated FAQs are gated by the confidence audit (fact_confidence.faqs, aligned
+  // to order) — an answer shows only when "high". The MiCA Q&A is generated from
+  // the authoritative register, so it's always trusted.
+  const faqConf: string[] = Array.isArray((ft.factConfidence as any)?.faqs) ? (ft.factConfidence as any).faqs : [];
+  const faqs: { q: string; a: string }[] = (Array.isArray(ft.faqs) ? (ft.faqs as any[]) : []).filter((_, i) => faqConf[i] === "high");
   // Exchanges get auto-generated MiCA Q&A prepended to the curated FAQ.
   const allFaqs = mica ? [...micaFaqs(ft.name, mica), ...faqs] : faqs;
   const licenses: string[] = Array.isArray(ft.licenses) ? (ft.licenses as any) : [];

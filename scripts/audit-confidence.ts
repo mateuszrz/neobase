@@ -35,8 +35,14 @@ const SYSTEM =
   "you are HIGHLY CONFIDENT the specific value is factually correct for THIS company. Output \"high\" only when you " +
   "are sure (a well-known fact, or it matches the official register provided); otherwise \"low\". When unsure, ALWAYS " +
   "say \"low\" — it is far worse to show a wrong fact than to hide a right one. For a crypto exchange, a `licenses`/" +
-  "regulator value that contradicts the official MiCA register row must be \"low\". Respond with ONLY JSON mapping " +
-  "each field name to \"high\" or \"low\".";
+  "regulator value that contradicts the official MiCA register row must be \"low\".\n" +
+  "Separately, flag risky FAQs. FAQs are the company's own product prose and are kept by default; a FAQ is only a " +
+  "problem when it asserts an EXTERNAL fact — a regulator/licence/legal-entity, country of authorisation, deposit-" +
+  "guarantee/insurance-scheme, listing, or a market statistic — that is WRONG, unverifiable, or contradicts the " +
+  "official register. Do NOT flag a FAQ merely for product specifics (prices, coverage amounts, supported coins). " +
+  "Return the indices of only the FAQs that must be hidden.\n" +
+  "Respond with ONLY JSON: each stored-field name → \"high\"/\"low\", plus \"hideFaqs\": [<indices to hide>] (empty " +
+  "array if none / no FAQs).";
 
 // Authoritative register lookup for exchanges.
 const casps = await db.select().from(schema.caspProviders);
@@ -61,12 +67,16 @@ async function one(r: (typeof rows)[number]) {
     const v = (current as any)[f];
     return v != null && v !== "" && !(Array.isArray(v) && v.length === 0);
   });
-  if (present.length) {
+  const faqs: { q: string; a: string }[] = Array.isArray(r.faqs) ? (r.faqs as any) : [];
+  if (present.length || faqs.length) {
+    const faqBlock = faqs.length
+      ? `\n\nFAQs (judge each answer, in order):\n${faqs.map((f, i) => `[${i}] Q: ${f.q}\n    A: ${f.a}`).join("\n")}`
+      : "";
     try {
       const res = await anthropic().messages.create(
-        { model: env.ANTHROPIC_CRAWL_MODEL, max_tokens: 700, system: SYSTEM,
+        { model: env.ANTHROPIC_CRAWL_MODEL, max_tokens: 1000, system: SYSTEM,
           messages: [{ role: "user", content:
-            `Company: ${r.name} (${r.type})\nWebsite: ${r.website ?? "?"}\n${register}\n\nSTORED VALUES (judge each):\n${JSON.stringify(Object.fromEntries(present.map((f) => [f, (current as any)[f]])))}` }] },
+            `Company: ${r.name} (${r.type})\nWebsite: ${r.website ?? "?"}\n${register}\n\nSTORED VALUES (judge each):\n${JSON.stringify(Object.fromEntries(present.map((f) => [f, (current as any)[f]])))}${faqBlock}` }] },
         { timeout: 90_000, maxRetries: 1 },
       );
       const t = res.content.map((b) => (b.type === "text" ? b.text : "")).join("");
@@ -75,14 +85,22 @@ async function one(r: (typeof rows)[number]) {
     } catch { /* leave all low */ }
   }
 
-  const conf: Record<string, "high" | "low"> = {};
+  const conf: Record<string, any> = {};
   for (const f of present) conf[f] = out[f] === "high" ? "high" : "low";
+  // Per-FAQ gate: keep by default, hide only the indices flagged with a bad
+  // external claim. A parse miss (no array) keeps everything — FAQs are the
+  // company's own prose, so default-show; the gate targets wrong external facts.
+  if (faqs.length) {
+    const hide = new Set<number>(Array.isArray(out.hideFaqs) ? out.hideFaqs.map((n: any) => Number(n)) : []);
+    conf.faqs = faqs.map((_, i) => (hide.has(i) ? "low" : "high"));
+  }
   Object.assign(conf, VERIFIED[r.id] ?? {}); // hand-verified overrides win
 
-  const highs = Object.entries(conf).filter(([, v]) => v === "high").map(([k]) => k);
-  const lows = Object.entries(conf).filter(([, v]) => v === "low").map(([k]) => k);
+  const highs = Object.entries(conf).filter(([k, v]) => v === "high" && k !== "faqs").map(([k]) => k);
+  const lows = Object.entries(conf).filter(([k, v]) => v === "low" && k !== "faqs").map(([k]) => k);
+  const faqHi = Array.isArray(conf.faqs) ? conf.faqs.filter((v: string) => v === "high").length : 0;
   done++;
-  console.log(`${r.id}: high=[${highs.join(",")}] low=[${lows.join(",")}]`);
+  console.log(`${r.id}: high=[${highs.join(",")}] low=[${lows.join(",")}]${faqs.length ? ` faqs=${faqHi}/${faqs.length}` : ""}`);
   if (DRY) return;
   await db.update(schema.fintechs).set({ factConfidence: conf, updatedAt: new Date() }).where(eq(schema.fintechs.id, r.id));
 }
