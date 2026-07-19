@@ -14,6 +14,17 @@ import { composeBrief } from "@/lib/summary/compose";
 
 const { fintechs, metricSnapshots, reviews, socialPosts, newsItems, blogPosts, mentions, caspProviders } = schema;
 
+/** Whether the per-field confidence audit marked HQ country as trustworthy.
+ *  jsonb comes back parsed (object) on Neon, but tolerate a string too. */
+function confidentCountry(fc: unknown): boolean {
+  if (!fc) return false;
+  const obj = typeof fc === "string" ? safeJson(fc) : fc;
+  return !!obj && typeof obj === "object" && (obj as any).country === "high";
+}
+function safeJson(s: string): unknown {
+  try { return JSON.parse(s); } catch { return null; }
+}
+
 export interface FintechListItem {
   id: string;
   name: string;
@@ -42,6 +53,7 @@ async function listWithLatest(
       : sql`ORDER BY m.rating DESC NULLS LAST, f.name ASC`;
   const rows = await db.execute(sql`
     SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
+           f.fact_confidence AS "factConfidence",
            m.rating, m.review_count AS "reviewCount", si.composite AS sentiment
     FROM fintechs f
     LEFT JOIN LATERAL (
@@ -61,7 +73,8 @@ async function listWithLatest(
   return (rows.rows as any[]).map((r) => ({
     id: r.id,
     name: r.name,
-    country: r.country,
+    // Trust gate: only surface HQ country when the confidence audit cleared it.
+    country: confidentCountry(r.factConfidence) ? r.country : null,
     logoSvg: r.logoSvg,
     website: r.website ?? null,
     tags: r.tags,
@@ -518,6 +531,7 @@ export interface BestRow {
 export async function getBestForTag(match: string[], group: "neobank" | "exchange", limit = 60): Promise<BestRow[]> {
   const rows = await db.execute(sql`
     SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
+           f.fact_confidence AS "factConfidence",
            si.composite AS sentiment, m.rating, m.review_count AS "reviewCount"
     FROM fintechs f
     LEFT JOIN LATERAL (SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1) si ON true
@@ -531,7 +545,7 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
     LIMIT ${limit}
   `);
   return (rows.rows as any[]).map((r) => ({
-    id: r.id, name: r.name, country: r.country, logoSvg: r.logoSvg, website: r.website ?? null,
+    id: r.id, name: r.name, country: confidentCountry(r.factConfidence) ? r.country : null, logoSvg: r.logoSvg, website: r.website ?? null,
     sentiment: r.sentiment == null ? null : Number(r.sentiment),
     rating: r.rating == null ? null : Number(r.rating),
     reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
