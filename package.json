@@ -32,6 +32,7 @@
     "casp:seed": "tsx scripts/seed-casp.ts",
     "casp:exchanges": "tsx scripts/add-casp-exchanges.ts",
     "data:wiki": "tsx scripts/refresh-from-wikipedia.ts",
+    "data:about": "tsx scripts/refresh-from-about.ts",
     "tags:enrich": "tsx scripts/enrich-tags.ts",
     "backfill:socialnews": "tsx scripts/backfill-social-news.ts",
     "blog:seed": "tsx scripts/seed-blog-sources.ts",
