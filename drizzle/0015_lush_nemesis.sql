@@ -1,0 +1,1 @@
+ALTER TABLE "fintechs" ADD COLUMN "fact_confidence" jsonb;

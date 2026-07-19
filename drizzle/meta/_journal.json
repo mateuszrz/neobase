@@ -106,6 +106,13 @@
       "when": 1784318976581,
       "tag": "0014_soft_lilandra",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1784458987396,
+      "tag": "0015_lush_nemesis",
+      "breakpoints": true
     }
   ]
 }
