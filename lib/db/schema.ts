@@ -53,6 +53,9 @@ export const fintechs = pgTable(
     availableIn: char("available_in", { length: 2 }).array(),
     // Low-churn structured blobs kept as JSON for now.
     licenses: jsonb("licenses"),
+    // Per-field trust gate: { <field>: "high" | "low" }. Facts are only rendered
+    // when marked "high" — we never show data we aren't confident is correct.
+    factConfidence: jsonb("fact_confidence"),
     socials: jsonb("socials"),
     keyPeople: jsonb("key_people"),
     investors: jsonb("investors"),

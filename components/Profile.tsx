@@ -89,6 +89,12 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   // Exchanges get auto-generated MiCA Q&A prepended to the curated FAQ.
   const allFaqs = mica ? [...micaFaqs(ft.name, mica), ...faqs] : faqs;
   const licenses: string[] = Array.isArray(ft.licenses) ? (ft.licenses as any) : [];
+  // Trust gate — only render a fact when the confidence audit marked it "high"
+  // (see scripts/audit-confidence). Absent/"low" → we don't show it. Exchanges
+  // never show the AI licence string; their regulator comes from the authoritative
+  // MiCA register panel instead.
+  const conf = (ft.factConfidence && typeof ft.factConfidence === "object" ? ft.factConfidence : {}) as Record<string, string>;
+  const ok = (field: string) => conf[field] === "high";
   const availableIn: string[] = Array.isArray(ft.availableIn) ? (ft.availableIn as any) : [];
   const hasResponsiveness = extras?.responseRate != null || extras?.responseTime != null;
   const hasSeries = series.filter((p) => p.rating != null).length >= 2;
@@ -112,11 +118,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           <div style={{ flex: 1, minWidth: 240 }}>
             <p className="eyebrow" style={{ marginBottom: 7 }}>
               {ft.type === "exchange" ? "Crypto exchange" : "Neobank"}
-              {ft.country ? ` · ${ft.country}` : ""}
+              {ok("country") && ft.country ? ` · ${ft.country}` : ""}
             </p>
             <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
             <p className="muted" style={{ margin: "8px 0 0" }}>
-              {ft.headquarters || ft.country || "Global"}
+              {(ok("headquarters") && ft.headquarters) || (ok("country") && ft.country) || "Global"}
               {ft.website && (
                 <>
                   {" · "}
@@ -138,7 +144,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         </div>
 
-        {ft.description && <p className="lead" style={{ marginTop: 20, maxWidth: 760 }}>{ft.description}</p>}
+        {ok("description") && ft.description && <p className="lead" style={{ marginTop: 20, maxWidth: 760 }}>{ft.description}</p>}
 
         {/* MiCA / ESMA licence status — a headline trust signal for exchanges */}
         {mica && (
@@ -283,22 +289,30 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         )}
 
-        {/* Company facts */}
+        {/* Company facts — only the fields the confidence audit cleared as "high" */}
+        {(
+          (ok("founded") && ft.founded) || (ok("headquarters") && ft.headquarters) ||
+          (ok("employees") && ft.employees) || (ok("valuationUsd") && ft.valuationUsd) ||
+          (ok("status") && ft.status) || (ft.type !== "exchange" && ok("licenses") && licenses.length) ||
+          availableIn.length
+        ) ? (
         <div className="card" style={{ marginTop: 20 }}>
           <h2 className="subheading" style={{ marginBottom: 14 }}>Company</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", columnGap: 40 }}>
-            <FactRow label="Founded" value={ft.founded ?? undefined} />
-            <FactRow label="Headquarters" value={ft.headquarters ?? undefined} />
-            <FactRow label="Employees" value={ft.employees ? fmt(ft.employees) : undefined} />
-            <FactRow label="Valuation" value={ft.valuationUsd ? fmtMoney(ft.valuationUsd) : undefined} />
-            <FactRow label="Status" value={ft.status ?? undefined} />
-            <FactRow label="Licenses" value={licenses.length ? licenses.slice(0, 4).join(", ") : undefined} />
+            <FactRow label="Founded" value={ok("founded") ? (ft.founded ?? undefined) : undefined} />
+            <FactRow label="Headquarters" value={ok("headquarters") ? (ft.headquarters ?? undefined) : undefined} />
+            <FactRow label="Employees" value={ok("employees") && ft.employees ? fmt(ft.employees) : undefined} />
+            <FactRow label="Valuation" value={ok("valuationUsd") && ft.valuationUsd ? fmtMoney(ft.valuationUsd) : undefined} />
+            <FactRow label="Status" value={ok("status") ? (ft.status ?? undefined) : undefined} />
+            {/* Exchanges: regulator comes from the authoritative MiCA panel above, not this AI field. */}
+            <FactRow label="Licenses" value={ft.type !== "exchange" && ok("licenses") && licenses.length ? licenses.slice(0, 4).join(", ") : undefined} />
             <FactRow label="Available in" value={availableIn.length ? `${availableIn.length} markets` : undefined} />
           </div>
         </div>
+        ) : null}
 
-        {/* About */}
-        {ft.about && (
+        {/* About — same-origin AI prose, gated on the description's confidence. */}
+        {ok("description") && ft.about && (
           <div style={{ marginTop: 40, maxWidth: 760 }}>
             <h2 className="subheading" style={{ marginBottom: 12 }}>About {ft.name}</h2>
             <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>{ft.about}</p>
