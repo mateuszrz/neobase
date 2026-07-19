@@ -3,9 +3,10 @@
 import { useState } from "react";
 
 /**
- * Brand logo tile with a graceful fallback. Renders the logo image, but if the
- * src is missing OR the URL fails to load (some fintechs have dead logo URLs),
- * it falls back to a monogram tile — so a broken image never shows.
+ * Brand logo tile with a graceful fallback chain. Prefers the site's own
+ * favicon (fetched by domain), then the stored logo image, then a monogram —
+ * so a broken/missing icon never shows. Favicons make the directory feel like
+ * the real brands rather than generic tiles.
  */
 
 function monogram(name: string): string {
@@ -13,18 +14,37 @@ function monogram(name: string): string {
   return (s.slice(0, 2) || "?").toUpperCase();
 }
 
+/** DuckDuckGo icon service — returns the real favicon, or a clean 404 (→ onError
+ *  falls through to the stored logo) when a domain has none. */
+function faviconUrl(website?: string | null): string | null {
+  if (!website) return null;
+  const host = website
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/.*$/, "")
+    .trim();
+  if (!host || !host.includes(".")) return null;
+  return `https://icons.duckduckgo.com/ip3/${host}.ico`;
+}
+
 export function BrandLogo({
   src,
+  website,
   name,
   size = 44,
   radius = "var(--r-icon)",
 }: {
   src?: string | null;
+  website?: string | null;
   name: string;
   size?: number;
   radius?: number | string;
 }) {
-  const [broken, setBroken] = useState(false);
+  // Ordered fallback: favicon → stored logo → monogram.
+  const sources = [faviconUrl(website), src].filter(Boolean) as string[];
+  const [idx, setIdx] = useState(0);
+  const current = sources[idx];
+
   const box = {
     width: size,
     height: size,
@@ -34,22 +54,23 @@ export function BrandLogo({
     border: "1px solid var(--stone-border)",
   };
 
-  if (src && !broken) {
+  if (current) {
     return (
       <img
-        src={src}
+        key={current}
+        src={current}
         alt=""
         loading="lazy"
-        onError={() => setBroken(true)}
+        onError={() => setIdx((i) => i + 1)}
         // Also catch images that already failed before hydration (onError won't
         // re-fire) or that load a 200 with no pixels — check naturalWidth.
         onLoad={(e) => {
-          if (e.currentTarget.naturalWidth === 0) setBroken(true);
+          if (e.currentTarget.naturalWidth === 0) setIdx((i) => i + 1);
         }}
         ref={(el) => {
-          if (el && el.complete && el.naturalWidth === 0) setBroken(true);
+          if (el && el.complete && el.naturalWidth === 0) setIdx((i) => i + 1);
         }}
-        style={{ ...box, objectFit: "contain" }}
+        style={{ ...box, objectFit: "contain", padding: Math.round(size * 0.14) }}
       />
     );
   }

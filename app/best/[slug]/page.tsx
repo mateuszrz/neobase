@@ -69,7 +69,7 @@ export default async function BestPage({ params }: { params: Promise<{ slug: str
                 style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", textDecoration: "none", color: "inherit" }}
               >
                 <span style={{ flex: "0 0 auto", width: 26, textAlign: "center", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: i < 3 ? "var(--ink-black)" : "var(--ash-gray)" }}>{i + 1}</span>
-                <BrandLogo src={r.logoSvg} name={r.name} size={40} />
+                <BrandLogo src={r.logoSvg} website={r.website} name={r.name} size={40} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600 }}>{r.name}</div>
                   <div className="muted" style={{ fontSize: 12 }}>

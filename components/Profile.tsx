@@ -108,7 +108,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {/* Header — identity only; ratings live in the hero below */}
         <div className="row" style={{ gap: 18, alignItems: "flex-start" }}>
-          <BrandLogo src={ft.logoSvg} name={ft.name} size={64} />
+          <BrandLogo src={ft.logoSvg} website={ft.website} name={ft.name} size={64} />
           <div style={{ flex: 1, minWidth: 240 }}>
             <p className="eyebrow" style={{ marginBottom: 7 }}>
               {ft.type === "exchange" ? "Crypto exchange" : "Neobank"}
@@ -263,7 +263,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                     <span className="muted" style={{ fontSize: 12 }}>LinkedIn &amp; Facebook</span>
                   )}
                 </div>
-                <SocialFeed posts={social.posts} name={ft.name} logo={ft.logoSvg} />
+                <SocialFeed posts={social.posts} name={ft.name} logo={ft.logoSvg} website={ft.website} />
               </div>
             )}
 

@@ -19,6 +19,7 @@ export interface FintechListItem {
   name: string;
   country: string | null;
   logoSvg: string | null;
+  website: string | null;
   tags: string[] | null;
   rating: number | null;
   reviewCount: number | null;
@@ -40,7 +41,7 @@ async function listWithLatest(
       ? sql`ORDER BY si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC`
       : sql`ORDER BY m.rating DESC NULLS LAST, f.name ASC`;
   const rows = await db.execute(sql`
-    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.tags,
+    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
            m.rating, m.review_count AS "reviewCount", si.composite AS sentiment
     FROM fintechs f
     LEFT JOIN LATERAL (
@@ -62,6 +63,7 @@ async function listWithLatest(
     name: r.name,
     country: r.country,
     logoSvg: r.logoSvg,
+    website: r.website ?? null,
     tags: r.tags,
     rating: r.rating == null ? null : Number(r.rating),
     reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
@@ -505,6 +507,7 @@ export interface BestRow {
   name: string;
   country: string | null;
   logoSvg: string | null;
+  website: string | null;
   sentiment: number | null;
   rating: number | null;
   reviewCount: number | null;
@@ -514,7 +517,7 @@ export interface BestRow {
 /** Fintechs of a type whose tags overlap `match`, ranked by our sentiment score. */
 export async function getBestForTag(match: string[], group: "neobank" | "exchange", limit = 60): Promise<BestRow[]> {
   const rows = await db.execute(sql`
-    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.tags,
+    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
            si.composite AS sentiment, m.rating, m.review_count AS "reviewCount"
     FROM fintechs f
     LEFT JOIN LATERAL (SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1) si ON true
@@ -528,7 +531,7 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
     LIMIT ${limit}
   `);
   return (rows.rows as any[]).map((r) => ({
-    id: r.id, name: r.name, country: r.country, logoSvg: r.logoSvg,
+    id: r.id, name: r.name, country: r.country, logoSvg: r.logoSvg, website: r.website ?? null,
     sentiment: r.sentiment == null ? null : Number(r.sentiment),
     rating: r.rating == null ? null : Number(r.rating),
     reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
