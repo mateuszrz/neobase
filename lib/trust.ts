@@ -30,8 +30,11 @@ export const SUCCESSOR_LICENCE: Record<string, { entity: string; brand: string; 
   ari10: {
     entity: "WEB3 Technology B.V.",
     brand: "RGLTD",
+    // Position-independent wording on purpose: this sentence is reused in the
+    // generated FAQ, which can surface on its own in search results, so it
+    // can't say "the licence below".
     note:
-      "Ari10 stopped serving customers on 1 July 2026. The CASP authorisation below is held by the group's Dutch entity, which now trades under a different brand — it is not a licence to use Ari10.",
+      "Ari10 stopped serving customers on 1 July 2026. The group's remaining CASP authorisation is held by its Dutch entity under a different brand, and is not a licence to use Ari10.",
   },
 };
 
