@@ -140,5 +140,33 @@
       "name": "Usługi transferu kryptoaktywów",
       "desc": "Przekazywanie kryptoaktywów w imieniu klientów."
     }
+  },
+  "directory": {
+    "eyebrow": "Katalog",
+    "neobanksTitle": "Neobanki i fintechy",
+    "neobanksMetaTitle": "Katalog neobanków i fintechów",
+    "neobanksMetaDesc": "Porównaj ponad 100 neobanków i firm fintech według ocen, opinii i kraju.",
+    "exchangesTitle": "Giełdy kryptowalut",
+    "exchangesMetaTitle": "Katalog giełd kryptowalut",
+    "exchangesMetaDesc": "Porównaj największe giełdy kryptowalut według ocen, opinii i sentymentu użytkowników.",
+    "all": "Wszystkie",
+    "countWorldwide": "{count, plural, one {# firma} few {# firmy} many {# firm} other {# firmy}} na świecie, według TrustScore.",
+    "countInCountry": "{count, plural, one {# firma} few {# firmy} many {# firm} other {# firmy}} w kraju {country}, według TrustScore.",
+    "exchangesLead": "{count, plural, one {# giełda} few {# giełdy} many {# giełd} other {# giełdy}}, według naszego wskaźnika sentymentu.",
+    "micaCta": "🇪🇺 Rejestr licencji MiCA →"
+  },
+  "rankings": {
+    "eyebrow": "Rankingi",
+    "title": "Najlepsze według zastosowania",
+    "metaTitle": "Najlepsze neobanki i giełdy kryptowalut według zastosowania — rankingi NeoBase",
+    "metaDesc": "Rankingi najlepszych neobanków i giełd kryptowalut według zastosowania — konta wielowalutowe, karty podróżne, giełdy z niskimi opłatami, staking i więcej — uszeregowane według własnego wskaźnika sentymentu NeoBase.",
+    "neobanks": "Neobanki",
+    "exchanges": "Giełdy kryptowalut",
+    "allRankings": "Wszystkie rankingi",
+    "browseAll": "Zobacz wszystkie →",
+    "noOptions": "Brak pozycji.",
+    "rankedBy": "Uszeregowane według złożonego wskaźnika sentymentu NeoBase (opinie + media + wzmianki). Wyniki aktualizowane co tydzień.",
+    "optionCount": "{count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
+    "reviewCount": "{count, plural, one {# opinia} few {# opinie} many {# opinii} other {# opinii}}"
   }
 }

@@ -140,5 +140,33 @@
       "name": "Transfer services for crypto-assets",
       "desc": "Transferring crypto-assets on behalf of clients."
     }
+  },
+  "directory": {
+    "eyebrow": "Directory",
+    "neobanksTitle": "Neobanks & fintechs",
+    "neobanksMetaTitle": "Neobank & Fintech Directory",
+    "neobanksMetaDesc": "Compare 100+ neobanks and fintech companies by rating, reviews and country.",
+    "exchangesTitle": "Crypto exchanges",
+    "exchangesMetaTitle": "Crypto Exchange Directory",
+    "exchangesMetaDesc": "Compare top cryptocurrency exchanges by rating, reviews and user sentiment.",
+    "all": "All",
+    "countWorldwide": "{count, plural, one {# company} other {# companies}} worldwide, ranked by TrustScore.",
+    "countInCountry": "{count, plural, one {# company} other {# companies}} in {country}, ranked by TrustScore.",
+    "exchangesLead": "{count, plural, one {# exchange} other {# exchanges}}, ranked by our own sentiment score.",
+    "micaCta": "🇪🇺 MiCA licence registry →"
+  },
+  "rankings": {
+    "eyebrow": "Rankings",
+    "title": "Best by use case",
+    "metaTitle": "Best Neobanks & Crypto Exchanges by Use Case — NeoBase Rankings",
+    "metaDesc": "Rankings of the best neobanks and crypto exchanges by use case — multi-currency accounts, travel cards, low-fee exchanges, staking and more — ranked by NeoBase's own sentiment score.",
+    "neobanks": "Neobanks",
+    "exchanges": "Crypto exchanges",
+    "allRankings": "All rankings",
+    "browseAll": "Browse all →",
+    "noOptions": "No options yet.",
+    "rankedBy": "Ranked by NeoBase's composite sentiment score (reviews + news + mentions). Scores update weekly.",
+    "optionCount": "{count, plural, one {# option} other {# options}}",
+    "reviewCount": "{count, plural, one {# review} other {# reviews}}"
   }
 }

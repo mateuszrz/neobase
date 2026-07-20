@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { BrandLogo } from "@/components/BrandLogo";
 import { micaFaqs } from "@/lib/mica/reference";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -52,6 +53,7 @@ function FactRow({ label, value }: { label: string; value: ReactNode }) {
 export default async function Profile({ slug }: { slug: string; kind?: "neobank" | "exchange" }) {
   const locale = await getLocale();
   const tp = await getTranslations("profile");
+  const showBrief = locale === routing.defaultLocale;
   const ft = await getFintech(slug, locale);
   if (!ft) notFound();
 
@@ -164,9 +166,15 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         )}
 
         {/* Sentiment overview (AI narrative) + composite sentiment index, side by side */}
-        {(brief.text || sentiment) && (
+        {/* The AI brief is English prose: the stored one is written by the weekly
+            Claude cron, the fallback by an English-only template. Translating a
+            digest that regenerates weekly would leave a stale Polish paragraph
+            sitting next to fresh numbers, so on other locales we show nothing
+            rather than something wrong or something in the wrong language.
+            Lift this once briefs are generated per locale. */}
+        {((brief.text && showBrief) || sentiment) && (
           <div className="grid grid-2" style={{ marginTop: 24, alignItems: "stretch" }}>
-            {brief.text && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
+            {brief.text && showBrief && <AiBrief text={brief.text} isSample={brief.isSample} updatedAt={brief.updatedAt} />}
             {sentiment && <SentimentIndexCard data={sentiment} />}
           </div>
         )}
