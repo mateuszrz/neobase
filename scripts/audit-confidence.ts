@@ -15,6 +15,7 @@ import { sql, eq } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
 import { anthropic, isClaudeLive } from "../lib/anthropic/index.ts";
 import { env } from "../lib/env.ts";
+import { FILLS, FOUNDED } from "./verified-facts.ts";
 
 const argv = process.argv.slice(2);
 const DRY = argv.includes("--dry");
@@ -25,16 +26,19 @@ if (!isClaudeLive()) { console.log("ANTHROPIC_API_KEY not set"); process.exit(1)
 
 const FIELDS = ["country", "founded", "headquarters", "employees", "valuationUsd", "status", "licenses", "description"] as const;
 
-// Facts we've verified by hand (authoritative) — always trusted.
-const VERIFIED: Record<string, Partial<Record<(typeof FIELDS)[number], "high">>> = {
+// Facts we've verified by hand (authoritative) — always trusted, never re-judged.
+type Verdicts = Partial<Record<(typeof FIELDS)[number], "high">>;
+const VERIFIED: Record<string, Verdicts> = {
   zen: { licenses: "high", country: "high" }, // ZEN.COM: Bank of Lithuania EMI (user-confirmed)
-  // Hand-checked against national business + regulator registers; see the
-  // per-company source notes in scripts/fill-thin-exchanges.ts.
-  anycoin: { country: "high", founded: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
-  bitmymoney: { country: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
-  meria: { country: "high", founded: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
-  zbx: { country: "high", founded: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
 };
+// Everything hand-checked against national business + regulator registers is
+// declared once in scripts/verified-facts.ts (with its sources) and trusted
+// here, so the two can't drift apart.
+for (const [id, fill] of Object.entries(FILLS)) {
+  const v: Verdicts = (VERIFIED[id] ??= {});
+  for (const f of FIELDS) if (f in fill) v[f] = "high";
+}
+for (const id of Object.keys(FOUNDED)) (VERIFIED[id] ??= {}).founded = "high";
 
 const SYSTEM =
   "You are a strict fact-checker for a fintech / crypto-exchange directory. For each stored field, decide whether " +
