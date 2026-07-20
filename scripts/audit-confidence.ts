@@ -28,6 +28,12 @@ const FIELDS = ["country", "founded", "headquarters", "employees", "valuationUsd
 // Facts we've verified by hand (authoritative) — always trusted.
 const VERIFIED: Record<string, Partial<Record<(typeof FIELDS)[number], "high">>> = {
   zen: { licenses: "high", country: "high" }, // ZEN.COM: Bank of Lithuania EMI (user-confirmed)
+  // Hand-checked against national business + regulator registers; see the
+  // per-company source notes in scripts/fill-thin-exchanges.ts.
+  anycoin: { country: "high", founded: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
+  bitmymoney: { country: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
+  meria: { country: "high", founded: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
+  zbx: { country: "high", founded: "high", headquarters: "high", status: "high", licenses: "high", description: "high" },
 };
 
 const SYSTEM =
