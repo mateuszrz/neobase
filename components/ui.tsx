@@ -808,7 +808,11 @@ export function MicaLicence({
       <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
         Licence details
       </div>
-      <MicaRow label="Status" value={<span style={{ color: "#16a34a", fontWeight: 600 }}>✓ Authorised (MiCA CASP)</span>} />
+      {/* "Licence status", not "Status" — the Company block below carries the
+          company's own lifecycle status, and two rows both labelled "Status"
+          read as one field. They can legitimately disagree: a licence stays
+          live while the brand it was issued to has ceased trading. */}
+      <MicaRow label="Licence status" value={<span style={{ color: "#16a34a", fontWeight: 600 }}>✓ Authorised (MiCA CASP)</span>} />
       <MicaRow label="Legal entity" value={mica.legalEntity ?? mica.provider} />
       <MicaRow label="Home regulator" value={regFull} />
       <MicaRow label="Country of authorisation" value={mica.country ? <><span aria-hidden>{countryFlag(mica.country)}</span> {mica.country}</> : null} />
