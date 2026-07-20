@@ -81,7 +81,21 @@ export function countryFlag(name: string): string {
 export function micaFaqs(
   name: string,
   mica: { licensed: boolean; legalEntity: string | null; country: string | null; regulator: string | null; services: string[] },
+  /** Set when the register row belongs to a successor entity, not to this brand. */
+  successor?: { entity: string; brand: string; note: string } | null,
 ): { q: string; a: string }[] {
+  // The register row is real, but it is not this brand's licence. Answering
+  // "yes, and it may serve clients EU-wide" would be false — and these answers
+  // are the ones that end up in FAQ rich results.
+  if (mica.licensed && successor) {
+    const reg = regulatorName(mica.regulator ?? "");
+    return [
+      { q: `Does ${name} have a MiCA licence?`, a: `Not any more. ${successor.note} The authorisation is registered to ${successor.entity}, which trades as ${successor.brand}, regulated by ${reg} in ${mica.country}.` },
+      { q: `Can I still use ${name}?`, a: `No. ${name} no longer serves customers. The MiCA-authorised business of the group operates under the ${successor.brand} brand instead.` },
+      { q: `Who holds ${name}'s former MiCA authorisation?`, a: `${successor.entity} holds the CASP authorisation in the ESMA register, supervised by ${reg} in ${mica.country}. It trades as ${successor.brand}.` },
+      { q: `Is a MiCA licence the same as a CASP licence?`, a: `Yes. MiCA (MiCAR) is the EU regulation; a CASP (crypto-asset service provider) is a firm it licenses. "MiCA register", "CASP register" and "ESMA register" all refer to the same official list.` },
+    ];
+  }
   if (mica.licensed) {
     const reg = regulatorName(mica.regulator ?? "");
     const svc = mica.services.map((t) => micaService(t).name).join(", ");

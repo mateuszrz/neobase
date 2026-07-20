@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
 import { micaFaqs } from "@/lib/mica/reference";
 import { normalizeTags } from "@/lib/tags";
-import { HIDE_COMPANY_FACTS } from "@/lib/trust";
+import { HIDE_COMPANY_FACTS, SUCCESSOR_LICENCE } from "@/lib/trust";
 import { getSentimentIndex } from "@/lib/sentiment";
 import { SentimentIndexCard } from "@/components/SentimentIndex";
 import {
@@ -92,7 +92,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const faqConf: string[] = Array.isArray((ft.factConfidence as any)?.faqs) ? (ft.factConfidence as any).faqs : [];
   const faqs: { q: string; a: string }[] = (Array.isArray(ft.faqs) ? (ft.faqs as any[]) : []).filter((_, i) => faqConf[i] === "high");
   // Exchanges get auto-generated MiCA Q&A prepended to the curated FAQ.
-  const allFaqs = mica ? [...micaFaqs(ft.name, mica), ...faqs] : faqs;
+  const allFaqs = mica ? [...micaFaqs(ft.name, mica, SUCCESSOR_LICENCE[ft.id]), ...faqs] : faqs;
   const licenses: string[] = Array.isArray(ft.licenses) ? (ft.licenses as any) : [];
   // Trust gate — only render a fact when the confidence audit marked it "high"
   // (see scripts/audit-confidence). Absent/"low" → we don't show it. Exchanges
@@ -154,7 +154,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {/* MiCA / ESMA licence status — a headline trust signal for exchanges */}
         {mica && (
           <div style={{ marginTop: 24 }}>
-            <MicaLicence mica={mica} name={ft.name} />
+            <MicaLicence mica={mica} name={ft.name} successor={SUCCESSOR_LICENCE[ft.id]} />
           </div>
         )}
 
