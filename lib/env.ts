@@ -35,6 +35,12 @@ export const env = {
         ? `https://${process.env.VERCEL_URL}` // preview deployments
         : "http://localhost:3000"),
   CRON_SECRET: process.env.CRON_SECRET ?? "",
+  /**
+   * Comma-separated emails allowed to author blog posts. Empty means NOBODY —
+   * /panel is customer-facing, so defaulting to "any logged-in user" would let
+   * every subscriber publish to the site. See lib/auth/admin.ts.
+   */
+  ADMIN_EMAILS: process.env.ADMIN_EMAILS ?? "",
   APIFY_WEBHOOK_SECRET: process.env.APIFY_WEBHOOK_SECRET ?? "",
 
   APIFY_TOKEN: process.env.APIFY_TOKEN ?? "",

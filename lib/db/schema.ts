@@ -415,6 +415,39 @@ export const blogPosts = pgTable(
   ],
 );
 
+// OUR OWN editorial articles — written in /panel/blog, one row per language.
+// Distinct from `blog_posts` above, which is crawled third-party content bound
+// to a fintech; these belong to NeoBase and stand alone.
+//
+// Language versions are independent by design: a post may exist only in Polish
+// (e.g. about the KNF) with no English counterpart, so there is no "translation
+// group" linking rows — `locale` + `slug` is the whole identity, and slugs are
+// written in each language.
+export const articles = pgTable(
+  "articles",
+  {
+    id: bigserial("id", { mode: "number" }).primaryKey(),
+    locale: text("locale").notNull(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt"),
+    bodyMd: text("body_md").notNull().default(""),
+    coverUrl: text("cover_url"),
+    author: text("author"),
+    tags: text("tags").array(),
+    status: text("status").notNull().default("draft"), // draft | published
+    seoTitle: text("seo_title"),
+    seoDescription: text("seo_description"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("articles_locale_slug").on(t.locale, t.slug),
+    index("articles_feed_idx").on(t.locale, t.status, t.publishedAt),
+  ],
+);
+
 // Third-party MENTIONS — public posts by OTHER people about the brand, found by
 // searching each network for the brand (name / @handle). Distinct from social_posts
 // (the brand's own posts): here the author is a third party. Public social-listening
@@ -616,6 +649,7 @@ export type Project = typeof projects.$inferSelect;
 export type SocialPost = typeof socialPosts.$inferSelect;
 export type NewsItem = typeof newsItems.$inferSelect;
 export type BlogPost = typeof blogPosts.$inferSelect;
+export type Article = typeof articles.$inferSelect;
 export type ReportRequest = typeof reportRequests.$inferSelect;
 export type SentimentIndexRow = typeof sentimentIndex.$inferSelect;
 export type JobRow = typeof jobQueue.$inferSelect;

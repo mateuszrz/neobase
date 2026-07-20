@@ -22,6 +22,7 @@ export async function Nav() {
         <Link className="nav-link nav-hide-sm" href="/neobanks/">{t("neobanks")}</Link>
         <Link className="nav-link nav-hide-sm" href="/exchanges/">{t("exchanges")}</Link>
         <Link className="nav-link nav-hide-sm" href="/best/">{t("rankings")}</Link>
+        <Link className="nav-link nav-hide-sm" href="/blog/">{t("blog")}</Link>
         <Link className="nav-link nav-hide-sm" href="/about/">{t("about")}</Link>
         <Link className="btn btn-ghost nav-hide-sm" href="/test/">{t("testReports")}</Link>
         <Link className="btn btn-cyan" href="/monitoring/">{t("getMonitoring")}</Link>
@@ -42,6 +43,7 @@ export async function Footer() {
         <div className="row" style={{ gap: 16 }}>
           <Link href="/neobanks/">{t("nav.neobanks")}</Link>
           <Link href="/exchanges/">{t("nav.exchanges")}</Link>
+          <Link href="/blog/">{t("nav.blog")}</Link>
           <Link href="/about/">{t("nav.about")}</Link>
           <LocaleSwitcher />
           <span className="muted">© 2026</span>
