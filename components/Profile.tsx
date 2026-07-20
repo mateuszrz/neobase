@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
 import { micaFaqs } from "@/lib/mica/reference";
 import { normalizeTags } from "@/lib/tags";
+import { HIDE_COMPANY_FACTS } from "@/lib/trust";
 import { getSentimentIndex } from "@/lib/sentiment";
 import { SentimentIndexCard } from "@/components/SentimentIndex";
 import {
@@ -293,8 +294,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </div>
         )}
 
-        {/* Company facts — only the fields the confidence audit cleared as "high" */}
-        {(
+        {/* Company facts — only the fields the confidence audit cleared as "high",
+            and only where the block as a whole isn't suppressed (see lib/trust). */}
+        {!HIDE_COMPANY_FACTS.has(ft.id) && (
           (ok("founded") && ft.founded) || (ok("headquarters") && ft.headquarters) ||
           (ok("employees") && ft.employees) || (ok("valuationUsd") && ft.valuationUsd) ||
           (ok("status") && ft.status) || (ft.type !== "exchange" && ok("licenses") && licenses.length) ||
