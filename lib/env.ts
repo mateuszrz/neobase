@@ -14,7 +14,26 @@ export const env = {
   get DATABASE_URL() {
     return required("DATABASE_URL");
   },
-  APP_BASE_URL: process.env.APP_BASE_URL ?? "http://localhost:3000",
+  /**
+   * Canonical public origin. Used by robots.txt, the sitemap, `metadataBase`
+   * and every hreflang, so a wrong value poisons all of them at once.
+   *
+   * APP_BASE_URL was never set on Vercel, so production fell back to
+   * "http://localhost:3000" and served a robots.txt pointing Google at
+   * `http://localhost:3000/sitemap.xml` — the sitemap has never been usable.
+   * The production fallback below fixes that without depending on the
+   * dashboard; set APP_BASE_URL explicitly to override it.
+   *
+   * Note the apex 307s to www, so www is the canonical host — pointing at the
+   * apex would make every canonical URL a redirect.
+   */
+  APP_BASE_URL:
+    process.env.APP_BASE_URL ??
+    (process.env.VERCEL_ENV === "production"
+      ? "https://www.neobase.co"
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}` // preview deployments
+        : "http://localhost:3000"),
   CRON_SECRET: process.env.CRON_SECRET ?? "",
   APIFY_WEBHOOK_SECRET: process.env.APIFY_WEBHOOK_SECRET ?? "",
 

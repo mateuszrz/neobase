@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { desc, eq, sql } from "drizzle-orm";
 import { auth, signOut } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
@@ -13,7 +14,7 @@ const { subscriptions, projects, projectBrands, projectMarkets } = schema;
 export default async function PanelPage() {
   const session = await auth();
   const userId = (session?.user as { id?: string } | undefined)?.id;
-  if (!userId) redirect("/login");
+  if (!userId) return redirect("/login/");
 
   const [sub] = await db
     .select({ packageId: subscriptions.packageId, status: subscriptions.status, currentPeriodEnd: subscriptions.currentPeriodEnd })
@@ -45,17 +46,17 @@ export default async function PanelPage() {
     "use server";
     const s = await auth();
     const uid = (s?.user as { id?: string } | undefined)?.id;
-    if (!uid) redirect("/login");
+    if (!uid) return redirect("/login/");
     const name = String(formData.get("name") ?? "").trim();
-    if (!name) redirect("/panel/");
+    if (!name) return redirect("/panel/");
     let id: string;
     try {
       id = await createProject(uid!, name);
     } catch (e) {
-      if (e instanceof EntitlementError) redirect("/panel/?error=entitlement");
+      if (e instanceof EntitlementError) return redirect("/panel/?error=entitlement");
       throw e;
     }
-    redirect(`/panel/project/${id}/`);
+    return redirect(`/panel/project/${id}/`);
   }
 
   return (
@@ -83,7 +84,7 @@ export default async function PanelPage() {
             </p>
           ) : (
             <p style={{ marginTop: 12 }} className="muted">
-              No active subscription. <a href="/monitoring" style={{ color: "var(--cyan-signal)" }}>Choose a plan</a> to start tracking brands.
+              No active subscription. <Link href="/monitoring/" style={{ color: "var(--cyan-signal)" }}>Choose a plan</Link> to start tracking brands.
             </p>
           )}
         </div>
@@ -96,10 +97,10 @@ export default async function PanelPage() {
         {projs.length > 0 && (
           <div className="stack-8" style={{ marginTop: 12 }}>
             {projs.map((p) => (
-              <a key={p.id} href={`/panel/project/${p.id}/`} className="card row spread" style={{ textDecoration: "none", color: "inherit" }}>
+              <Link key={p.id} href={`/panel/project/${p.id}/`} className="card row spread" style={{ textDecoration: "none", color: "inherit" }}>
                 <strong>{p.name}</strong>
                 <span className="muted" style={{ fontSize: 14 }}>{p.brands} brands · {p.markets} markets →</span>
-              </a>
+              </Link>
             ))}
           </div>
         )}
@@ -116,7 +117,7 @@ export default async function PanelPage() {
           </form>
         ) : (
           <p className="muted" style={{ marginTop: 12 }}>
-            An active subscription is required to create projects. <a href="/monitoring" style={{ color: "var(--cyan-signal)" }}>Choose a plan</a>.
+            An active subscription is required to create projects. <Link href="/monitoring/" style={{ color: "var(--cyan-signal)" }}>Choose a plan</Link>.
           </p>
         )}
       </div>

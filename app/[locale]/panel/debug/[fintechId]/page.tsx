@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 import { and, asc, desc, eq, ne } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 
@@ -106,9 +107,9 @@ export default async function DebugPage({ params }: { params: Promise<{ fintechI
 
   return (
     <main style={{ maxWidth: 820, margin: "0 auto", padding: "48px 20px 96px" }}>
-      <a href="/" style={{ color: "#818cf8", fontSize: 14 }}>
+      <Link href="/" style={{ color: "#818cf8", fontSize: 14 }}>
         ← NeoBase
-      </a>
+      </Link>
       <h1 style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 4 }}>{ft.name}</h1>
       <p style={{ color: "#64748b", fontSize: 14, marginTop: 0 }}>
         {ft.type} · {ft.country ?? "—"} · {points.length} Trustpilot snapshots

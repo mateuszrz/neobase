@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 import { headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { getReportRequest, unlockReport } from "@/lib/report/generate";
 import { sendReportEmail } from "@/lib/report/email";
 import { ReportView } from "@/components/Report";
@@ -29,7 +31,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
       const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") ? "http" : "https");
       await sendReportEmail(email, rid, res.brand, `${proto}://${host}`);
     }
-    redirect(`/test/${rid}`);
+    return redirect(`/test/${rid}/`);
   }
 
   const generated = new Date(report.generatedAt).toLocaleDateString("en", { day: "numeric", month: "long", year: "numeric" });
@@ -61,7 +63,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
 
         <p className="muted" style={{ fontSize: 12, marginTop: 28, textAlign: "center" }}>
           Grounded in real cross-platform ratings and customer-sentiment data — we never invent events.{" "}
-          <a href="/test/" style={{ color: "var(--cyan-edge)" }}>Run another brand →</a>
+          <Link href="/test/" style={{ color: "var(--cyan-edge)" }}>Run another brand →</Link>
         </p>
       </div>
     </main>

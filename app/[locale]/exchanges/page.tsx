@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 import { listExchanges } from "@/lib/queries";
 import { FintechCard } from "@/components/ui";
 
@@ -19,7 +20,7 @@ export default async function ExchangesPage() {
           {list.length} exchanges ranked by NeoBase sentiment score.
         </p>
         <p style={{ marginBottom: 28 }}>
-          <a href="/exchanges/mica/" className="btn btn-ghost">🇪🇺 MiCA licence registry →</a>
+          <Link href="/exchanges/mica/" className="btn btn-ghost">🇪🇺 MiCA licence registry →</Link>
         </p>
         <div className="grid grid-3">
           {list.map((f) => (

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { generateReport } from "@/lib/report/generate";
 import { clientIp, withinRateLimit, RATE_MAX, RATE_WINDOW_MIN } from "@/lib/report/rate-limit";
 import { getAllFintechs } from "@/lib/queries";
@@ -33,10 +34,10 @@ export default async function TestReportPage({ searchParams }: { searchParams: P
       .slice(0, 8); // cap the fan-out
 
     const ip = await clientIp();
-    if (!(await withinRateLimit(ip))) redirect("/test/?slow=1");
+    if (!(await withinRateLimit(ip))) return redirect("/test/?slow=1");
 
     const { id } = await generateReport(brand, competitors, ip);
-    redirect(`/test/${id}`);
+    return redirect(`/test/${id}/`);
   }
 
   return (
@@ -58,7 +59,7 @@ export default async function TestReportPage({ searchParams }: { searchParams: P
             style={{ padding: "12px 16px", borderRadius: 8, marginBottom: 20, background: "var(--stone-canvas)", border: "1px solid var(--neg)", color: "var(--neg)", fontSize: 14, lineHeight: 1.6 }}
           >
             You&apos;ve generated a few briefs in a short window (limit {RATE_MAX} per {RATE_WINDOW_MIN} minutes).
-            Give it a little while and try again — or <a href="/monitoring/" style={{ color: "inherit", textDecoration: "underline" }}>talk to us</a> for unlimited reports.
+            Give it a little while and try again — or <Link href="/monitoring/" style={{ color: "inherit", textDecoration: "underline" }}>talk to us</Link> for unlimited reports.
           </p>
         )}
 
