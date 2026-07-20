@@ -1,0 +1,30 @@
+{
+  "site": {
+    "title": "NeoBase — Global Neobank & Fintech Intelligence",
+    "titleTemplate": "%s — NeoBase",
+    "description": "Track ratings, reviews and sentiment for 100+ neobanks and crypto exchanges worldwide. Independent fintech intelligence."
+  },
+  "nav": {
+    "home": "NeoBase home",
+    "neobanks": "Neobanks",
+    "exchanges": "Exchanges",
+    "rankings": "Rankings",
+    "blog": "Blog",
+    "about": "About",
+    "testReports": "Test our reports",
+    "getMonitoring": "Get monitoring"
+  },
+  "footer": {
+    "tagline": "Independent neobank and crypto-exchange intelligence.",
+    "rights": "All rights reserved."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Analysis of neobanks, crypto exchanges and EU fintech regulation.",
+    "readMore": "Read more",
+    "empty": "No posts yet.",
+    "backToBlog": "Back to blog",
+    "published": "Published {date}",
+    "updated": "Updated {date}"
+  }
+}

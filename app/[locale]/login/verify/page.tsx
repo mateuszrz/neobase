@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 
 export const metadata: Metadata = {
   title: "Check your email",
@@ -15,7 +16,7 @@ export default function VerifyRequestPage() {
           We sent a magic link to your inbox. Click it to finish signing in — the link expires in 24 hours.
         </p>
         <p className="muted" style={{ marginTop: 24, fontSize: 13 }}>
-          Didn&apos;t get it? Check spam, or <a href="/login" style={{ color: "var(--cyan-signal)" }}>try again</a>.
+          Didn&apos;t get it? Check spam, or <Link href="/login/" style={{ color: "var(--cyan-signal)" }}>try again</Link>.
         </p>
       </div>
     </main>

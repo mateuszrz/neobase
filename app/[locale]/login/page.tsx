@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { auth, signIn } from "@/lib/auth";
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default async function LoginPage() {
   // Already signed in → straight to the panel.
   const session = await auth();
-  if (session?.user) redirect("/panel");
+  if (session?.user) return redirect("/panel/");
 
   async function sendLink(formData: FormData) {
     "use server";

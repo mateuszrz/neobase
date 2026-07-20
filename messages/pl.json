@@ -1,0 +1,30 @@
+{
+  "site": {
+    "title": "NeoBase — analizy neobanków i fintechów",
+    "titleTemplate": "%s — NeoBase",
+    "description": "Oceny, opinie i sentyment ponad 100 neobanków i giełd kryptowalut. Niezależne analizy rynku fintech."
+  },
+  "nav": {
+    "home": "NeoBase — strona główna",
+    "neobanks": "Neobanki",
+    "exchanges": "Giełdy",
+    "rankings": "Rankingi",
+    "blog": "Blog",
+    "about": "O nas",
+    "testReports": "Zobacz nasze raporty",
+    "getMonitoring": "Zamów monitoring"
+  },
+  "footer": {
+    "tagline": "Niezależne analizy neobanków i giełd kryptowalut.",
+    "rights": "Wszelkie prawa zastrzeżone."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Analizy neobanków, giełd kryptowalut i unijnych regulacji fintech.",
+    "readMore": "Czytaj dalej",
+    "empty": "Nie ma jeszcze żadnych wpisów.",
+    "backToBlog": "Wróć na blog",
+    "published": "Opublikowano {date}",
+    "updated": "Zaktualizowano {date}"
+  }
+}

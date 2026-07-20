@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { Link } from "@/i18n/navigation";
+import { notFound } from "next/navigation";
+import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
@@ -48,7 +50,7 @@ export default async function ProjectPage({
 
   const session = await auth();
   const userId = (session?.user as { id?: string } | undefined)?.id;
-  if (!userId) redirect("/login");
+  if (!userId) return redirect("/login/");
 
   const project = await ownedProject(id, userId!);
   if (!project) notFound();
@@ -57,7 +59,7 @@ export default async function ProjectPage({
   try {
     pkg = await activePackage(userId!);
   } catch (e) {
-    if (e instanceof EntitlementError) redirect("/panel/?error=entitlement");
+    if (e instanceof EntitlementError) return redirect("/panel/?error=entitlement");
     throw e;
   }
 
@@ -76,39 +78,39 @@ export default async function ProjectPage({
     "use server";
     const s = await auth();
     const uid = (s?.user as { id?: string } | undefined)?.id;
-    if (!uid || !(await ownedProject(id, uid))) redirect("/panel/");
+    if (!uid || !(await ownedProject(id, uid))) return redirect("/panel/");
     const ids = formData.getAll("brandIds").map((v) => String(v));
     try {
       await setBrands(id, ids);
     } catch (e) {
       const code = e instanceof LimitError ? "limit" : e instanceof EntitlementError ? "entitlement" : "save";
-      redirect(`/panel/project/${id}/?error=${code}`);
+      return redirect(`/panel/project/${id}/?error=${code}`);
     }
-    redirect(`/panel/project/${id}/?saved=brands`);
+    return redirect(`/panel/project/${id}/?saved=brands`);
   }
 
   async function saveMarkets(formData: FormData) {
     "use server";
     const s = await auth();
     const uid = (s?.user as { id?: string } | undefined)?.id;
-    if (!uid || !(await ownedProject(id, uid))) redirect("/panel/");
+    if (!uid || !(await ownedProject(id, uid))) return redirect("/panel/");
     const codes = formData.getAll("marketCodes").map((v) => String(v));
     try {
       await setMarkets(id, codes);
     } catch (e) {
       const code = e instanceof LimitError ? "limit" : e instanceof EntitlementError ? "entitlement" : "save";
-      redirect(`/panel/project/${id}/?error=${code}`);
+      return redirect(`/panel/project/${id}/?error=${code}`);
     }
-    redirect(`/panel/project/${id}/?saved=markets`);
+    return redirect(`/panel/project/${id}/?saved=markets`);
   }
 
   async function genReport() {
     "use server";
     const s = await auth();
     const uid = (s?.user as { id?: string } | undefined)?.id;
-    if (!uid || !(await ownedProject(id, uid))) redirect("/panel/");
+    if (!uid || !(await ownedProject(id, uid))) return redirect("/panel/");
     await generateProjectReport(id);
-    redirect(`/panel/project/${id}/?saved=report`);
+    return redirect(`/panel/project/${id}/?saved=report`);
   }
 
   async function deleteProject() {
@@ -120,7 +122,7 @@ export default async function ProjectPage({
       const { reconcileProjectSources } = await import("@/lib/projects/reconcile");
       await reconcileProjectSources();
     }
-    redirect("/panel/");
+    return redirect("/panel/");
   }
 
   const dailySources = currentBrands.length * currentMarkets.length * PROJECT_KINDS.length;
@@ -133,7 +135,7 @@ export default async function ProjectPage({
   return (
     <main className="section">
       <div className="wrap" style={{ maxWidth: 760 }}>
-        <a href="/panel/" className="nav-link" style={{ padding: 0, color: "var(--cyan-edge)", fontSize: 13 }}>← Panel</a>
+        <Link href="/panel/" className="nav-link" style={{ padding: 0, color: "var(--cyan-edge)", fontSize: 13 }}>← Panel</Link>
         <div className="spread" style={{ alignItems: "baseline", marginTop: 10 }}>
           <h1 className="display" style={{ fontSize: "2rem" }}>{project.name}</h1>
           <span className="pill pill-score">{pkg.name}</span>

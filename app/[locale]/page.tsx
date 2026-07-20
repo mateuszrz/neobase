@@ -1,4 +1,5 @@
 import { getPlatformStats, getTopNeobanks, getTopExchanges } from "@/lib/queries";
+import { Link } from "@/i18n/navigation";
 import { FintechCard, Highlight, Stat, fmt } from "@/components/ui";
 
 export const revalidate = 3600;
@@ -24,8 +25,8 @@ export default async function Home() {
             Trustpilot and the app stores, segmented by country, updated daily.
           </p>
           <div className="row" style={{ marginTop: 28 }}>
-            <a className="btn btn-cyan" href="/test/">Test our reports — free</a>
-            <a className="btn btn-ghost" href="/neobanks/">Explore neobanks</a>
+            <Link className="btn btn-cyan" href="/test/">Test our reports — free</Link>
+            <Link className="btn btn-ghost" href="/neobanks/">Explore neobanks</Link>
           </div>
           <div className="row" style={{ marginTop: 22, color: "var(--warm-gray)", fontSize: 13 }}>
             <span className="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></span>
@@ -49,9 +50,9 @@ export default async function Home() {
         <div className="wrap">
           <div className="spread" style={{ marginBottom: 20 }}>
             <h2 className="h-sm">Top-rated neobanks</h2>
-            <a className="nav-link" href="/neobanks/" style={{ padding: 0, color: "var(--cyan-edge)" }}>
+            <Link className="nav-link" href="/neobanks/" style={{ padding: 0, color: "var(--cyan-edge)" }}>
               View all →
-            </a>
+            </Link>
           </div>
           <div className="grid grid-3">
             {neobanks.map((f) => (
@@ -82,9 +83,9 @@ export default async function Home() {
         <div className="wrap">
           <div className="spread" style={{ marginBottom: 20 }}>
             <h2 className="h-sm">Crypto exchanges</h2>
-            <a className="nav-link" href="/exchanges/" style={{ padding: 0, color: "var(--cyan-edge)" }}>
+            <Link className="nav-link" href="/exchanges/" style={{ padding: 0, color: "var(--cyan-edge)" }}>
               View all →
-            </a>
+            </Link>
           </div>
           <div className="grid grid-3">
             {exchanges.map((f) => (

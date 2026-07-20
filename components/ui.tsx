@@ -1,43 +1,49 @@
 import type { ReactNode } from "react";
+import { getTranslations } from "next-intl/server";
 import type { FintechListItem, PlatformRating } from "@/lib/queries";
+import { Link } from "@/i18n/navigation";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { BrandLogo } from "@/components/BrandLogo";
 import { micaService, regulatorName, countryFlag, EU_EEA_COUNTRIES, EU_EEA_MEMBERS } from "@/lib/mica/reference";
 
 /* ─── Brand / chrome ──────────────────────────────────────────────────────── */
 
-export function Nav() {
+export async function Nav() {
+  const t = await getTranslations("nav");
   return (
     <nav className="nav">
       <div className="wrap nav-inner">
-        <a href="/" className="brand" aria-label="NeoBase home">
+        <Link href="/" className="brand" aria-label={t("home")}>
           <svg className="brand-glyph" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
             <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" />
           </svg>
           NeoBase
-        </a>
-        <a className="nav-link nav-hide-sm" href="/neobanks/">Neobanks</a>
-        <a className="nav-link nav-hide-sm" href="/exchanges/">Exchanges</a>
-        <a className="nav-link nav-hide-sm" href="/best/">Rankings</a>
-        <a className="nav-link nav-hide-sm" href="/about/">About</a>
-        <a className="btn btn-ghost nav-hide-sm" href="/test/">Test our reports</a>
-        <a className="btn btn-cyan" href="/monitoring/">Get monitoring</a>
+        </Link>
+        <Link className="nav-link nav-hide-sm" href="/neobanks/">{t("neobanks")}</Link>
+        <Link className="nav-link nav-hide-sm" href="/exchanges/">{t("exchanges")}</Link>
+        <Link className="nav-link nav-hide-sm" href="/best/">{t("rankings")}</Link>
+        <Link className="nav-link nav-hide-sm" href="/about/">{t("about")}</Link>
+        <Link className="btn btn-ghost nav-hide-sm" href="/test/">{t("testReports")}</Link>
+        <Link className="btn btn-cyan" href="/monitoring/">{t("getMonitoring")}</Link>
       </div>
     </nav>
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  const t = await getTranslations();
   return (
     <footer className="footer">
       <div className="wrap spread">
         <div className="row" style={{ gap: 8 }}>
           <span style={{ fontWeight: 600, color: "var(--ink-black)" }}>NeoBase</span>
-          <span>· Independent fintech intelligence</span>
+          <span>· {t("footer.tagline")}</span>
         </div>
         <div className="row" style={{ gap: 16 }}>
-          <a href="/neobanks/">Neobanks</a>
-          <a href="/exchanges/">Exchanges</a>
-          <a href="/about/">About</a>
+          <Link href="/neobanks/">{t("nav.neobanks")}</Link>
+          <Link href="/exchanges/">{t("nav.exchanges")}</Link>
+          <Link href="/about/">{t("nav.about")}</Link>
+          <LocaleSwitcher />
           <span className="muted">© 2026</span>
         </div>
       </div>

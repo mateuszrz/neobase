@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { getBestForTag } from "@/lib/queries";
 import { tagBySlug, TAGS } from "@/lib/tags";
@@ -49,7 +50,7 @@ export default async function BestPage({ params }: { params: Promise<{ slug: str
     <main className="section" style={{ paddingTop: 24 }}>
       <div className="wrap">
         <p style={{ fontSize: 13, marginBottom: 12 }}>
-          <a href="/best/" style={{ color: "var(--cyan-edge)" }}>← All rankings</a>
+          <Link href="/best/" style={{ color: "var(--cyan-edge)" }}>← All rankings</Link>
         </p>
         <p className="eyebrow" style={{ marginBottom: 10 }}>{tag.group === "exchange" ? "Crypto exchanges" : "Neobanks"} · Ranking</p>
         <h1 className="h-sm">{tag.title}</h1>
@@ -58,11 +59,11 @@ export default async function BestPage({ params }: { params: Promise<{ slug: str
         </p>
 
         {rows.length === 0 ? (
-          <p className="muted">No options yet. <a href={backHref} style={{ color: "var(--cyan-edge)" }}>Browse all →</a></p>
+          <p className="muted">No options yet. <Link href={backHref} style={{ color: "var(--cyan-edge)" }}>Browse all →</Link></p>
         ) : (
           <div className="stack-8" style={{ maxWidth: 760 }}>
             {rows.map((r, i) => (
-              <a
+              <Link
                 key={r.id}
                 href={`/${kind}/${r.id}/`}
                 className="card"
@@ -83,7 +84,7 @@ export default async function BestPage({ params }: { params: Promise<{ slug: str
                 ) : (
                   <span className="muted" style={{ flex: "0 0 auto" }}>—</span>
                 )}
-              </a>
+              </Link>
             ))}
           </div>
         )}

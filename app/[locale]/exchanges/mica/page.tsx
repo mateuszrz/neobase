@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Link } from "@/i18n/navigation";
 import { getMicaRegistry } from "@/lib/queries";
 import { MicaRegistry } from "@/components/MicaRegistry";
 
@@ -22,7 +23,7 @@ export default async function MicaRegistryPage() {
     <main className="section" style={{ paddingTop: 24 }}>
       <div className="wrap">
         <p style={{ fontSize: 13, marginBottom: 12 }}>
-          <a href="/exchanges/" style={{ color: "var(--cyan-edge)" }}>← Exchanges</a>
+          <Link href="/exchanges/" style={{ color: "var(--cyan-edge)" }}>← Exchanges</Link>
         </p>
         <p className="eyebrow" style={{ marginBottom: 10 }}>EU regulation</p>
         <h1 className="h-sm">MiCA-licensed crypto providers</h1>
