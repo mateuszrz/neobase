@@ -34,6 +34,15 @@ export async function generateMetadata({
     metadataBase: new URL(env.APP_BASE_URL),
     title: { default: t("title"), template: t("titleTemplate") },
     description: t("description"),
+    // Non-English locales are noindex until their CONTENT is translated, not
+    // just their chrome — right now /pl/ is a Polish shell around English
+    // copy, which is exactly the thin duplicate search engines penalise.
+    // Remove this once scripts/translate-content.ts has run for the locale.
+    //
+    // Deliberately a meta tag and NOT a robots.txt Disallow: a disallowed page
+    // is never fetched, so the noindex would never be read, and the URL could
+    // still surface from external links.
+    ...(locale === routing.defaultLocale ? {} : { robots: { index: false, follow: true } }),
   };
 }
 
