@@ -1,36 +1,51 @@
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPlatformStats, getTopNeobanks, getTopExchanges } from "@/lib/queries";
 import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { FintechCard, Highlight, Stat, fmt } from "@/components/ui";
 
 export const revalidate = 3600;
 
-export default async function Home() {
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("home");
   const [stats, neobanks, exchanges] = await Promise.all([
     getPlatformStats(),
     getTopNeobanks(9),
     getTopExchanges(6),
   ]);
 
+  const features = [
+    [t("featChangeTitle"), t("featChangeBody")],
+    [t("featSentimentTitle"), t("featSentimentBody")],
+    [t("featMomentumTitle"), t("featMomentumBody")],
+  ];
+
   return (
     <main>
       {/* Hero */}
       <section className="section">
         <div className="wrap" style={{ maxWidth: 880 }}>
-          <p className="eyebrow" style={{ marginBottom: 18 }}>Independent fintech intelligence</p>
+          <p className="eyebrow" style={{ marginBottom: 18 }}>{t("eyebrow")}</p>
           <h1 className="display">
-            Track how the world&apos;s <Highlight>neobanks</Highlight> are really doing.
+            {/* The highlighted word sits mid-sentence, and Polish puts it
+                elsewhere — so the whole headline is one message with an <hl>
+                tag rather than three concatenated fragments. */}
+            {t.rich("headline", { hl: (c) => <Highlight>{c}</Highlight> })}
           </h1>
-          <p className="lead" style={{ marginTop: 20, maxWidth: 620 }}>
-            Ratings, reviews and sentiment for 100+ neobanks and crypto exchanges — aggregated from
-            Trustpilot and the app stores, segmented by country, updated daily.
-          </p>
+          <p className="lead" style={{ marginTop: 20, maxWidth: 620 }}>{t("lead")}</p>
           <div className="row" style={{ marginTop: 28 }}>
-            <Link className="btn btn-cyan" href="/test/">Test our reports — free</Link>
-            <Link className="btn btn-ghost" href="/neobanks/">Explore neobanks</Link>
+            <Link className="btn btn-cyan" href="/test/">{t("ctaReports")}</Link>
+            <Link className="btn btn-ghost" href="/neobanks/">{t("ctaExplore")}</Link>
           </div>
           <div className="row" style={{ marginTop: 22, color: "var(--warm-gray)", fontSize: 13 }}>
             <span className="stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></span>
-            Real reviews from Trustpilot, Google Play &amp; the App Store
+            {t("realReviews")}
           </div>
         </div>
       </section>
@@ -38,10 +53,10 @@ export default async function Home() {
       {/* Stats */}
       <section className="wrap">
         <div className="grid grid-4">
-          <Stat num={String(stats.fintechs)} label="Fintechs tracked" />
-          <Stat num={fmt(stats.ratings)} label="Ratings analysed" />
-          <Stat num={String(stats.countries)} label="Countries segmented" />
-          <Stat num="Daily" label="Data refresh cadence" />
+          <Stat num={String(stats.fintechs)} label={t("statFintechs")} />
+          <Stat num={fmt(stats.ratings)} label={t("statRatings")} />
+          <Stat num={String(stats.countries)} label={t("statCountries")} />
+          <Stat num={t("statCadenceValue")} label={t("statCadence")} />
         </div>
       </section>
 
@@ -49,9 +64,9 @@ export default async function Home() {
       <section className="section">
         <div className="wrap">
           <div className="spread" style={{ marginBottom: 20 }}>
-            <h2 className="h-sm">Top-rated neobanks</h2>
+            <h2 className="h-sm">{t("topNeobanks")}</h2>
             <Link className="nav-link" href="/neobanks/" style={{ padding: 0, color: "var(--cyan-edge)" }}>
-              View all →
+              {t("viewAll")}
             </Link>
           </div>
           <div className="grid grid-3">
@@ -65,14 +80,10 @@ export default async function Home() {
       {/* Value props */}
       <section className="wrap">
         <div className="grid grid-3">
-          {[
-            ["Change detection", "Spot pricing, plan and positioning shifts across competitors before they reach you."],
-            ["Sentiment tracking", "See whether the market mood is turning — positive vs negative, by country."],
-            ["Rating momentum", "Follow how ratings and review volume grow across Trustpilot and the app stores."],
-          ].map(([t, d]) => (
-            <div key={t} className="feature-card">
-              <h3 className="subheading" style={{ marginBottom: 8 }}>{t}</h3>
-              <p className="muted" style={{ margin: 0 }}>{d}</p>
+          {features.map(([title, body]) => (
+            <div key={title} className="feature-card">
+              <h3 className="subheading" style={{ marginBottom: 8 }}>{title}</h3>
+              <p className="muted" style={{ margin: 0 }}>{body}</p>
             </div>
           ))}
         </div>
@@ -82,9 +93,9 @@ export default async function Home() {
       <section className="section">
         <div className="wrap">
           <div className="spread" style={{ marginBottom: 20 }}>
-            <h2 className="h-sm">Crypto exchanges</h2>
+            <h2 className="h-sm">{t("topExchanges")}</h2>
             <Link className="nav-link" href="/exchanges/" style={{ padding: 0, color: "var(--cyan-edge)" }}>
-              View all →
+              {t("viewAll")}
             </Link>
           </div>
           <div className="grid grid-3">

@@ -6,7 +6,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import "../globals.css";
 import { Nav, Footer } from "@/components/ui";
-import { routing } from "@/i18n/routing";
+import { routing, isIndexable } from "@/i18n/routing";
 import { env } from "@/lib/env";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -42,7 +42,7 @@ export async function generateMetadata({
     // Deliberately a meta tag and NOT a robots.txt Disallow: a disallowed page
     // is never fetched, so the noindex would never be read, and the URL could
     // still surface from external links.
-    ...(locale === routing.defaultLocale ? {} : { robots: { index: false, follow: true } }),
+    ...(isIndexable(locale) ? {} : { robots: { index: false, follow: true } }),
   };
 }
 

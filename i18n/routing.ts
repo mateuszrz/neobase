@@ -18,3 +18,18 @@ export const routing = defineRouting({
 });
 
 export type Locale = (typeof routing.locales)[number];
+
+/**
+ * Locales whose content is translated well enough to index.
+ *
+ * Everything else ships `noindex` (app/[locale]/layout.tsx), is left out of the
+ * sitemap, and is omitted from hreflang — those three must agree, or you end up
+ * telling crawlers to index a page you also told them to ignore. Declared once
+ * so they can't drift apart.
+ *
+ * Add a locale here only once its UI strings AND its directory content are
+ * translated.
+ */
+export const INDEXABLE_LOCALES: readonly string[] = ["en"];
+
+export const isIndexable = (locale: string): boolean => INDEXABLE_LOCALES.includes(locale);

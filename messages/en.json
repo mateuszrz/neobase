@@ -167,6 +167,187 @@
     "noOptions": "No options yet.",
     "rankedBy": "Ranked by NeoBase's composite sentiment score (reviews + news + mentions). Scores update weekly.",
     "optionCount": "{count, plural, one {# option} other {# options}}",
-    "reviewCount": "{count, plural, one {# review} other {# reviews}}"
+    "reviewCount": "{count, plural, one {# review} other {# reviews}}",
+    "pageTitle": "{title} (2026) — Ranked by Sentiment",
+    "pageDesc": "{blurb} Ranked by NeoBase's own customer-sentiment score across Trustpilot, Google Play, App Store, news and social."
+  },
+  "tags": {
+    "multi-currency-accounts": {
+      "chip": "Multi-currency",
+      "title": "Best multi-currency accounts",
+      "blurb": "Neobanks for holding and spending in many currencies."
+    },
+    "travel-cards": {
+      "chip": "Travel",
+      "title": "Best travel cards",
+      "blurb": "Cards for spending abroad with low fees and fair FX."
+    },
+    "low-fee-neobanks": {
+      "chip": "Low fees",
+      "title": "Best low-fee neobanks",
+      "blurb": "Accounts with minimal fees and free ATM withdrawals."
+    },
+    "business-accounts": {
+      "chip": "Business",
+      "title": "Best business accounts",
+      "blurb": "Neobanks built for companies and SMEs."
+    },
+    "for-freelancers": {
+      "chip": "Freelancers",
+      "title": "Best accounts for freelancers",
+      "blurb": "Accounts with invoicing and tools for the self-employed."
+    },
+    "savings-accounts": {
+      "chip": "Savings",
+      "title": "Best savings & high-yield accounts",
+      "blurb": "Neobanks with strong savings and high-yield rates."
+    },
+    "budgeting-apps": {
+      "chip": "Budgeting",
+      "title": "Best budgeting apps",
+      "blurb": "Neobanks with budgeting and money-management tools."
+    },
+    "for-students": {
+      "chip": "Students",
+      "title": "Best accounts for students",
+      "blurb": "Accounts aimed at students and Gen-Z."
+    },
+    "credit-and-lending": {
+      "chip": "Credit",
+      "title": "Best for credit & lending",
+      "blurb": "Neobanks offering credit, overdraft or credit-building."
+    },
+    "cashback-rewards": {
+      "chip": "Cashback",
+      "title": "Best cashback & rewards accounts",
+      "blurb": "Accounts that pay you back on spending."
+    },
+    "investing-neobanks": {
+      "chip": "Investing",
+      "title": "Best neobanks for investing",
+      "blurb": "Neobanks with built-in stock or asset investing."
+    },
+    "crypto-friendly-neobanks": {
+      "chip": "Crypto",
+      "title": "Best crypto-friendly neobanks",
+      "blurb": "Neobanks with integrated crypto features."
+    },
+    "money-transfer-apps": {
+      "chip": "Transfers",
+      "title": "Best apps for international money transfers",
+      "blurb": "Send money abroad with low fees and fair exchange rates."
+    },
+    "virtual-cards": {
+      "chip": "Virtual cards",
+      "title": "Best virtual card providers",
+      "blurb": "Neobanks offering instant virtual and disposable cards."
+    },
+    "for-non-residents": {
+      "chip": "Non-residents",
+      "title": "Best bank accounts for non-residents & expats",
+      "blurb": "Open an account without local residency."
+    },
+    "premium-accounts": {
+      "chip": "Premium",
+      "title": "Best premium bank accounts",
+      "blurb": "Premium tiers with perks, lounges and higher limits."
+    },
+    "free-accounts": {
+      "chip": "Free account",
+      "title": "Best free bank accounts",
+      "blurb": "Accounts with no monthly fee."
+    },
+    "accounts-with-insurance": {
+      "chip": "Insurance",
+      "title": "Best accounts with travel insurance",
+      "blurb": "Cards that bundle travel or purchase insurance."
+    },
+    "for-teens": {
+      "chip": "Teens",
+      "title": "Best bank accounts for teenagers",
+      "blurb": "Accounts and cards for kids and teens."
+    },
+    "joint-accounts": {
+      "chip": "Joint accounts",
+      "title": "Best joint bank accounts",
+      "blurb": "Shared accounts for couples and households."
+    },
+    "get-paid-early": {
+      "chip": "Early pay",
+      "title": "Best apps to get paid early",
+      "blurb": "Access your salary a day or two ahead."
+    },
+    "expense-management": {
+      "chip": "Expenses",
+      "title": "Best expense-management accounts",
+      "blurb": "Neobanks with expense tools for teams and the self-employed."
+    },
+    "apple-google-pay": {
+      "chip": "Apple/Google Pay",
+      "title": "Best neobanks for Apple Pay & Google Pay",
+      "blurb": "Accounts with mobile-wallet support."
+    },
+    "spot-trading": {
+      "chip": "Spot",
+      "title": "Best exchanges for spot trading",
+      "blurb": "Exchanges strong on spot markets."
+    },
+    "futures-derivatives": {
+      "chip": "Derivatives",
+      "title": "Best exchanges for futures & derivatives",
+      "blurb": "Exchanges offering futures and leveraged products."
+    },
+    "staking-earn": {
+      "chip": "Staking",
+      "title": "Best exchanges for staking & earn",
+      "blurb": "Exchanges with staking and yield products."
+    },
+    "nft-platforms": {
+      "chip": "NFTs",
+      "title": "Best exchanges for NFTs",
+      "blurb": "Exchanges with NFT marketplaces."
+    },
+    "copy-trading": {
+      "chip": "Copy trading",
+      "title": "Best exchanges for copy trading",
+      "blurb": "Exchanges with social/copy-trading features."
+    },
+    "low-fee-exchanges": {
+      "chip": "Low fees",
+      "title": "Best low-fee crypto exchanges",
+      "blurb": "Exchanges with the lowest trading fees."
+    },
+    "for-beginners": {
+      "chip": "Beginners",
+      "title": "Best crypto exchanges for beginners",
+      "blurb": "Easy, approachable exchanges for first-time users."
+    },
+    "defi-web3": {
+      "chip": "DeFi & Web3",
+      "title": "Best exchanges for DeFi & Web3",
+      "blurb": "Exchanges with DeFi access and Web3 wallets."
+    }
+  },
+  "home": {
+    "eyebrow": "Independent fintech intelligence",
+    "headline": "Track how the world's <hl>neobanks</hl> are really doing.",
+    "lead": "Ratings, reviews and sentiment for 100+ neobanks and crypto exchanges — aggregated from Trustpilot and the app stores, segmented by country, updated daily.",
+    "ctaReports": "Test our reports — free",
+    "ctaExplore": "Explore neobanks",
+    "realReviews": "Real reviews from Trustpilot, Google Play & the App Store",
+    "statFintechs": "Fintechs tracked",
+    "statRatings": "Ratings analysed",
+    "statCountries": "Countries segmented",
+    "statCadence": "Data refresh cadence",
+    "statCadenceValue": "Daily",
+    "topNeobanks": "Top-rated neobanks",
+    "topExchanges": "Crypto exchanges",
+    "viewAll": "View all →",
+    "featChangeTitle": "Change detection",
+    "featChangeBody": "Spot pricing, plan and positioning shifts across competitors before they reach you.",
+    "featSentimentTitle": "Sentiment tracking",
+    "featSentimentBody": "See whether the market mood is turning — positive vs negative, by country.",
+    "featMomentumTitle": "Rating momentum",
+    "featMomentumBody": "Follow how ratings and review volume grow across Trustpilot and the app stores."
   }
 }
