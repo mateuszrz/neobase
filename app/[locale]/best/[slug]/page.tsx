@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { alternates } from "@/lib/i18n/alternates";
 import { env } from "@/lib/env";
 import { getBestForTag } from "@/lib/queries";
 import { tagBySlug, TAGS } from "@/lib/tags";
@@ -28,11 +29,7 @@ export async function generateMetadata({
   return {
     title: t("pageTitle", { title: tt(`${tag.slug}.title`) }),
     description: t("pageDesc", { blurb: tt(`${tag.slug}.blurb`) }),
-    // Trailing slash: trailingSlash: true serves /best/x/, so a canonical
-    // without one points at a redirect.
-    alternates: {
-      canonical: locale === routing.defaultLocale ? `/best/${tag.slug}/` : `/${locale}/best/${tag.slug}/`,
-    },
+    alternates: alternates(locale, `/best/${tag.slug}/`),
   };
 }
 

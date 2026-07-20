@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { alternates } from "@/lib/i18n/alternates";
 import { listArticles } from "@/lib/blog/articles";
 
 export const revalidate = 3600;
@@ -16,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: t("title"),
     description: t("description"),
-    alternates: { canonical: locale === routing.defaultLocale ? "/blog/" : `/${locale}/blog/` },
+    alternates: alternates(locale, "/blog/"),
   };
 }
 

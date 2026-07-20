@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { alternates } from "@/lib/i18n/alternates";
 import { getTagCounts } from "@/lib/queries";
 import { TAGS, tagsForGroup } from "@/lib/tags";
 
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     description: t("metaDesc"),
     // With a trailing slash — trailingSlash: true serves /best/, so a canonical
     // of "/best" points at a URL that only 308s.
-    alternates: { canonical: locale === routing.defaultLocale ? "/best/" : `/${locale}/best/` },
+    alternates: alternates(locale, "/best/"),
   };
 }
 

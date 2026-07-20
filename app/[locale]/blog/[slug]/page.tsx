@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { alternates } from "@/lib/i18n/alternates";
 import { Markdown } from "@/components/Markdown";
 import { getArticle, allPublishedArticleParams, readingMinutes } from "@/lib/blog/articles";
 import { env } from "@/lib/env";
@@ -31,7 +32,7 @@ export async function generateMetadata({
   return {
     title: post.seoTitle ?? post.title,
     description: post.seoDescription ?? post.excerpt ?? undefined,
-    alternates: { canonical: path },
+    alternates: alternates(locale, `/blog/${slug}/`),
     openGraph: {
       type: "article",
       title: post.seoTitle ?? post.title,
