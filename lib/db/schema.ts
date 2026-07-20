@@ -46,7 +46,11 @@ export const fintechs = pgTable(
     headquarters: text("headquarters"),
     employees: integer("employees"),
     valuationUsd: bigint("valuation_usd", { mode: "number" }),
+    // Two distinct things that used to share one column (see drizzle/0016):
+    //  status    — lifecycle: "active" | "acquired" | "ceased"
+    //  ownership — who owns it: "Private", "Public (NASDAQ: PYPL)", "Subsidiary (Block Inc.)"
     status: text("status"),
+    ownership: text("ownership"),
     description: text("description"),
     about: text("about"),
     tags: text("tags").array(),

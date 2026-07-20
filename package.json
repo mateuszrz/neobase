@@ -34,6 +34,7 @@
     "data:wiki": "tsx scripts/refresh-from-wikipedia.ts",
     "data:about": "tsx scripts/refresh-from-about.ts",
     "data:fill-thin": "tsx scripts/fill-thin-exchanges.ts",
+    "data:split-status": "tsx scripts/split-status.ts",
     "data:confidence": "tsx scripts/audit-confidence.ts",
     "tags:enrich": "tsx scripts/enrich-tags.ts",
     "backfill:socialnews": "tsx scripts/backfill-social-news.ts",

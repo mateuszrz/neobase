@@ -299,7 +299,8 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {!HIDE_COMPANY_FACTS.has(ft.id) && (
           (ok("founded") && ft.founded) || (ok("headquarters") && ft.headquarters) ||
           (ok("employees") && ft.employees) || (ok("valuationUsd") && ft.valuationUsd) ||
-          (ok("status") && ft.status) || (ft.type !== "exchange" && ok("licenses") && licenses.length) ||
+          (ok("status") && ft.status) || (ok("ownership") && ft.ownership) ||
+          (ft.type !== "exchange" && ok("licenses") && licenses.length) ||
           availableIn.length
         ) ? (
         <div className="card" style={{ marginTop: 20 }}>
@@ -310,6 +311,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             <FactRow label="Employees" value={ok("employees") && ft.employees ? fmt(ft.employees) : undefined} />
             <FactRow label="Valuation" value={ok("valuationUsd") && ft.valuationUsd ? fmtMoney(ft.valuationUsd) : undefined} />
             <FactRow label="Status" value={ok("status") ? (ft.status ?? undefined) : undefined} />
+            <FactRow label="Ownership" value={ok("ownership") ? (ft.ownership ?? undefined) : undefined} />
             {/* Exchanges: regulator comes from the authoritative MiCA panel above, not this AI field. */}
             <FactRow label="Licenses" value={ft.type !== "exchange" && ok("licenses") && licenses.length ? licenses.slice(0, 4).join(", ") : undefined} />
             <FactRow label="Available in" value={availableIn.length ? `${availableIn.length} markets` : undefined} />

@@ -14,6 +14,7 @@ export type Fill = {
   founded?: number;
   headquarters?: string;
   status?: string;
+  ownership?: string;
   licenses?: string[];
   description?: string;
   about?: string;
@@ -28,6 +29,23 @@ export type Fill = {
  * but the B.V. was incorporated in 2016 — a genuine conflict).
  */
 export const FILLS: Record<string, Fill> = {
+  // ari10.com now serves only a wind-down notice ("Services are no longer
+  // available as of July 1st 2026"); the Polish operator Bitcan sp. z o.o. gave
+  // up its VASP status on 30 Jun 2026 at the end of Poland's MiCA transition.
+  // KRS 0000837013 (odpis aktualny) confirms ARI10 sp. z o.o. itself is still a
+  // registered company in Poznań — not in liquidation — so the *brand* ceased,
+  // not the legal entity. `founded` stays empty: KRS 2020 vs the brand's "since
+  // 2017" vs predecessor Bitcan 2019 is still unresolved.
+  ari10: {
+    country: "PL",
+    headquarters: "Poznań, Poland",
+    status: "ceased",
+    description:
+      "Ari10 was a Polish crypto-asset exchange and gateway service that ceased operations on 1 July 2026, with users redirected to RGLTD, a MiCA-licensed successor brand.",
+    about:
+      "Ari10 (ARI10 Sp. z o.o.) was a Poznań-based crypto-asset exchange and payment gateway. Its exchange was operated by Bitcan sp. z o.o., which ended its Polish VASP activity on 30 June 2026 as the country's MiCA transition period closed, and the Ari10 service shut down on 1 July 2026. The group's Dutch entity WEB3 Technology B.V. holds the MiCA CASP licence and now trades under the RGLTD brand rather than as Ari10.",
+  },
+
   // ARES/justice.cz (IČO 07055285, entered 19 Apr 2018) · EU CASP register
   // (MP Developers s.r.o., CNB, authorised 11 Feb 2026) · cs.wikipedia.org/wiki/Anycoin
   anycoin: {

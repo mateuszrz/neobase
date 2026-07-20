@@ -17,7 +17,9 @@
  * nothing: it invites the reader to conclude something we don't know.
  */
 export const HIDE_COMPANY_FACTS = new Set([
-  "ari10",
+  // ari10 belongs here on the founding-year rule, but is deliberately excluded:
+  // its status is "ceased", and telling a reader the service has shut down
+  // matters far more than the missing year misleads.
   "bitmymoney",
   "criptan",
   "cryptonow",
