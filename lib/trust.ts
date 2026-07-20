@@ -16,6 +16,25 @@
  * reads as "this company has no founding date", which is worse than showing
  * nothing: it invites the reader to conclude something we don't know.
  */
+/**
+ * Profiles whose MiCA register row belongs to a successor, not to the brand on
+ * the page. The register entry is genuine, so we keep it — but rendered as the
+ * normal green "Yes, {brand} is authorised" panel it would tell the reader the
+ * opposite of the truth: that a service which has shut down is licensed and
+ * free to take their money.
+ *
+ * `entity` is the licence holder as it appears in the register; `brand` is what
+ * that entity trades as today.
+ */
+export const SUCCESSOR_LICENCE: Record<string, { entity: string; brand: string; note: string }> = {
+  ari10: {
+    entity: "WEB3 Technology B.V.",
+    brand: "RGLTD",
+    note:
+      "Ari10 stopped serving customers on 1 July 2026. The CASP authorisation below is held by the group's Dutch entity, which now trades under a different brand — it is not a licence to use Ari10.",
+  },
+};
+
 export const HIDE_COMPANY_FACTS = new Set([
   // ari10 belongs here on the founding-year rule, but is deliberately excluded:
   // its status is "ceased", and telling a reader the service has shut down

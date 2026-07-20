@@ -769,9 +769,12 @@ function MicaRow({ label, value }: { label: string; value: ReactNode }) {
 export function MicaLicence({
   mica,
   name,
+  successor,
 }: {
   mica: { licensed: boolean; provider: string | null; legalEntity: string | null; country: string | null; regulator: string | null; services: string[]; website: string | null };
   name: string;
+  /** Set when the register row belongs to a successor entity, not to this brand. */
+  successor?: { entity: string; brand: string; note: string } | null;
 }) {
   if (!mica.licensed) {
     return (
@@ -792,18 +795,34 @@ export function MicaLicence({
 
   const regFull = regulatorName(mica.regulator ?? "");
   const web = (mica.website ?? "").replace(/^https?:\/\//, "").replace(/^www\./, "").replace(/\/.*$/, "");
+  // A successor's licence is not this brand's licence, so it gets neither the
+  // green treatment nor the "Yes." — the register row is real, but answering
+  // "does {name} have a licence?" with yes would be false.
+  const accent = successor ? "#b45309" : "#16a34a";
   return (
-    <section className="card" style={{ borderLeft: "3px solid #16a34a", background: "#f3faf4" }}>
+    <section className="card" style={{ borderLeft: `3px solid ${accent}`, background: successor ? "#fdf9f0" : "#f3faf4" }}>
       <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
         <h2 className="subheading">Does {name} have a MiCA licence?</h2>
-        <span style={{ fontSize: 12, fontWeight: 600, color: "#16a34a", flex: "0 0 auto" }}>✓ Authorised · MiCA CASP</span>
+        <span style={{ fontSize: 12, fontWeight: 600, color: accent, flex: "0 0 auto" }}>
+          {successor ? "Licence held by successor" : "✓ Authorised · MiCA CASP"}
+        </span>
       </div>
-      <p style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.7 }}>
-        <strong>Yes.</strong> {name}{mica.legalEntity ? ` (legal entity ${mica.legalEntity})` : ""} holds a MiCA crypto-asset
-        service provider (CASP) authorisation — regulated by <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{regFull}</strong>{" "}
-        in {mica.country}, listed in the official ESMA register. Through MiCA passporting it may legally serve clients across the
-        EU/EEA ({EU_EEA_COUNTRIES} countries).
-      </p>
+      {successor ? (
+        <p style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.7 }}>
+          <strong>Not any more.</strong> {successor.note} The authorisation is registered to{" "}
+          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{successor.entity}</strong>, which trades as{" "}
+          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{successor.brand}</strong> — regulated by{" "}
+          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{regFull}</strong> in {mica.country} and listed in the
+          official ESMA register.
+        </p>
+      ) : (
+        <p style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.7 }}>
+          <strong>Yes.</strong> {name}{mica.legalEntity ? ` (legal entity ${mica.legalEntity})` : ""} holds a MiCA crypto-asset
+          service provider (CASP) authorisation — regulated by <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{regFull}</strong>{" "}
+          in {mica.country}, listed in the official ESMA register. Through MiCA passporting it may legally serve clients across the
+          EU/EEA ({EU_EEA_COUNTRIES} countries).
+        </p>
+      )}
 
       <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
         Licence details
@@ -812,7 +831,15 @@ export function MicaLicence({
           company's own lifecycle status, and two rows both labelled "Status"
           read as one field. They can legitimately disagree: a licence stays
           live while the brand it was issued to has ceased trading. */}
-      <MicaRow label="Licence status" value={<span style={{ color: "#16a34a", fontWeight: 600 }}>✓ Authorised (MiCA CASP)</span>} />
+      <MicaRow
+        label="Licence status"
+        value={
+          <span style={{ color: accent, fontWeight: 600 }}>
+            {successor ? `Authorised — held by ${successor.entity}` : "✓ Authorised (MiCA CASP)"}
+          </span>
+        }
+      />
+      {successor && <MicaRow label="Trading as" value={successor.brand} />}
       <MicaRow label="Legal entity" value={mica.legalEntity ?? mica.provider} />
       <MicaRow label="Home regulator" value={regFull} />
       <MicaRow label="Country of authorisation" value={mica.country ? <><span aria-hidden>{countryFlag(mica.country)}</span> {mica.country}</> : null} />
