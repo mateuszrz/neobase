@@ -1,30 +1,35 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Highlight } from "@/components/ui";
+import { routing } from "@/i18n/routing";
+import { alternates } from "@/lib/i18n/alternates";
 
-export const metadata: Metadata = {
-  title: "About",
-  description: "NeoBase is an independent intelligence platform for the global neobank and crypto exchange ecosystem.",
-};
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-export default function AboutPage() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "about" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDesc"),
+    alternates: alternates(locale, "/about/"),
+  };
+}
+
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("about");
   return (
     <main className="section">
       <div className="wrap" style={{ maxWidth: 720 }}>
-        <p className="eyebrow" style={{ marginBottom: 14 }}>About</p>
-        <h1 className="display">
-          Independent <Highlight>fintech intelligence</Highlight>.
-        </h1>
+        <p className="eyebrow" style={{ marginBottom: 14 }}>{t("eyebrow")}</p>
+        <h1 className="display">{t.rich("headline", { hl: (c) => <Highlight>{c}</Highlight> })}</h1>
         <div className="stack-16" style={{ marginTop: 24 }}>
-          <p className="lead">
-            NeoBase tracks the global neobank and crypto exchange ecosystem. We aggregate user reviews,
-            app-store ratings and market signals to give an unbiased, always-current view of how each
-            company is really performing.
-          </p>
-          <p className="lead">
-            The public directory is free. Underneath it sits a monitoring platform: pick a country and a
-            few competitors, and get daily-updated data plus AI summaries of what changed — pricing,
-            plans, media coverage and sentiment.
-          </p>
+          <p className="lead">{t("p1")}</p>
+          <p className="lead">{t("p2")}</p>
         </div>
       </div>
     </main>
