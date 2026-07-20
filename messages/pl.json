@@ -58,5 +58,87 @@
     "backToBlog": "Wróć na blog",
     "published": "Opublikowano {date}",
     "updated": "Zaktualizowano {date}"
+  },
+  "ui": {
+    "noScore": "Brak oceny",
+    "trustScore": "TrustScore",
+    "sentimentScore": "Wskaźnik sentymentu NeoBase",
+    "positiveSentiment": "Pozytywny sentyment",
+    "notEnoughHistory": "Za mało historii — dane przybywają codziennie.",
+    "sentimentAccrues": "Historia sentymentu przybywa codziennie.",
+    "chartRatingVolume": "TrustScore i liczba opinii w czasie",
+    "chartPositive": "Pozytywny sentyment w czasie",
+    "chartPerPlatform": "Pozytywny sentyment według platformy w czasie",
+    "faqTitle": "Najczęstsze pytania",
+    "sample": "Przykład",
+    "samplePreviewWeekly": "Podgląd — po uruchomieniu odświeżane co tydzień",
+    "updatedWeekly": "Aktualizowane co tydzień"
+  },
+  "mica": {
+    "question": "Czy {name} ma licencję MiCA?",
+    "badgeNotAuthorised": "✕ Brak zezwolenia",
+    "badgeAuthorised": "✓ Licencjonowana · CASP wg MiCA",
+    "badgeSuccessor": "Licencja u następcy",
+    "bodyNotAuthorised": "<b>Nie.</b> {name} nie figuruje w unijnym rejestrze ESMA licencjonowanych dostawców usług w zakresie kryptoaktywów (CASP). Okres przejściowy MiCA zakończył się 1 lipca 2026 r., więc bez zezwolenia MiCA firma może nie mieć prawa obsługiwać klientów z UE/EOG. Przed handlem warto sprawdzić oficjalny rejestr ESMA.",
+    "bodyAuthorised": "<b>Tak.</b> {name}{entity} posiada zezwolenie dostawcy usług w zakresie kryptoaktywów (CASP) wydane na podstawie MiCA — pod nadzorem <reg>{regulator}</reg> w kraju: {country}, wpisane do oficjalnego rejestru ESMA. Dzięki paszportowaniu MiCA może legalnie obsługiwać klientów w całej UE/EOG ({count} krajów).",
+    "bodySuccessorLead": "<b>Już nie.</b> {note} Zezwolenie jest zarejestrowane na <reg>{entity}</reg>, która działa pod marką <reg>{brand}</reg> — pod nadzorem <reg>{regulator}</reg> w kraju: {country}, wpisane do oficjalnego rejestru ESMA.",
+    "legalEntityInline": " (podmiot prawny {entity})",
+    "sourceLine": "Źródło: rejestr ESMA MiCA.",
+    "licenceDetails": "Szczegóły licencji",
+    "licenceStatus": "Status licencji",
+    "licenceStatusValue": "✓ Licencjonowana (CASP wg MiCA)",
+    "licenceStatusSuccessor": "Licencjonowana — posiada {entity}",
+    "tradingAs": "Działa pod marką",
+    "legalEntity": "Podmiot prawny",
+    "homeRegulator": "Regulator macierzysty",
+    "countryOfAuthorisation": "Kraj zezwolenia",
+    "officialWebsite": "Oficjalna strona",
+    "source": "Źródło",
+    "sourceValue": "Rejestr ESMA MiCA",
+    "servicesSummary": "Licencjonowane usługi kryptoaktywów ({count})",
+    "passportSummary": "Gdzie możesz korzystać z {name} · paszportowanie UE/EOG ({count})",
+    "passportBody": "Zezwolenie MiCA jest paszportowane na całą UE/EOG, więc {name} może legalnie obsługiwać klientów w:"
+  },
+  "micaServices": {
+    "Custody": {
+      "name": "Przechowywanie i administrowanie kryptoaktywami",
+      "desc": "Przechowywanie i administrowanie kryptoaktywami w imieniu klientów."
+    },
+    "Trading platform": {
+      "name": "Prowadzenie platformy obrotu",
+      "desc": "Prowadzenie miejsca, w którym klienci handlują kryptoaktywami."
+    },
+    "Crypto<->cash": {
+      "name": "Wymiana kryptoaktywów na środki pieniężne",
+      "desc": "Wymiana kryptoaktywów na waluty tradycyjne."
+    },
+    "Crypto<->crypto": {
+      "name": "Wymiana kryptoaktywów na inne kryptoaktywa",
+      "desc": "Wymiana jednego kryptoaktywa na inne."
+    },
+    "Order execution": {
+      "name": "Wykonywanie zleceń w imieniu klientów",
+      "desc": "Realizacja zleceń kupna i sprzedaży kryptoaktywów dla klientów."
+    },
+    "Placing": {
+      "name": "Plasowanie kryptoaktywów",
+      "desc": "Oferowanie lub plasowanie kryptoaktywów w imieniu emitenta lub oferującego."
+    },
+    "Order routing": {
+      "name": "Przyjmowanie i przekazywanie zleceń",
+      "desc": "Przyjmowanie zleceń klientów na kryptoaktywa i przekazywanie ich dalej."
+    },
+    "Advice": {
+      "name": "Doradztwo w zakresie kryptoaktywów",
+      "desc": "Udzielanie spersonalizowanych rekomendacji dotyczących kryptoaktywów."
+    },
+    "Portfolio mgmt": {
+      "name": "Zarządzanie portfelem",
+      "desc": "Zarządzanie portfelami kryptoaktywów w sposób dyskrecjonalny."
+    },
+    "Transfers": {
+      "name": "Usługi transferu kryptoaktywów",
+      "desc": "Przekazywanie kryptoaktywów w imieniu klientów."
+    }
   }
 }

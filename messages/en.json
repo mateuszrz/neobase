@@ -58,5 +58,87 @@
     "backToBlog": "Back to blog",
     "published": "Published {date}",
     "updated": "Updated {date}"
+  },
+  "ui": {
+    "noScore": "No score yet",
+    "trustScore": "TrustScore",
+    "sentimentScore": "NeoBase sentiment score",
+    "positiveSentiment": "Positive sentiment",
+    "notEnoughHistory": "Not enough history yet — data accrues daily.",
+    "sentimentAccrues": "Sentiment history accrues daily.",
+    "chartRatingVolume": "TrustScore and review volume over time",
+    "chartPositive": "Positive sentiment over time",
+    "chartPerPlatform": "Positive sentiment per platform over time",
+    "faqTitle": "Frequently asked questions",
+    "sample": "Sample",
+    "samplePreviewWeekly": "Preview — refreshed weekly once live",
+    "updatedWeekly": "Updated weekly"
+  },
+  "mica": {
+    "question": "Does {name} have a MiCA licence?",
+    "badgeNotAuthorised": "✕ Not authorised",
+    "badgeAuthorised": "✓ Authorised · MiCA CASP",
+    "badgeSuccessor": "Licence held by successor",
+    "bodyNotAuthorised": "<b>No.</b> {name} is not listed in the EU's ESMA register of authorised crypto-asset service providers (CASPs). The MiCA transition period ended on 1 July 2026, so without a MiCA authorisation it may not be permitted to serve clients in the EU/EEA. Users in Europe should check the official ESMA register before trading.",
+    "bodyAuthorised": "<b>Yes.</b> {name}{entity} holds a MiCA crypto-asset service provider (CASP) authorisation — regulated by <reg>{regulator}</reg> in {country}, listed in the official ESMA register. Through MiCA passporting it may legally serve clients across the EU/EEA ({count} countries).",
+    "bodySuccessorLead": "<b>Not any more.</b> {note} The authorisation is registered to <reg>{entity}</reg>, which trades as <reg>{brand}</reg> — regulated by <reg>{regulator}</reg> in {country} and listed in the official ESMA register.",
+    "legalEntityInline": " (legal entity {entity})",
+    "sourceLine": "Source: ESMA MiCA register.",
+    "licenceDetails": "Licence details",
+    "licenceStatus": "Licence status",
+    "licenceStatusValue": "✓ Authorised (MiCA CASP)",
+    "licenceStatusSuccessor": "Authorised — held by {entity}",
+    "tradingAs": "Trading as",
+    "legalEntity": "Legal entity",
+    "homeRegulator": "Home regulator",
+    "countryOfAuthorisation": "Country of authorisation",
+    "officialWebsite": "Official website",
+    "source": "Source",
+    "sourceValue": "ESMA MiCA register",
+    "servicesSummary": "Licensed crypto services ({count})",
+    "passportSummary": "Where you can use {name} · EU/EEA passporting ({count})",
+    "passportBody": "A MiCA authorisation passports across the whole EU/EEA, so {name} may legally serve clients in:"
+  },
+  "micaServices": {
+    "Custody": {
+      "name": "Custody & administration of crypto-assets",
+      "desc": "Safekeeping and administration of crypto-assets on behalf of clients."
+    },
+    "Trading platform": {
+      "name": "Operation of a trading platform",
+      "desc": "Running a marketplace where clients can trade crypto-assets."
+    },
+    "Crypto<->cash": {
+      "name": "Exchange of crypto-assets for funds",
+      "desc": "Exchanging crypto-assets for fiat currency."
+    },
+    "Crypto<->crypto": {
+      "name": "Exchange of crypto-assets for other crypto-assets",
+      "desc": "Exchanging one crypto-asset for another."
+    },
+    "Order execution": {
+      "name": "Execution of orders on behalf of clients",
+      "desc": "Executing buy/sell orders for crypto-assets for clients."
+    },
+    "Placing": {
+      "name": "Placing of crypto-assets",
+      "desc": "Marketing or placing crypto-assets on behalf of an issuer or offeror."
+    },
+    "Order routing": {
+      "name": "Reception & transmission of orders",
+      "desc": "Receiving and passing on client orders for crypto-assets."
+    },
+    "Advice": {
+      "name": "Advice on crypto-assets",
+      "desc": "Providing personalised recommendations on crypto-assets."
+    },
+    "Portfolio mgmt": {
+      "name": "Portfolio management",
+      "desc": "Managing crypto-asset portfolios on a discretionary basis."
+    },
+    "Transfers": {
+      "name": "Transfer services for crypto-assets",
+      "desc": "Transferring crypto-assets on behalf of clients."
+    }
   }
 }

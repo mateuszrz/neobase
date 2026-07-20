@@ -77,11 +77,12 @@ export function Stars({ rating }: { rating: number | null }) {
   );
 }
 
-export function TrustScore({ rating }: { rating: number | null }) {
-  if (rating == null) return <span className="pill pill-neutral">No score yet</span>;
+export async function TrustScore({ rating }: { rating: number | null }) {
+  const t = await getTranslations();
+  if (rating == null) return <span className="pill pill-neutral">{t("ui.noScore")}</span>;
   return (
     <span className="pill pill-score">
-      ★ {rating.toFixed(1)} <span style={{ opacity: 0.7 }}>TrustScore</span>
+      ★ {rating.toFixed(1)} <span style={{ opacity: 0.7 }}>{t("ui.trustScore")}</span>
     </span>
   );
 }
@@ -159,7 +160,8 @@ export function Delta({
   );
 }
 
-export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?: "neobank" | "exchange" }) {
+export async function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?: "neobank" | "exchange" }) {
+  const t = await getTranslations();
   const href = `/${kind === "exchange" ? "exchange" : "fintech"}/${f.id}/`;
   return (
     <a className="fcard" href={href}>
@@ -172,7 +174,7 @@ export function FintechCard({ f, kind = "neobank" }: { f: FintechListItem; kind?
         </p>
       </div>
       {f.sentiment != null ? (
-        <span className="pill pill-score" title="NeoBase sentiment score">◆ {f.sentiment.toFixed(0)}</span>
+        <span className="pill pill-score" title={t("ui.sentimentScore")}>◆ {f.sentiment.toFixed(0)}</span>
       ) : (
         f.rating != null && <span className="pill pill-score">★ {f.rating.toFixed(1)}</span>
       )}
@@ -255,12 +257,13 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
 
 /* ─── Sentiment meter ─────────────────────────────────────────────────────── */
 
-export function SentimentMeter({ pos }: { pos: number | null }) {
+export async function SentimentMeter({ pos }: { pos: number | null }) {
+  const t = await getTranslations();
   const p = pos ?? 0;
   return (
     <div>
       <div className="spread" style={{ marginBottom: 6 }}>
-        <span className="muted" style={{ fontSize: 13 }}>Positive sentiment</span>
+        <span className="muted" style={{ fontSize: 13 }}>{t("ui.positiveSentiment")}</span>
         <span style={{ fontWeight: 500 }}>{pos == null ? "—" : `${pos.toFixed(0)}%`}</span>
       </div>
       <div className="meter">
@@ -278,17 +281,18 @@ function fmtMonth(d: string): string {
   return `${MONTHS[parseInt(m, 10) - 1] ?? m} '${(y ?? "").slice(2)}`;
 }
 
-export function SeriesChart({
+export async function SeriesChart({
   points,
 }: {
   points: { date: string; rating: number | null; count: number | null }[];
 }) {
+  const t = await getTranslations();
   const W = 820;
   const H = 280;
   const PAD = { t: 26, r: 20, b: 40, l: 16 };
   const rated = points.filter((p) => p.rating != null);
   if (rated.length < 2) {
-    return <p className="muted">Not enough history yet — data accrues daily.</p>;
+    return <p className="muted">{t("ui.notEnoughHistory")}</p>;
   }
 
   const n = points.length;
@@ -311,7 +315,7 @@ export function SeriesChart({
   const ticks = [...new Set([0, Math.floor((n - 1) / 3), Math.floor((2 * (n - 1)) / 3), n - 1])];
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="TrustScore and review volume over time">
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={t("ui.chartRatingVolume")}>
       <defs>
         <linearGradient id="volFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--sky-wash)" stopOpacity="0.7" />
@@ -368,7 +372,8 @@ export function SeriesChart({
 }
 
 /** Lifetime 1–5★ rating distribution. */
-export function RatingDistribution({ dist }: { dist: { s1: number; s2: number; s3: number; s4: number; s5: number } }) {
+export async function RatingDistribution({ dist }: { dist: { s1: number; s2: number; s3: number; s4: number; s5: number } }) {
+  const t = await getTranslations();
   const rows: [number, number][] = [
     [5, dist.s5],
     [4, dist.s4],
@@ -418,12 +423,13 @@ export function MiniStat({ label, value }: { label: string; value: string }) {
 }
 
 /** Positive-sentiment share over time (0–100%). */
-export function SentimentChart({ points }: { points: { date: string; pos: number | null }[] }) {
+export async function SentimentChart({ points }: { points: { date: string; pos: number | null }[] }) {
+  const t = await getTranslations();
   const W = 820;
   const H = 220;
   const PAD = { t: 22, r: 20, b: 36, l: 16 };
   const withData = points.filter((p) => p.pos != null);
-  if (withData.length < 2) return <p className="muted">Sentiment history accrues daily.</p>;
+  if (withData.length < 2) return <p className="muted">{t("ui.sentimentAccrues")}</p>;
 
   // Auto-scale the y-axis to the data range — lifetime sentiment moves subtly,
   // so a fixed 0–100 axis would flatten the trend into a line at the top.
@@ -446,7 +452,7 @@ export function SentimentChart({ points }: { points: { date: string; pos: number
   const gridVals = [...new Set([hi, Math.round((lo + hi) / 2), lo])];
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Positive sentiment over time">
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={t("ui.chartPositive")}>
       <defs>
         <linearGradient id="sentFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--sky-wash)" stopOpacity="0.7" />
@@ -487,13 +493,14 @@ export function SentimentChart({ points }: { points: { date: string; pos: number
 }
 
 /** Positive-sentiment trend per platform (multi-line, auto-scaled). */
-export function PlatformSentimentChart({
+export async function PlatformSentimentChart({
   series,
 }: {
   series: { kind: string; points: { date: string; pos: number }[] }[];
 }) {
+  const t = await getTranslations();
   const allDates = [...new Set(series.flatMap((s) => s.points.map((p) => p.date)))].sort();
-  if (allDates.length < 2) return <p className="muted">Sentiment history accrues daily.</p>;
+  if (allDates.length < 2) return <p className="muted">{t("ui.sentimentAccrues")}</p>;
   const idx = new Map(allDates.map((d, i) => [d, i]));
   const n = allDates.length;
 
@@ -527,7 +534,7 @@ export function PlatformSentimentChart({
           );
         })}
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label="Positive sentiment per platform over time">
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={t("ui.chartPerPlatform")}>
         {gridVals.map((v) => (
           <g key={v}>
             <line x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} stroke="var(--stone-border)" strokeWidth={1} />
@@ -774,7 +781,7 @@ function MicaRow({ label, value }: { label: string; value: ReactNode }) {
  * signal, expanded: a plain-language answer, the licence detail table, and each
  * licensed MiCA service with a description. Data from the ESMA register.
  */
-export function MicaLicence({
+export async function MicaLicence({
   mica,
   name,
   successor,
@@ -784,19 +791,18 @@ export function MicaLicence({
   /** Set when the register row belongs to a successor entity, not to this brand. */
   successor?: { entity: string; brand: string; note: string } | null;
 }) {
+  const t = await getTranslations();
   if (!mica.licensed) {
     return (
       <section className="card" style={{ borderLeft: "3px solid var(--neg)", background: "#fdf4f1" }}>
         <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
-          <h2 className="subheading">Does {name} have a MiCA licence?</h2>
-          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--neg)", flex: "0 0 auto" }}>✕ Not authorised</span>
+          <h2 className="subheading">{t("mica.question", { name })}</h2>
+          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--neg)", flex: "0 0 auto" }}>{t("mica.badgeNotAuthorised")}</span>
         </div>
         <p style={{ margin: 0, fontSize: 14, lineHeight: 1.7 }}>
-          <strong>No.</strong> {name} is not listed in the EU’s ESMA register of authorised crypto-asset service providers (CASPs).
-          The MiCA transition period ended on 1 July 2026, so without a MiCA authorisation it may not be permitted to serve
-          clients in the EU/EEA. Users in Europe should check the official ESMA register before trading.
+          {t.rich("mica.bodyNotAuthorised", { name, b: (c) => <strong>{c}</strong> })}
         </p>
-        <p className="muted" style={{ margin: "14px 0 0", fontSize: 11 }}>Source: ESMA MiCA register.</p>
+        <p className="muted" style={{ margin: "14px 0 0", fontSize: 11 }}>{t("mica.sourceLine")}</p>
       </section>
     );
   }
@@ -810,58 +816,67 @@ export function MicaLicence({
   return (
     <section className="card" style={{ borderLeft: `3px solid ${accent}`, background: successor ? "#fdf9f0" : "#f3faf4" }}>
       <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
-        <h2 className="subheading">Does {name} have a MiCA licence?</h2>
+        <h2 className="subheading">{t("mica.question", { name })}</h2>
         <span style={{ fontSize: 12, fontWeight: 600, color: accent, flex: "0 0 auto" }}>
-          {successor ? "Licence held by successor" : "✓ Authorised · MiCA CASP"}
+          {successor ? t("mica.badgeSuccessor") : t("mica.badgeAuthorised")}
         </span>
       </div>
       {successor ? (
         <p style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.7 }}>
-          <strong>Not any more.</strong> {successor.note} The authorisation is registered to{" "}
-          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{successor.entity}</strong>, which trades as{" "}
-          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{successor.brand}</strong> — regulated by{" "}
-          <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{regFull}</strong> in {mica.country} and listed in the
-          official ESMA register.
+          {t.rich("mica.bodySuccessorLead", {
+            note: successor.note,
+            entity: successor.entity,
+            brand: successor.brand,
+            regulator: regFull,
+            country: mica.country ?? "",
+            b: (c) => <strong>{c}</strong>,
+            reg: (c) => <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{c}</strong>,
+          })}
         </p>
       ) : (
         <p style={{ margin: "0 0 18px", fontSize: 14, lineHeight: 1.7 }}>
-          <strong>Yes.</strong> {name}{mica.legalEntity ? ` (legal entity ${mica.legalEntity})` : ""} holds a MiCA crypto-asset
-          service provider (CASP) authorisation — regulated by <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{regFull}</strong>{" "}
-          in {mica.country}, listed in the official ESMA register. Through MiCA passporting it may legally serve clients across the
-          EU/EEA ({EU_EEA_COUNTRIES} countries).
+          {t.rich("mica.bodyAuthorised", {
+            name,
+            entity: mica.legalEntity ? t("mica.legalEntityInline", { entity: mica.legalEntity }) : "",
+            regulator: regFull,
+            country: mica.country ?? "",
+            count: EU_EEA_COUNTRIES,
+            b: (c) => <strong>{c}</strong>,
+            reg: (c) => <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>{c}</strong>,
+          })}
         </p>
       )}
 
       <div className="muted" style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 4 }}>
-        Licence details
+        {t("mica.licenceDetails")}
       </div>
       {/* "Licence status", not "Status" — the Company block below carries the
           company's own lifecycle status, and two rows both labelled "Status"
           read as one field. They can legitimately disagree: a licence stays
           live while the brand it was issued to has ceased trading. */}
       <MicaRow
-        label="Licence status"
+        label={t("mica.licenceStatus")}
         value={
           <span style={{ color: accent, fontWeight: 600 }}>
-            {successor ? `Authorised — held by ${successor.entity}` : "✓ Authorised (MiCA CASP)"}
+            {successor ? t("mica.licenceStatusSuccessor", { entity: successor.entity }) : t("mica.licenceStatusValue")}
           </span>
         }
       />
-      {successor && <MicaRow label="Trading as" value={successor.brand} />}
-      <MicaRow label="Legal entity" value={mica.legalEntity ?? mica.provider} />
-      <MicaRow label="Home regulator" value={regFull} />
-      <MicaRow label="Country of authorisation" value={mica.country ? <><span aria-hidden>{countryFlag(mica.country)}</span> {mica.country}</> : null} />
-      <MicaRow label="Official website" value={web ? <a href={`https://${web}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan-edge)" }}>{web}</a> : null} />
-      <MicaRow label="Source" value="ESMA MiCA register" />
+      {successor && <MicaRow label={t("mica.tradingAs")} value={successor.brand} />}
+      <MicaRow label={t("mica.legalEntity")} value={mica.legalEntity ?? mica.provider} />
+      <MicaRow label={t("mica.homeRegulator")} value={regFull} />
+      <MicaRow label={t("mica.countryOfAuthorisation")} value={mica.country ? <><span aria-hidden>{countryFlag(mica.country)}</span> {mica.country}</> : null} />
+      <MicaRow label={t("mica.officialWebsite")} value={web ? <a href={`https://${web}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan-edge)" }}>{web}</a> : null} />
+      <MicaRow label={t("mica.source")} value={t("mica.sourceValue")} />
 
       {mica.services.length > 0 && (
         <details style={{ marginTop: 16, borderTop: "1px solid var(--stone-border)", paddingTop: 12 }}>
           <summary style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, cursor: "pointer", color: "var(--warm-gray)" }}>
-            Licensed crypto services ({mica.services.length})
+            {t("mica.servicesSummary", { count: mica.services.length })}
           </summary>
           <div className="stack-8" style={{ marginTop: 12 }}>
             {mica.services.map((tok) => {
-              const s = micaService(tok);
+              const s = micaService(tok, (k) => t(`micaServices.${tok}.${k}`));
               return (
                 <div key={tok} className="row" style={{ gap: 10, alignItems: "flex-start" }}>
                   <span
@@ -883,10 +898,10 @@ export function MicaLicence({
 
       <details style={{ marginTop: 12, borderTop: "1px solid var(--stone-border)", paddingTop: 12 }}>
         <summary style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.4, cursor: "pointer", color: "var(--warm-gray)" }}>
-          Where you can use {name} · EU/EEA passporting ({EU_EEA_COUNTRIES})
+          {t("mica.passportSummary", { name, count: EU_EEA_COUNTRIES })}
         </summary>
         <p className="muted" style={{ fontSize: 12, margin: "10px 0 10px", lineHeight: 1.5 }}>
-          A MiCA authorisation passports across the whole EU/EEA, so {name} may legally serve clients in:
+          {t("mica.passportBody", { name })}
         </p>
         <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
           {EU_EEA_MEMBERS.map((c) => (
@@ -901,7 +916,8 @@ export function MicaLicence({
 }
 
 /** FAQ accordion + FAQPage structured data (JSON-LD) for SEO rich results. */
-export function FaqSection({ items }: { items: { q: string; a: string }[] }) {
+export async function FaqSection({ items }: { items: { q: string; a: string }[] }) {
+  const t = await getTranslations();
   if (!items.length) return null;
   const ld = {
     "@context": "https://schema.org",
@@ -910,7 +926,7 @@ export function FaqSection({ items }: { items: { q: string; a: string }[] }) {
   };
   return (
     <div style={{ marginTop: 40, maxWidth: 780 }}>
-      <h2 className="subheading" style={{ marginBottom: 8 }}>Frequently asked questions</h2>
+      <h2 className="subheading" style={{ marginBottom: 8 }}>{t("ui.faqTitle")}</h2>
       <div>
         {items.map((f, i) => (
           <details key={i} style={{ borderBottom: "1px solid var(--stone-border)" }}>
@@ -926,7 +942,8 @@ export function FaqSection({ items }: { items: { q: string; a: string }[] }) {
 
 // ─── AI weekly brief ─────────────────────────────────────────────────────────
 
-export function AiBrief({ text, isSample, updatedAt }: { text: string; isSample: boolean; updatedAt: Date | null }) {
+export async function AiBrief({ text, isSample, updatedAt }: { text: string; isSample: boolean; updatedAt: Date | null }) {
+  const t = await getTranslations();
   const when = updatedAt ? new Date(updatedAt).toLocaleDateString("en", { day: "numeric", month: "short", year: "numeric" }) : null;
   return (
     <div
@@ -936,9 +953,9 @@ export function AiBrief({ text, isSample, updatedAt }: { text: string; isSample:
       <div className="spread" style={{ marginBottom: 10, alignItems: "center" }}>
         <span className="eyebrow" style={{ margin: 0, color: "var(--cyan-edge)" }}>✦ Sentiment Overview</span>
         {isSample ? (
-          <span className="pill pill-neutral" title="Preview — refreshed weekly once live">Sample</span>
+          <span className="pill pill-neutral" title={t("ui.samplePreviewWeekly")}>{t("ui.sample")}</span>
         ) : (
-          <span className="muted" style={{ fontSize: 12 }}>Updated weekly{when ? ` · ${when}` : ""}</span>
+          <span className="muted" style={{ fontSize: 12 }}>{t("ui.updatedWeekly")}{when ? ` · ${when}` : ""}</span>
         )}
       </div>
       <p style={{ margin: 0, fontSize: 16, lineHeight: 1.7 }}>{text}</p>

@@ -24,8 +24,22 @@ export const MICA_SERVICES: Record<string, MicaService> = {
   Transfers: { letter: "J", name: "Transfer services for crypto-assets", desc: "Transferring crypto-assets on behalf of clients." },
 };
 
-export function micaService(token: string): MicaService {
-  return MICA_SERVICES[token] ?? { letter: "•", name: token, desc: "" };
+/**
+ * A MiCA service by its register token.
+ *
+ * The letter (A–J) is regulatory shorthand and never translated; the name and
+ * description are prose, so callers on a localised page pass a `translate`
+ * lookup into the `micaServices` catalog. Without one — scripts, cron jobs —
+ * the English defaults below are used.
+ */
+export function micaService(token: string, translate?: (key: "name" | "desc") => string): MicaService {
+  const base = MICA_SERVICES[token] ?? { letter: "•", name: token, desc: "" };
+  if (!translate) return base;
+  try {
+    return { letter: base.letter, name: translate("name"), desc: translate("desc") };
+  } catch {
+    return base; // unknown token — no catalog entry, fall back to English
+  }
 }
 
 /** Full national-competent-authority names for the regulator abbreviations we see. */
