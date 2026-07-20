@@ -82,7 +82,13 @@ function buildEntity(
     headquarters: raw.headquarters ?? null,
     employees: parseEmployees(raw.employees),
     valuationUsd: parseValuation(raw.valuation),
-    status: raw.status ?? raw.regulation ?? null,
+    // The bundle's `status` is really an ownership fact ("Private", "Public
+    // (NASDAQ: PYPL)", "Unicorn"), so it lands in `ownership`; our own `status`
+    // column is lifecycle-only and stays empty until something verifies it.
+    // It used to fall back to raw.regulation — a subjective regulation-strength
+    // rating ("Very High" … "Low") — which is never a status. Don't reinstate.
+    status: null,
+    ownership: raw.status ?? null,
     description: raw.description ?? null,
     about: raw.about ?? null,
     tags: Array.isArray(raw.tags) ? raw.tags : Array.isArray(raw.types) ? raw.types : null,

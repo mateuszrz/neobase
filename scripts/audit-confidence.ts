@@ -24,7 +24,7 @@ const only = (argv.includes("--only") ? argv[argv.indexOf("--only") + 1] : "")
 const CONC = 5;
 if (!isClaudeLive()) { console.log("ANTHROPIC_API_KEY not set"); process.exit(1); }
 
-const FIELDS = ["country", "founded", "headquarters", "employees", "valuationUsd", "status", "licenses", "description"] as const;
+const FIELDS = ["country", "founded", "headquarters", "employees", "valuationUsd", "status", "ownership", "licenses", "description"] as const;
 
 // Facts we've verified by hand (authoritative) — always trusted, never re-judged.
 type Verdicts = Partial<Record<(typeof FIELDS)[number], "high">>;
