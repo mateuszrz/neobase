@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 import { BrandLogo } from "@/components/BrandLogo";
 import { micaFaqs } from "@/lib/mica/reference";
+import { getLocale, getTranslations } from "next-intl/server";
 import { normalizeTags } from "@/lib/tags";
 import { HIDE_COMPANY_FACTS, SUCCESSOR_LICENCE } from "@/lib/trust";
 import { getSentimentIndex } from "@/lib/sentiment";
@@ -48,7 +50,9 @@ function FactRow({ label, value }: { label: string; value: ReactNode }) {
 }
 
 export default async function Profile({ slug }: { slug: string; kind?: "neobank" | "exchange" }) {
-  const ft = await getFintech(slug);
+  const locale = await getLocale();
+  const tp = await getTranslations("profile");
+  const ft = await getFintech(slug, locale);
   if (!ft) notFound();
 
   const [series, extras, platforms, distData, platformSent, social, news, mentions, brief] = await Promise.all([
@@ -80,7 +84,8 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const tagChips = normalizeTags(tags, ft.type === "exchange" ? "exchange" : "neobank");
   const regionName = (() => {
     try {
-      const dn = new Intl.DisplayNames(["en"], { type: "region" });
+      // Country names in the reader's language — "Niemcy", not "Germany".
+      const dn = new Intl.DisplayNames([locale], { type: "region" });
       return (cc: string) => dn.of(cc) ?? cc;
     } catch {
       return (cc: string) => cc;
@@ -112,9 +117,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
     <main className="section" style={{ paddingTop: 12 }}>
       <div className="wrap">
         <p style={{ fontSize: 13, marginBottom: 12 }}>
-          <a href={ft.type === "exchange" ? "/exchanges/" : "/neobanks/"} style={{ color: "var(--cyan-edge)" }}>
-            ← {ft.type === "exchange" ? "Exchanges" : "Neobanks"}
-          </a>
+          <Link href={ft.type === "exchange" ? "/exchanges/" : "/neobanks/"} style={{ color: "var(--cyan-edge)" }}>
+            ← {ft.type === "exchange" ? tp("backExchanges") : tp("backNeobanks")}
+          </Link>
         </p>
 
         {/* Header — identity only; ratings live in the hero below */}
@@ -122,12 +127,12 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           <BrandLogo src={ft.logoSvg} website={ft.website} name={ft.name} size={64} />
           <div style={{ flex: 1, minWidth: 240 }}>
             <p className="eyebrow" style={{ marginBottom: 7 }}>
-              {ft.type === "exchange" ? "Crypto exchange" : "Neobank"}
+              {ft.type === "exchange" ? tp("kindExchange") : tp("kindNeobank")}
               {ok("country") && ft.country ? ` · ${ft.country}` : ""}
             </p>
             <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
             <p className="muted" style={{ margin: "8px 0 0" }}>
-              {(ok("headquarters") && ft.headquarters) || (ok("country") && ft.country) || "Global"}
+              {(ok("headquarters") && ft.headquarters) || (ok("country") && ft.country) || tp("global")}
               {ft.website && (
                 <>
                   {" · "}
@@ -170,7 +175,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {availableIn.length > 0 && (
           <section style={{ marginTop: 28 }}>
             <div className="spread" style={{ marginBottom: 12, alignItems: "baseline" }}>
-              <h2 className="subheading">Where {ft.name} operates</h2>
+              <h2 className="subheading">{tp("operatesIn", { name: ft.name })}</h2>
               <span className="muted" style={{ fontSize: 12 }}>{availableIn.length} markets</span>
             </div>
             <div className="row" style={{ gap: 6, flexWrap: "wrap" }}>
@@ -187,7 +192,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {platforms.length > 0 && (
           <section style={{ marginTop: 32 }}>
             <div className="spread" style={{ marginBottom: 16, alignItems: "flex-end" }}>
-              <h2 className="subheading">{rated.length > 1 ? "Ratings across platforms" : "Rating"}</h2>
+              <h2 className="subheading">{rated.length > 1 ? tp("ratingsAcross") : tp("rating")}</h2>
               {rated.length > 1 && avgRating != null && (
                 <span style={{ fontSize: 13 }}>
                   <strong style={{ color: "var(--ink-black)", fontWeight: 600 }}>★ {avgRating.toFixed(1)}</strong>
@@ -205,7 +210,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             {distData && (
               <div className="card">
                 <div className="spread" style={{ marginBottom: 14 }}>
-                  <h2 className="subheading">Rating distribution</h2>
+                  <h2 className="subheading">{tp("ratingDistribution")}</h2>
                   <span className="muted" style={{ fontSize: 12 }}>
                     {distData.sources.length === 3
                       ? "All platforms"
@@ -217,10 +222,10 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             )}
             {hasResponsiveness && (
               <div className="card">
-                <h2 className="subheading" style={{ marginBottom: 16 }}>Company responsiveness</h2>
+                <h2 className="subheading" style={{ marginBottom: 16 }}>{tp("responsiveness")}</h2>
                 <div className="row" style={{ gap: 40 }}>
-                  {extras?.responseRate != null && <MiniStat label="Replies to reviews" value={`${Math.round(extras.responseRate)}%`} />}
-                  {extras?.responseTime != null && <MiniStat label="Typical reply time" value={fmtReplyTime(extras.responseTime)} />}
+                  {extras?.responseRate != null && <MiniStat label={tp("repliesToReviews")} value={`${Math.round(extras.responseRate)}%`} />}
+                  {extras?.responseTime != null && <MiniStat label={tp("typicalReplyTime")} value={fmtReplyTime(extras.responseTime)} />}
                 </div>
               </div>
             )}
@@ -230,7 +235,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {/* Review volume over time (live Trustpilot series) */}
         {hasSeries && (
           <div className="card" style={{ marginTop: 20 }}>
-            <h2 className="subheading" style={{ marginBottom: 16 }}>Rating &amp; review volume over time</h2>
+            <h2 className="subheading" style={{ marginBottom: 16 }}>{tp("ratingOverTime")}</h2>
             <SeriesChart points={series.map((p) => ({ date: p.date, rating: p.rating, count: p.count }))} />
           </div>
         )}
@@ -239,7 +244,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {hasSentTrend && (
           <div className="card" style={{ marginTop: 20 }}>
             <div className="spread" style={{ marginBottom: 16, alignItems: "flex-end" }}>
-              <h2 className="subheading">Brand sentiment trend</h2>
+              <h2 className="subheading">{tp("sentimentTrend")}</h2>
               <span className="muted" style={{ fontSize: 12 }}>positive sentiment, by platform</span>
             </div>
             <PlatformSentimentChart series={platformSent} />
@@ -253,9 +258,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             {news.items.length > 0 && (
               <div className="card">
                 <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-                  <h2 className="subheading">In the media</h2>
+                  <h2 className="subheading">{tp("inTheMedia")}</h2>
                   {news.isSample ? (
-                    <span className="pill pill-neutral" title="Preview data — live news feed coming soon">Sample</span>
+                    <span className="pill pill-neutral" title={tp("samplePreview")}>{tp("sample")}</span>
                   ) : (
                     <span className="muted" style={{ fontSize: 12 }}>brand coverage</span>
                   )}
@@ -267,9 +272,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             {social.posts.length > 0 && (
               <div className="card">
                 <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-                  <h2 className="subheading">Latest from social</h2>
+                  <h2 className="subheading">{tp("latestSocial")}</h2>
                   {social.isSample ? (
-                    <span className="pill pill-neutral" title="Preview data — live social feed coming soon">Sample</span>
+                    <span className="pill pill-neutral" title={tp("samplePreview")}>{tp("sample")}</span>
                   ) : (
                     <span className="muted" style={{ fontSize: 12 }}>LinkedIn &amp; Facebook</span>
                   )}
@@ -281,9 +286,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             {mentions.items.length > 0 && (
               <div className="card">
                 <div className="spread" style={{ marginBottom: 16, alignItems: "baseline" }}>
-                  <h2 className="subheading">What people are saying</h2>
+                  <h2 className="subheading">{tp("whatPeopleSay")}</h2>
                   {mentions.isSample ? (
-                    <span className="pill pill-neutral" title="Preview data — live mentions feed coming soon">Sample</span>
+                    <span className="pill pill-neutral" title={tp("samplePreview")}>{tp("sample")}</span>
                   ) : (
                     <span className="muted" style={{ fontSize: 12 }}>mentions on X, Reddit &amp; Facebook</span>
                   )}
@@ -304,17 +309,17 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           availableIn.length
         ) ? (
         <div className="card" style={{ marginTop: 20 }}>
-          <h2 className="subheading" style={{ marginBottom: 14 }}>Company</h2>
+          <h2 className="subheading" style={{ marginBottom: 14 }}>{tp("company")}</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", columnGap: 40 }}>
-            <FactRow label="Founded" value={ok("founded") ? (ft.founded ?? undefined) : undefined} />
-            <FactRow label="Headquarters" value={ok("headquarters") ? (ft.headquarters ?? undefined) : undefined} />
-            <FactRow label="Employees" value={ok("employees") && ft.employees ? fmt(ft.employees) : undefined} />
-            <FactRow label="Valuation" value={ok("valuationUsd") && ft.valuationUsd ? fmtMoney(ft.valuationUsd) : undefined} />
-            <FactRow label="Status" value={ok("status") ? (ft.status ?? undefined) : undefined} />
-            <FactRow label="Ownership" value={ok("ownership") ? (ft.ownership ?? undefined) : undefined} />
+            <FactRow label={tp("founded")} value={ok("founded") ? (ft.founded ?? undefined) : undefined} />
+            <FactRow label={tp("headquarters")} value={ok("headquarters") ? (ft.headquarters ?? undefined) : undefined} />
+            <FactRow label={tp("employees")} value={ok("employees") && ft.employees ? fmt(ft.employees) : undefined} />
+            <FactRow label={tp("valuation")} value={ok("valuationUsd") && ft.valuationUsd ? fmtMoney(ft.valuationUsd) : undefined} />
+            <FactRow label={tp("status")} value={ok("status") ? (ft.status ?? undefined) : undefined} />
+            <FactRow label={tp("ownership")} value={ok("ownership") ? (ft.ownership ?? undefined) : undefined} />
             {/* Exchanges: regulator comes from the authoritative MiCA panel above, not this AI field. */}
-            <FactRow label="Licenses" value={ft.type !== "exchange" && ok("licenses") && licenses.length ? licenses.slice(0, 4).join(", ") : undefined} />
-            <FactRow label="Available in" value={availableIn.length ? `${availableIn.length} markets` : undefined} />
+            <FactRow label={tp("licenses")} value={ft.type !== "exchange" && ok("licenses") && licenses.length ? licenses.slice(0, 4).join(", ") : undefined} />
+            <FactRow label={tp("availableIn")} value={availableIn.length ? tp("markets", { count: availableIn.length }) : undefined} />
           </div>
         </div>
         ) : null}
@@ -322,7 +327,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         {/* About — same-origin AI prose, gated on the description's confidence. */}
         {ok("description") && ft.about && (
           <div style={{ marginTop: 40, maxWidth: 760 }}>
-            <h2 className="subheading" style={{ marginBottom: 12 }}>About {ft.name}</h2>
+            <h2 className="subheading" style={{ marginBottom: 12 }}>{tp("about", { name: ft.name })}</h2>
             <p className="muted" style={{ margin: 0, lineHeight: 1.8 }}>{ft.about}</p>
           </div>
         )}

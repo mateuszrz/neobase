@@ -415,6 +415,28 @@ export const blogPosts = pgTable(
   ],
 );
 
+// Translated prose for a directory entry. English is NOT stored here — it stays
+// canonical in `fintechs` and is never written by the translator, so a bad
+// translation can never damage the source of truth.
+//
+// Visibility is still decided by `fintechs.fact_confidence`, which is about the
+// FACT, not the language: if the English description didn't clear the trust
+// gate, no language shows it.
+export const fintechTranslations = pgTable(
+  "fintech_translations",
+  {
+    fintechId: text("fintech_id")
+      .notNull()
+      .references(() => fintechs.id, { onDelete: "cascade" }),
+    locale: text("locale").notNull(),
+    description: text("description"),
+    about: text("about"),
+    faqs: jsonb("faqs"),
+    translatedAt: timestamp("translated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("fintech_translations_key").on(t.fintechId, t.locale)],
+);
+
 // OUR OWN editorial articles — written in /panel/blog, one row per language.
 // Distinct from `blog_posts` above, which is crawled third-party content bound
 // to a fintech; these belong to NeoBase and stand alone.

@@ -108,9 +108,42 @@ export async function getPlatformStats() {
   return { fintechs: Number(r.fintechs ?? 0), ratings: Number(r.ratings ?? 0), countries: Number(r.countries ?? 0) };
 }
 
-export async function getFintech(slug: string) {
+/**
+ * A directory entry, with prose overlaid in the reader's language when we have
+ * it.
+ *
+ * The English row stays canonical: `fact_confidence` is read from it and is
+ * never re-derived per language, because confidence is a property of the FACT,
+ * not of the wording. A description the trust gate hid in English stays hidden
+ * in every language; a translation can never promote something to visible.
+ *
+ * Falls back to English field by field, so a partially translated row degrades
+ * gracefully instead of blanking.
+ */
+export async function getFintech(slug: string, locale?: string) {
   const [row] = await db.select().from(fintechs).where(eq(fintechs.id, slug)).limit(1);
-  return row ?? null;
+  if (!row) return null;
+  if (!locale || locale === "en") return row;
+
+  const [tr] = await db
+    .select()
+    .from(schema.fintechTranslations)
+    .where(and(eq(schema.fintechTranslations.fintechId, slug), eq(schema.fintechTranslations.locale, locale)))
+    .limit(1);
+  if (!tr) return row;
+
+  return {
+    ...row,
+    description: tr.description ?? row.description,
+    about: tr.about ?? row.about,
+    // FAQ order is load-bearing: fact_confidence.faqs is an array aligned to it
+    // by index, so a translation that reorders or drops entries would shift the
+    // gate onto the wrong answers. Only accept a same-length array.
+    faqs:
+      Array.isArray(tr.faqs) && Array.isArray(row.faqs) && (tr.faqs as unknown[]).length === (row.faqs as unknown[]).length
+        ? tr.faqs
+        : row.faqs,
+  };
 }
 
 export interface SeriesPoint {
