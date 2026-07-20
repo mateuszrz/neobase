@@ -15,7 +15,7 @@
 import "dotenv/config";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
-import { FILLS, FOUNDED } from "./verified-facts.ts";
+import { FILLS, FOUNDED, CLEAR } from "./verified-facts.ts";
 
 const DRY = process.argv.slice(2).includes("--dry");
 
@@ -34,6 +34,16 @@ for (const [id, founded] of Object.entries(FOUNDED)) {
   await db
     .update(schema.fintechs)
     .set({ founded, updatedAt: new Date() })
+    .where(eq(schema.fintechs.id, id));
+}
+
+for (const [id, fields] of Object.entries(CLEAR)) {
+  console.log(`✗ ${id}: clearing ${fields.join(", ")}`);
+  if (DRY) continue;
+  const nulls = Object.fromEntries(fields.map((f) => [f, null]));
+  await db
+    .update(schema.fintechs)
+    .set({ ...nulls, updatedAt: new Date() } as any)
     .where(eq(schema.fintechs.id, id));
 }
 

@@ -88,6 +88,26 @@ export const FILLS: Record<string, Fill> = {
 };
 
 /**
+ * Fields to blank out, because what's stored isn't a value of that field at all.
+ *
+ * These six exchanges carry a `status` of "Very High" / "High" / "Medium" /
+ * "Low" — the seed bundle's subjective `regulation` rating, which the importer
+ * used to fall back to when a record had no `status` (fixed in
+ * scripts/seed-from-appjs.ts). There is no correct status to put in its place:
+ * the field elsewhere means ownership or standing ("active", "Private",
+ * "Public (NASDAQ: PYPL)"), and the seed's `funding` field is no better
+ * ("$200M+", "N/A"). So we clear it rather than invent one.
+ */
+export const CLEAR: Record<string, ("status")[]> = {
+  bitcoin_suisse: ["status"], // was "Very High"
+  gate: ["status"], // was "Medium"
+  mexc: ["status"], // was "Low"
+  revolution_x: ["status"], // was "High"
+  robinhood_crypto: ["status"], // was "High"
+  swissborg: ["status"], // was "High"
+};
+
+/**
  * Founding years for the exchanges that had none. This is the year the BRAND
  * was founded, not the year an EU subsidiary was incorporated to hold the MiCA
  * licence — most of these entities are 2025/2026 vehicles and would give a

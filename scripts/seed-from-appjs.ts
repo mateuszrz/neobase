@@ -82,7 +82,11 @@ function buildEntity(
     headquarters: raw.headquarters ?? null,
     employees: parseEmployees(raw.employees),
     valuationUsd: parseValuation(raw.valuation),
-    status: raw.status ?? raw.regulation ?? null,
+    // `status` is the company's standing (active / Private / Public (…) / …).
+    // It used to fall back to raw.regulation, but that field is a subjective
+    // regulation-strength rating ("Very High" … "Low"), so six exchanges ended
+    // up with a status of "High" or "Low". Never fall back to it.
+    status: raw.status ?? null,
     description: raw.description ?? null,
     about: raw.about ?? null,
     tags: Array.isArray(raw.tags) ? raw.tags : Array.isArray(raw.types) ? raw.types : null,
