@@ -167,6 +167,187 @@
     "noOptions": "Brak pozycji.",
     "rankedBy": "Uszeregowane według złożonego wskaźnika sentymentu NeoBase (opinie + media + wzmianki). Wyniki aktualizowane co tydzień.",
     "optionCount": "{count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
-    "reviewCount": "{count, plural, one {# opinia} few {# opinie} many {# opinii} other {# opinii}}"
+    "reviewCount": "{count, plural, one {# opinia} few {# opinie} many {# opinii} other {# opinii}}",
+    "pageTitle": "{title} (2026) — ranking według sentymentu",
+    "pageDesc": "{blurb} Uszeregowane według własnego wskaźnika sentymentu NeoBase, liczonego z Trustpilota, Google Play, App Store, mediów i social mediów."
+  },
+  "tags": {
+    "multi-currency-accounts": {
+      "chip": "Wielowalutowe",
+      "title": "Najlepsze konta wielowalutowe",
+      "blurb": "Neobanki do trzymania i wydawania pieniędzy w wielu walutach."
+    },
+    "travel-cards": {
+      "chip": "Podróże",
+      "title": "Najlepsze karty podróżne",
+      "blurb": "Karty do płatności za granicą z niskimi opłatami i uczciwym przewalutowaniem."
+    },
+    "low-fee-neobanks": {
+      "chip": "Niskie opłaty",
+      "title": "Najtańsze neobanki",
+      "blurb": "Konta z minimalnymi opłatami i darmowymi wypłatami z bankomatów."
+    },
+    "business-accounts": {
+      "chip": "Firmowe",
+      "title": "Najlepsze konta firmowe",
+      "blurb": "Neobanki stworzone dla firm i MŚP."
+    },
+    "for-freelancers": {
+      "chip": "Freelancerzy",
+      "title": "Najlepsze konta dla freelancerów",
+      "blurb": "Konta z fakturowaniem i narzędziami dla samozatrudnionych."
+    },
+    "savings-accounts": {
+      "chip": "Oszczędności",
+      "title": "Najlepsze konta oszczędnościowe",
+      "blurb": "Neobanki z mocną ofertą oszczędnościową i wysokim oprocentowaniem."
+    },
+    "budgeting-apps": {
+      "chip": "Budżetowanie",
+      "title": "Najlepsze aplikacje do budżetowania",
+      "blurb": "Neobanki z narzędziami do budżetowania i zarządzania pieniędzmi."
+    },
+    "for-students": {
+      "chip": "Studenci",
+      "title": "Najlepsze konta dla studentów",
+      "blurb": "Konta skierowane do studentów i pokolenia Z."
+    },
+    "credit-and-lending": {
+      "chip": "Kredyty",
+      "title": "Najlepsze do kredytów i pożyczek",
+      "blurb": "Neobanki oferujące kredyt, debet lub budowanie historii kredytowej."
+    },
+    "cashback-rewards": {
+      "chip": "Cashback",
+      "title": "Najlepsze konta z cashbackiem",
+      "blurb": "Konta, które zwracają część wydanych pieniędzy."
+    },
+    "investing-neobanks": {
+      "chip": "Inwestycje",
+      "title": "Najlepsze neobanki do inwestowania",
+      "blurb": "Neobanki z wbudowanym inwestowaniem w akcje lub inne aktywa."
+    },
+    "crypto-friendly-neobanks": {
+      "chip": "Krypto",
+      "title": "Najlepsze neobanki przyjazne kryptowalutom",
+      "blurb": "Neobanki ze zintegrowanymi funkcjami kryptowalutowymi."
+    },
+    "money-transfer-apps": {
+      "chip": "Przelewy",
+      "title": "Najlepsze aplikacje do przelewów zagranicznych",
+      "blurb": "Wysyłaj pieniądze za granicę z niskimi opłatami i uczciwym kursem."
+    },
+    "virtual-cards": {
+      "chip": "Karty wirtualne",
+      "title": "Najlepsze karty wirtualne",
+      "blurb": "Neobanki oferujące natychmiastowe karty wirtualne i jednorazowe."
+    },
+    "for-non-residents": {
+      "chip": "Nierezydenci",
+      "title": "Najlepsze konta dla nierezydentów i ekspatów",
+      "blurb": "Otwórz konto bez lokalnego meldunku."
+    },
+    "premium-accounts": {
+      "chip": "Premium",
+      "title": "Najlepsze konta premium",
+      "blurb": "Pakiety premium z benefitami, salonikami i wyższymi limitami."
+    },
+    "free-accounts": {
+      "chip": "Darmowe konto",
+      "title": "Najlepsze darmowe konta bankowe",
+      "blurb": "Konta bez opłaty miesięcznej."
+    },
+    "accounts-with-insurance": {
+      "chip": "Ubezpieczenie",
+      "title": "Najlepsze konta z ubezpieczeniem podróżnym",
+      "blurb": "Karty z pakietem ubezpieczenia podróżnego lub zakupów."
+    },
+    "for-teens": {
+      "chip": "Nastolatki",
+      "title": "Najlepsze konta dla nastolatków",
+      "blurb": "Konta i karty dla dzieci i nastolatków."
+    },
+    "joint-accounts": {
+      "chip": "Konta wspólne",
+      "title": "Najlepsze konta wspólne",
+      "blurb": "Wspólne konta dla par i gospodarstw domowych."
+    },
+    "get-paid-early": {
+      "chip": "Wcześniejsza wypłata",
+      "title": "Najlepsze aplikacje do wcześniejszej wypłaty",
+      "blurb": "Dostęp do wynagrodzenia dzień lub dwa wcześniej."
+    },
+    "expense-management": {
+      "chip": "Wydatki",
+      "title": "Najlepsze konta do zarządzania wydatkami",
+      "blurb": "Neobanki z narzędziami do wydatków dla zespołów i samozatrudnionych."
+    },
+    "apple-google-pay": {
+      "chip": "Apple/Google Pay",
+      "title": "Najlepsze neobanki dla Apple Pay i Google Pay",
+      "blurb": "Konta obsługujące portfele mobilne."
+    },
+    "spot-trading": {
+      "chip": "Spot",
+      "title": "Najlepsze giełdy do handlu spot",
+      "blurb": "Giełdy mocne na rynkach spot."
+    },
+    "futures-derivatives": {
+      "chip": "Instrumenty pochodne",
+      "title": "Najlepsze giełdy do kontraktów terminowych",
+      "blurb": "Giełdy oferujące kontrakty terminowe i produkty lewarowane."
+    },
+    "staking-earn": {
+      "chip": "Staking",
+      "title": "Najlepsze giełdy do stakingu",
+      "blurb": "Giełdy ze stakingiem i produktami odsetkowymi."
+    },
+    "nft-platforms": {
+      "chip": "NFT",
+      "title": "Najlepsze giełdy dla NFT",
+      "blurb": "Giełdy z marketplace'ami NFT."
+    },
+    "copy-trading": {
+      "chip": "Copy trading",
+      "title": "Najlepsze giełdy do copy tradingu",
+      "blurb": "Giełdy z funkcjami handlu społecznościowego."
+    },
+    "low-fee-exchanges": {
+      "chip": "Niskie opłaty",
+      "title": "Najtańsze giełdy kryptowalut",
+      "blurb": "Giełdy z najniższymi opłatami transakcyjnymi."
+    },
+    "for-beginners": {
+      "chip": "Początkujący",
+      "title": "Najlepsze giełdy dla początkujących",
+      "blurb": "Proste, przystępne giełdy dla pierwszego razu."
+    },
+    "defi-web3": {
+      "chip": "DeFi i Web3",
+      "title": "Najlepsze giełdy dla DeFi i Web3",
+      "blurb": "Giełdy z dostępem do DeFi i portfelami Web3."
+    }
+  },
+  "home": {
+    "eyebrow": "Niezależne analizy rynku fintech",
+    "headline": "Sprawdź, jak naprawdę radzą sobie <hl>neobanki</hl> na świecie.",
+    "lead": "Oceny, opinie i sentyment ponad 100 neobanków i giełd kryptowalut — zebrane z Trustpilota i sklepów z aplikacjami, w podziale na kraje, aktualizowane codziennie.",
+    "ctaReports": "Zobacz nasze raporty — za darmo",
+    "ctaExplore": "Przeglądaj neobanki",
+    "realReviews": "Prawdziwe opinie z Trustpilota, Google Play i App Store",
+    "statFintechs": "Śledzonych fintechów",
+    "statRatings": "Przeanalizowanych ocen",
+    "statCountries": "Krajów w podziale",
+    "statCadence": "Częstotliwość odświeżania",
+    "statCadenceValue": "Codziennie",
+    "topNeobanks": "Najwyżej oceniane neobanki",
+    "topExchanges": "Giełdy kryptowalut",
+    "viewAll": "Zobacz wszystkie →",
+    "featChangeTitle": "Wykrywanie zmian",
+    "featChangeBody": "Wychwyć zmiany cen, planów i pozycjonowania konkurencji, zanim do ciebie dotrą.",
+    "featSentimentTitle": "Śledzenie sentymentu",
+    "featSentimentBody": "Zobacz, czy nastroje rynku się zmieniają — pozytywne kontra negatywne, według kraju.",
+    "featMomentumTitle": "Dynamika ocen",
+    "featMomentumBody": "Śledź, jak rosną oceny i liczba opinii na Trustpilocie i w sklepach z aplikacjami."
   }
 }

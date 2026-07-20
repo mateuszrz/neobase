@@ -53,6 +53,7 @@ function FactRow({ label, value }: { label: string; value: ReactNode }) {
 export default async function Profile({ slug }: { slug: string; kind?: "neobank" | "exchange" }) {
   const locale = await getLocale();
   const tp = await getTranslations("profile");
+  const tt = await getTranslations("tags");
   const showBrief = locale === routing.defaultLocale;
   const ft = await getFintech(slug, locale);
   if (!ft) notFound();
@@ -147,9 +148,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             {tagChips.length > 0 && (
               <div className="row" style={{ gap: 6, marginTop: 12, flexWrap: "wrap" }}>
                 {tagChips.map((c) => (
-                  <a key={c.slug} href={`/best/${c.slug}/`} className="badge" style={{ textDecoration: "none" }} title={`Best ${c.chip.toLowerCase()} →`}>
-                    {c.chip}
-                  </a>
+                  <Link key={c.slug} href={`/best/${c.slug}/`} className="badge" style={{ textDecoration: "none" }} title={tt(`${c.slug}.title`)}>
+                    {tt(`${c.slug}.chip`)}
+                  </Link>
                 ))}
               </div>
             )}

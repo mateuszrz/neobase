@@ -1,39 +1,60 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import { getTagCounts } from "@/lib/queries";
 import { TAGS, tagsForGroup } from "@/lib/tags";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Best Neobanks & Crypto Exchanges by Use Case — NeoBase Rankings",
-  description:
-    "Rankings of the best neobanks and crypto exchanges by use case — multi-currency accounts, travel cards, low-fee exchanges, staking and more — ranked by NeoBase's own sentiment score.",
-  alternates: { canonical: "/best" },
-};
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
 
-export default async function RankingsIndex() {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "rankings" });
+  return {
+    title: t("metaTitle"),
+    description: t("metaDesc"),
+    // With a trailing slash — trailingSlash: true serves /best/, so a canonical
+    // of "/best" points at a URL that only 308s.
+    alternates: { canonical: locale === routing.defaultLocale ? "/best/" : `/${locale}/best/` },
+  };
+}
+
+export default async function RankingsIndex({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("rankings");
+  const tt = await getTranslations("tags");
   const counts = await getTagCounts();
-  const sizeOf = (t: (typeof TAGS)[number]) => t.match.reduce((s, raw) => s + (counts.get(`${t.group}:${raw}`) ?? 0), 0);
+  const sizeOf = (tag: (typeof TAGS)[number]) =>
+    tag.match.reduce((s, raw) => s + (counts.get(`${tag.group}:${raw}`) ?? 0), 0);
 
   return (
     <main className="section" style={{ paddingTop: 24 }}>
       <div className="wrap">
-        <p className="eyebrow" style={{ marginBottom: 10 }}>Rankings</p>
-        <h1 className="h-sm">Best by use case</h1>
-        <p className="lead" style={{ marginTop: 10, marginBottom: 28, maxWidth: 760 }}>
-          The best neobanks and crypto exchanges for what you actually need — each list ranked by NeoBase’s own
-          customer-sentiment score.
-        </p>
+        <p className="eyebrow" style={{ marginBottom: 10 }}>{t("eyebrow")}</p>
+        <h1 className="h-sm">{t("title")}</h1>
+        <p className="lead" style={{ marginTop: 10, marginBottom: 28, maxWidth: 760 }}>{t("metaDesc")}</p>
 
         {(["neobank", "exchange"] as const).map((group) => (
           <section key={group} style={{ marginBottom: 32 }}>
-            <h2 className="subheading" style={{ marginBottom: 14 }}>{group === "neobank" ? "Neobanks" : "Crypto exchanges"}</h2>
+            <h2 className="subheading" style={{ marginBottom: 14 }}>
+              {group === "neobank" ? t("neobanks") : t("exchanges")}
+            </h2>
             <div className="grid grid-3">
-              {tagsForGroup(group).map((t) => (
-                <a key={t.slug} href={`/best/${t.slug}/`} className="card" style={{ textDecoration: "none", color: "inherit", padding: 18 }}>
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{t.title}</div>
-                  <div className="muted" style={{ fontSize: 12 }}>{sizeOf(t)} options</div>
-                </a>
+              {tagsForGroup(group).map((tag) => (
+                <Link
+                  key={tag.slug}
+                  href={`/best/${tag.slug}/`}
+                  className="card"
+                  style={{ textDecoration: "none", color: "inherit", padding: 18 }}
+                >
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{tt(`${tag.slug}.title`)}</div>
+                  <div className="muted" style={{ fontSize: 12 }}>{t("optionCount", { count: sizeOf(tag) })}</div>
+                </Link>
               ))}
             </div>
           </section>
