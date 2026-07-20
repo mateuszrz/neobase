@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { MicaRegistryRow } from "@/lib/queries";
 import { countryFlag } from "@/lib/mica/reference";
 
@@ -17,6 +18,7 @@ function scoreColor(v: number): string {
 const uniqSorted = (xs: string[]) => Array.from(new Set(xs.filter(Boolean))).sort((a, b) => a.localeCompare(b));
 
 export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
+  const t = useTranslations("micaPage");
   const [q, setQ] = useState("");
   const [country, setCountry] = useState("");
   const [regulator, setRegulator] = useState("");
@@ -50,20 +52,20 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search provider…"
+          placeholder={t("searchPlaceholder")}
           style={{ ...selStyle, flex: 1, minWidth: 220 }}
-          aria-label="Search provider"
+          aria-label={t("searchLabel")}
         />
         <select value={country} onChange={(e) => setCountry(e.target.value)} style={selStyle} aria-label="Country">
-          <option value="">All countries</option>
+          <option value="">{t("allCountries")}</option>
           {countries.map((c) => <option key={c} value={c}>{countryFlag(c)} {c}</option>)}
         </select>
         <select value={regulator} onChange={(e) => setRegulator(e.target.value)} style={selStyle} aria-label="Regulator">
-          <option value="">All regulators</option>
+          <option value="">{t("allRegulators")}</option>
           {regulators.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={service} onChange={(e) => setService(e.target.value)} style={selStyle} aria-label="MiCA service">
-          <option value="">All services</option>
+        <select value={service} onChange={(e) => setService(e.target.value)} style={selStyle} aria-label={t("serviceLabel")}>
+          <option value="">{t("allServices")}</option>
           {services.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
       </div>
@@ -85,11 +87,11 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
           <thead>
             <tr style={{ textAlign: "left", color: "var(--warm-gray)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4 }}>
               <th style={{ padding: "8px 10px", width: 40 }}>#</th>
-              <th style={{ padding: "8px 10px" }}>Provider</th>
-              <th style={{ padding: "8px 10px", width: 120 }}>NeoBase score</th>
-              <th style={{ padding: "8px 10px" }}>Country</th>
-              <th style={{ padding: "8px 10px" }}>Regulator</th>
-              <th style={{ padding: "8px 10px" }}>Services</th>
+              <th style={{ padding: "8px 10px" }}>{t("colProvider")}</th>
+              <th style={{ padding: "8px 10px", width: 120 }}>{t("colScore")}</th>
+              <th style={{ padding: "8px 10px" }}>{t("colCountry")}</th>
+              <th style={{ padding: "8px 10px" }}>{t("colRegulator")}</th>
+              <th style={{ padding: "8px 10px" }}>{t("colServices")}</th>
             </tr>
           </thead>
           <tbody>
@@ -131,7 +133,7 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
           </tbody>
         </table>
       </div>
-      {filtered.length === 0 && <p className="muted" style={{ padding: "20px 0", textAlign: "center" }}>No providers match your filters.</p>}
+      {filtered.length === 0 && <p className="muted" style={{ padding: "20px 0", textAlign: "center" }}>{t("noMatch")}</p>}
     </div>
   );
 }

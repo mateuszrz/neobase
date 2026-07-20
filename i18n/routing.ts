@@ -30,6 +30,6 @@ export type Locale = (typeof routing.locales)[number];
  * Add a locale here only once its UI strings AND its directory content are
  * translated.
  */
-export const INDEXABLE_LOCALES: readonly string[] = ["en"];
+export const INDEXABLE_LOCALES: readonly string[] = ["en", "pl"];
 
 export const isIndexable = (locale: string): boolean => INDEXABLE_LOCALES.includes(locale);
