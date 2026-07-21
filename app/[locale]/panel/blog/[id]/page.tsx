@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidateArticle } from "@/lib/blog/revalidate";
 import { eq } from "drizzle-orm";
 import { Link } from "@/i18n/navigation";
 import { localeRedirect as redirect } from "@/lib/i18n/redirect";
@@ -67,10 +67,9 @@ async function save(formData: FormData) {
   }
 
   // The public routes are ISR with revalidate=3600; without this an editor
-  // would publish and then not see the post for up to an hour.
-  const prefix = v.locale === routing.defaultLocale ? "" : `/${v.locale}`;
-  revalidatePath(`${prefix}/blog`);
-  revalidatePath(`${prefix}/blog/${v.slug}`);
+  // would publish and then not see the post for up to an hour. The sitemap is
+  // ISR too, which this used to forget — see lib/blog/revalidate.ts.
+  await revalidateArticle(v.locale, v.slug);
 
   return redirect(`/panel/blog/${savedId}/?saved=1`);
 }
@@ -82,9 +81,7 @@ async function remove(formData: FormData) {
   const existing = id ? await getArticleById(id) : null;
   if (existing) {
     await db.delete(articles).where(eq(articles.id, id));
-    const prefix = existing.locale === routing.defaultLocale ? "" : `/${existing.locale}`;
-    revalidatePath(`${prefix}/blog`);
-    revalidatePath(`${prefix}/blog/${existing.slug}`);
+    await revalidateArticle(existing.locale, existing.slug);
   }
   return redirect("/panel/blog/");
 }

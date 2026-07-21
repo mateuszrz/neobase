@@ -41,6 +41,7 @@
     "backfill:socialnews": "tsx scripts/backfill-social-news.ts",
     "blog:seed": "tsx scripts/seed-blog-sources.ts",
     "blog:test": "tsx scripts/blog-test.ts",
+    "blog:publish": "tsx scripts/publish-article.ts",
     "summary:generate": "tsx scripts/summary-generate.ts",
     "sentiment:backfill": "tsx scripts/sentiment-backfill.ts",
     "report:test": "tsx scripts/report-test.ts",
