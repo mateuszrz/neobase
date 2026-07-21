@@ -40,6 +40,24 @@ import {
   fmtReplyTime,
 } from "@/components/ui";
 
+/**
+ * Bare host from a stored website, for both the link target and its label.
+ *
+ * `fintechs.website` is stored without a scheme for all but a handful of rows,
+ * and this used to interpolate it straight into `https://${website}` — so the
+ * six rows that DID carry one (Revolut and N26 among them) rendered
+ * `https://https://www.revolut.com`, a dead link on some of the most visited
+ * profiles. Normalising here means a stray scheme in the data can no longer
+ * produce a broken link, and the label reads consistently across the directory.
+ */
+function siteHost(website?: string | null): string | null {
+  const host = (website ?? "")
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/+$/, "")
+    .trim();
+  return host.includes(".") ? host : null;
+}
+
 function FactRow({ label, value }: { label: string; value: ReactNode }) {
   if (value == null || value === "" || value === "—") return null;
   return (
@@ -136,11 +154,11 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             <h1 className="h-sm" style={{ marginBottom: 0 }}>{ft.name}</h1>
             <p className="muted" style={{ margin: "8px 0 0" }}>
               {(ok("headquarters") && ft.headquarters) || (ok("country") && ft.country) || tp("global")}
-              {ft.website && (
+              {siteHost(ft.website) && (
                 <>
                   {" · "}
-                  <a href={`https://${ft.website}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan-edge)" }}>
-                    {ft.website}
+                  <a href={`https://${siteHost(ft.website)}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan-edge)" }}>
+                    {siteHost(ft.website)}
                   </a>
                 </>
               )}
