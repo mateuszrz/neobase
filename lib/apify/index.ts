@@ -35,12 +35,36 @@ export function googlePlayDailyInput(appId: string, storeCountry = "us"): Record
 }
 
 /**
+ * Storefronts the App Store actor accepts. Anything else is rejected outright
+ * ("Field input.country must be equal to one of the allowed values"), which
+ * fails the whole run rather than degrading.
+ *
+ * We pass the fintech's home country as the storefront, and a company can
+ * legitimately be domiciled somewhere Apple's actor does not list — five
+ * exchanges failed every single run this way: AstroPay (UY), Bitfinex (VG),
+ * Bitget and OKX (SC), Bitstamp (LU). Those are global apps whose registered
+ * office happens to sit in a small jurisdiction.
+ */
+const APP_STORE_STOREFRONTS = new Set([
+  "us", "gb", "ca", "au", "in", "ie", "nz", "za", "sg", "ph", "fr", "de", "es", "it", "nl", "be",
+  "pt", "pl", "se", "dk", "fi", "no", "at", "ch", "cz", "sk", "hu", "ro", "gr", "ua", "ru", "tr",
+  "br", "mx", "ar", "cl", "co", "pe", "jp", "kr", "cn", "tw", "hk", "id", "my", "th", "vn", "sa",
+  "ae", "eg", "il", "ng",
+]);
+
+/**
  * App Store: `ratings` mode returns the all-time rating count + 1–5★ histogram
  * (Apple exposes no average, so we compute it from the histogram). No reviews.
  * `externalRef` is the numeric App Store id.
+ *
+ * An unsupported storefront falls back to `us` — the largest one, where a
+ * global app is always listed. The alternative is no App Store data at all for
+ * that brand. The snapshot is stored against country `ZZ` (global) either way,
+ * so the fallback does not misattribute the numbers to a market.
  */
 export function appStoreDailyInput(appId: string, storeCountry = "us"): Record<string, unknown> {
-  return { mode: "ratings", id: Number(appId), country: storeCountry.toLowerCase() };
+  const cc = storeCountry.toLowerCase();
+  return { mode: "ratings", id: Number(appId), country: APP_STORE_STOREFRONTS.has(cc) ? cc : "us" };
 }
 
 /** kind → { actor env resolver, daily input builder } — drives the generic kickoff. */
