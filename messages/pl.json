@@ -76,7 +76,8 @@
     "faqTitle": "Najczęstsze pytania",
     "sample": "Przykład",
     "samplePreviewWeekly": "Podgląd — po uruchomieniu odświeżane co tydzień",
-    "updatedWeekly": "Aktualizowane co tydzień"
+    "updatedWeekly": "Aktualizowane co tydzień",
+    "reviewCount": "{count, plural, one {1 opinia} few {{formatted} opinie} many {{formatted} opinii} other {{formatted} opinii}}"
   },
   "mica": {
     "question": "Czy {name} ma licencję MiCA?",

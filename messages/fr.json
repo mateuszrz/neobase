@@ -76,7 +76,8 @@
     "faqTitle": "Questions fréquentes",
     "sample": "Exemple",
     "samplePreviewWeekly": "Aperçu — actualisé chaque semaine après la mise en service",
-    "updatedWeekly": "Mis à jour chaque semaine"
+    "updatedWeekly": "Mis à jour chaque semaine",
+    "reviewCount": "{count, plural, one {1 avis} other {{formatted} avis}}"
   },
   "mica": {
     "question": "{name} dispose-t-il d'un agrément MiCA ?",

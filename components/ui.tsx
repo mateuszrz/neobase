@@ -105,6 +105,21 @@ export function fmt(n: number | null | undefined): string {
   return String(n);
 }
 
+/**
+ * Arguments for a count message whose number is displayed abbreviated.
+ *
+ * `formatted` is what the reader sees ("22K"); `count` is what ICU picks the
+ * plural form from — and once the number is abbreviated those must not be the
+ * same value. "21K" is read aloud as "21 thousand", which takes the generic
+ * plural, but the exact 21,234 behind it makes Polish's CLDR rule choose the
+ * 2-4 form: "21K opinie" next to "22K opinii" on the same row. Above the
+ * abbreviation threshold we therefore ask for a plain plural (any number in
+ * the generic category will do; 5 is in it for every locale we ship).
+ */
+function pluralArgs(n: number): { count: number; formatted: string } {
+  return { count: Math.abs(n) >= 1000 ? 5 : n, formatted: fmt(n) };
+}
+
 export function fmtMoney(usd: number | null | undefined): string {
   if (usd == null) return "—";
   if (usd >= 1e9) return `$${(usd / 1e9).toFixed(usd >= 1e10 ? 0 : 1)}B`;
@@ -170,7 +185,7 @@ export async function FintechCard({ f, kind = "neobank" }: { f: FintechListItem;
         <h3>{f.name}</h3>
         <p className="sub">
           {f.country ?? "Global"}
-          {f.reviewCount != null && ` · ${fmt(f.reviewCount)} reviews`}
+          {f.reviewCount != null && ` · ${t("ui.reviewCount", pluralArgs(f.reviewCount))}`}
         </p>
       </div>
       {f.sentiment != null ? (
