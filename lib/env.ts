@@ -79,6 +79,16 @@ export const env = {
   PADDLE_ENV: process.env.PADDLE_ENV ?? "sandbox", // sandbox | production
 };
 
+/**
+ * True for any production build, self-hosted or on Vercel.
+ *
+ * Used by the auth guards to decide whether a missing shared secret is a local
+ * convenience or a misconfiguration. `next dev` sets NODE_ENV=development, so
+ * unauthenticated local runs keep working; anything built for production —
+ * including Vercel previews, which are reachable from the internet — does not.
+ */
+export const isProductionRuntime = () => process.env.NODE_ENV === "production";
+
 /** True once a Paddle API key is configured (else billing runs in manual mode). */
 export const isPaddleLive = () => Boolean(env.PADDLE_API_KEY);
 
