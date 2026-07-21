@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { listExchanges } from "@/lib/queries";
+import { alternates } from "@/lib/i18n/alternates";
 import { FintechCard } from "@/components/ui";
 
 export const revalidate = 3600;
@@ -9,7 +10,11 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "directory" });
-  return { title: t("exchangesMetaTitle"), description: t("exchangesMetaDesc") };
+  return {
+    title: t("exchangesMetaTitle"),
+    description: t("exchangesMetaDesc"),
+    alternates: alternates(locale, "/exchanges/"),
+  };
 }
 
 export default async function ExchangesPage({ params }: { params: Promise<{ locale: string }> }) {

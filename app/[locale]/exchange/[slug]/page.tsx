@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import Profile from "@/components/Profile";
 import { routing } from "@/i18n/routing";
 import { alternates } from "@/lib/i18n/alternates";
@@ -26,9 +26,14 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const ft = await getFintech(slug, locale);
   if (!ft) return { title: "Exchange not found" };
+  // The title is the strongest on-page signal there is, so it follows the
+  // reader's language — an English title over translated body copy is the
+  // mismatch that keeps a localised page out of local results. `description`
+  // already carries the translated prose from getFintech().
+  const t = await getTranslations({ locale, namespace: "profile" });
   return {
-    title: `${ft.name} Review 2026 — Crypto Exchange Ratings`,
-    description: `${ft.name} — TrustScore, fees, reviews and user sentiment. ${ft.description ?? ""}`.slice(0, 160),
+    title: t("metaTitleExchange", { name: ft.name }),
+    description: `${t("metaDescExchange", { name: ft.name })} ${ft.description ?? ""}`.slice(0, 160),
     alternates: alternates(locale, `/exchange/${slug}/`),
   };
 }

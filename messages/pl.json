@@ -48,7 +48,11 @@
     "ownership": "Właściciel",
     "licenses": "Licencje",
     "availableIn": "Dostępne w",
-    "about": "O {name}"
+    "about": "O {name}",
+    "metaTitleExchange": "{name} — recenzja 2026, oceny giełdy kryptowalut",
+    "metaDescExchange": "{name} — TrustScore, opłaty, opinie i nastroje użytkowników.",
+    "metaTitleNeobank": "{name} — recenzja 2026, oceny i opinie",
+    "metaDescNeobank": "{name} — TrustScore, opinie i nastroje użytkowników."
   },
   "blog": {
     "title": "Blog",
