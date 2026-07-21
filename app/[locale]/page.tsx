@@ -1,13 +1,30 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPlatformStats, getTopNeobanks, getTopExchanges } from "@/lib/queries";
 import { Link } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { alternates } from "@/lib/i18n/alternates";
 import { FintechCard, Highlight, Stat, fmt } from "@/components/ui";
 
 export const revalidate = 3600;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+/**
+ * Title and description come from the layout's defaults; this exists purely for
+ * the canonical + hreflang set. The homepage is the most linked page on the
+ * site, so leaving it as the one page with no alternates would hide the whole
+ * language set from crawlers arriving at the root.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: alternates(locale, "/") };
 }
 
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {

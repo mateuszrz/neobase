@@ -12,7 +12,7 @@ import { defineRouting } from "next-intl/routing";
  * country=PL — a Pole comparing German neobanks is a normal case.
  */
 export const routing = defineRouting({
-  locales: ["en", "pl"],
+  locales: ["en", "pl", "de", "es", "fr"],
   defaultLocale: "en",
   localePrefix: "as-needed",
 });
@@ -30,6 +30,6 @@ export type Locale = (typeof routing.locales)[number];
  * Add a locale here only once its UI strings AND its directory content are
  * translated.
  */
-export const INDEXABLE_LOCALES: readonly string[] = ["en", "pl"];
+export const INDEXABLE_LOCALES: readonly string[] = ["en", "pl", "de", "es", "fr"];
 
 export const isIndexable = (locale: string): boolean => INDEXABLE_LOCALES.includes(locale);

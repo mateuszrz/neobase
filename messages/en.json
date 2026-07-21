@@ -48,7 +48,11 @@
     "ownership": "Ownership",
     "licenses": "Licenses",
     "availableIn": "Available in",
-    "about": "About {name}"
+    "about": "About {name}",
+    "metaTitleExchange": "{name} Review 2026 — Crypto Exchange Ratings",
+    "metaDescExchange": "{name} — TrustScore, fees, reviews and user sentiment.",
+    "metaTitleNeobank": "{name} Review 2026 — Ratings & Reviews",
+    "metaDescNeobank": "{name} — TrustScore, reviews and sentiment."
   },
   "blog": {
     "title": "Blog",

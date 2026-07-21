@@ -1,0 +1,430 @@
+{
+  "site": {
+    "title": "NeoBase — analyses des néobanques et de la fintech",
+    "titleTemplate": "%s — NeoBase",
+    "description": "Notes, avis et sentiment client de plus de 100 néobanques et plateformes crypto dans le monde. Analyses fintech indépendantes."
+  },
+  "nav": {
+    "home": "NeoBase — accueil",
+    "neobanks": "Néobanques",
+    "exchanges": "Plateformes crypto",
+    "rankings": "Classements",
+    "blog": "Blog",
+    "about": "À propos",
+    "testReports": "Tester nos rapports",
+    "getMonitoring": "Obtenir le monitoring"
+  },
+  "footer": {
+    "tagline": "Analyses indépendantes des néobanques et des plateformes crypto.",
+    "rights": "Tous droits réservés."
+  },
+  "profile": {
+    "backExchanges": "Plateformes crypto",
+    "backNeobanks": "Néobanques",
+    "kindExchange": "Plateforme crypto",
+    "kindNeobank": "Néobanque",
+    "global": "Monde",
+    "operatesIn": "Où {name} est présent",
+    "markets": "{count, plural, one {# marché} other {# marchés}}",
+    "ratingsAcross": "Notes par plateforme",
+    "rating": "Note",
+    "ratingDistribution": "Répartition des notes",
+    "responsiveness": "Réactivité de l'entreprise",
+    "repliesToReviews": "Réponses aux avis",
+    "typicalReplyTime": "Délai de réponse habituel",
+    "ratingOverTime": "Note et volume d'avis dans le temps",
+    "sentimentTrend": "Tendance du sentiment de marque",
+    "inTheMedia": "Dans les médias",
+    "latestSocial": "Derniers posts sociaux",
+    "whatPeopleSay": "Ce que disent les utilisateurs",
+    "sample": "Exemple",
+    "samplePreview": "Données de démonstration — flux en direct bientôt disponible",
+    "company": "Entreprise",
+    "founded": "Création",
+    "headquarters": "Siège",
+    "employees": "Effectif",
+    "valuation": "Valorisation",
+    "status": "Statut",
+    "ownership": "Actionnariat",
+    "licenses": "Licences",
+    "availableIn": "Disponible dans",
+    "about": "À propos de {name}",
+    "metaTitleExchange": "{name} : avis 2026 — notes de la plateforme crypto",
+    "metaDescExchange": "{name} — TrustScore, frais, avis et ressenti des utilisateurs.",
+    "metaTitleNeobank": "{name} : avis 2026 — notes et avis",
+    "metaDescNeobank": "{name} — TrustScore, avis et ressenti des utilisateurs."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Analyses des néobanques, des plateformes crypto et de la réglementation fintech européenne.",
+    "readMore": "Lire la suite",
+    "empty": "Aucun article pour le moment.",
+    "backToBlog": "Retour au blog",
+    "published": "Publié le {date}",
+    "updated": "Mis à jour le {date}"
+  },
+  "ui": {
+    "noScore": "Pas encore de score",
+    "trustScore": "TrustScore",
+    "sentimentScore": "Score de sentiment NeoBase",
+    "positiveSentiment": "Sentiment positif",
+    "notEnoughHistory": "Historique encore insuffisant — les données s'accumulent chaque jour.",
+    "sentimentAccrues": "L'historique du sentiment s'accumule chaque jour.",
+    "chartRatingVolume": "TrustScore et volume d'avis dans le temps",
+    "chartPositive": "Sentiment positif dans le temps",
+    "chartPerPlatform": "Sentiment positif par plateforme dans le temps",
+    "faqTitle": "Questions fréquentes",
+    "sample": "Exemple",
+    "samplePreviewWeekly": "Aperçu — actualisé chaque semaine après la mise en service",
+    "updatedWeekly": "Mis à jour chaque semaine"
+  },
+  "mica": {
+    "question": "{name} dispose-t-il d'un agrément MiCA ?",
+    "badgeNotAuthorised": "✕ Non agréé",
+    "badgeAuthorised": "✓ Agréé · CASP MiCA",
+    "badgeSuccessor": "Agrément détenu par le repreneur",
+    "bodyNotAuthorised": "<b>Non.</b> {name} ne figure pas au registre européen de l'ESMA des prestataires de services sur crypto-actifs (CASP) agréés. La période transitoire MiCA a pris fin le 1er juillet 2026 : sans agrément MiCA, la société peut ne pas être autorisée à servir des clients dans l'UE/EEE. Les utilisateurs européens sont invités à consulter le registre officiel de l'ESMA avant de négocier.",
+    "bodyAuthorised": "<b>Oui.</b> {name}{entity} détient un agrément de prestataire de services sur crypto-actifs (CASP) au titre de MiCA — sous la supervision de <reg>{regulator}</reg> en {country}, et inscrit au registre officiel de l'ESMA. Grâce au passeport MiCA, la société peut légalement servir des clients dans toute l'UE/EEE ({count} pays).",
+    "bodySuccessorLead": "<b>Plus maintenant.</b> {note} L'agrément est enregistré au nom de <reg>{entity}</reg>, qui opère sous la marque <reg>{brand}</reg> — sous la supervision de <reg>{regulator}</reg> en {country} et inscrit au registre officiel de l'ESMA.",
+    "legalEntityInline": " (entité juridique {entity})",
+    "sourceLine": "Source : registre MiCA de l'ESMA.",
+    "licenceDetails": "Détails de l'agrément",
+    "licenceStatus": "Statut de l'agrément",
+    "licenceStatusValue": "✓ Agréé (CASP MiCA)",
+    "licenceStatusSuccessor": "Agréé — détenu par {entity}",
+    "tradingAs": "Opère sous la marque",
+    "legalEntity": "Entité juridique",
+    "homeRegulator": "Régulateur d'origine",
+    "countryOfAuthorisation": "Pays de l'agrément",
+    "officialWebsite": "Site officiel",
+    "source": "Source",
+    "sourceValue": "Registre MiCA de l'ESMA",
+    "servicesSummary": "Services crypto agréés ({count})",
+    "passportSummary": "Où utiliser {name} · passeport UE/EEE ({count})",
+    "passportBody": "Un agrément MiCA bénéficie du passeport dans toute l'UE/EEE : {name} peut donc légalement servir des clients dans les pays suivants :"
+  },
+  "micaServices": {
+    "Custody": {
+      "name": "Conservation et administration de crypto-actifs",
+      "desc": "Conservation et administration de crypto-actifs pour le compte de clients."
+    },
+    "Trading platform": {
+      "name": "Exploitation d'une plateforme de négociation",
+      "desc": "Exploitation d'un marché sur lequel les clients négocient des crypto-actifs."
+    },
+    "Crypto<->cash": {
+      "name": "Échange de crypto-actifs contre des fonds",
+      "desc": "Échange de crypto-actifs contre de la monnaie fiduciaire."
+    },
+    "Crypto<->crypto": {
+      "name": "Échange de crypto-actifs contre d'autres crypto-actifs",
+      "desc": "Échange d'un crypto-actif contre un autre."
+    },
+    "Order execution": {
+      "name": "Exécution d'ordres pour le compte de clients",
+      "desc": "Exécution des ordres d'achat et de vente de crypto-actifs des clients."
+    },
+    "Placing": {
+      "name": "Placement de crypto-actifs",
+      "desc": "Commercialisation ou placement de crypto-actifs pour le compte d'un émetteur ou d'un offrant."
+    },
+    "Order routing": {
+      "name": "Réception et transmission d'ordres",
+      "desc": "Réception des ordres des clients sur crypto-actifs et transmission à un tiers."
+    },
+    "Advice": {
+      "name": "Conseil en crypto-actifs",
+      "desc": "Fourniture de recommandations personnalisées sur les crypto-actifs."
+    },
+    "Portfolio mgmt": {
+      "name": "Gestion de portefeuille",
+      "desc": "Gestion discrétionnaire de portefeuilles de crypto-actifs."
+    },
+    "Transfers": {
+      "name": "Services de transfert de crypto-actifs",
+      "desc": "Transfert de crypto-actifs pour le compte de clients."
+    }
+  },
+  "directory": {
+    "eyebrow": "Annuaire",
+    "neobanksTitle": "Néobanques et fintechs",
+    "neobanksMetaTitle": "Annuaire des néobanques et fintechs",
+    "neobanksMetaDesc": "Comparez plus de 100 néobanques et sociétés fintech par note, avis et pays.",
+    "exchangesTitle": "Plateformes crypto",
+    "exchangesMetaTitle": "Annuaire des plateformes crypto",
+    "exchangesMetaDesc": "Comparez les principales plateformes d'échange de cryptomonnaies par note, avis et sentiment des utilisateurs.",
+    "all": "Toutes",
+    "countWorldwide": "{count, plural, one {# société} other {# sociétés}} dans le monde, classées par TrustScore.",
+    "countInCountry": "{count, plural, one {# société} other {# sociétés}} en {country}, classées par TrustScore.",
+    "exchangesLead": "{count, plural, one {# plateforme} other {# plateformes}}, classées selon notre propre score de sentiment.",
+    "micaCta": "🇪🇺 Registre des agréments MiCA →"
+  },
+  "rankings": {
+    "eyebrow": "Classements",
+    "title": "Les meilleurs par usage",
+    "metaTitle": "Meilleures néobanques et plateformes crypto par usage — classements NeoBase",
+    "metaDesc": "Classements des meilleures néobanques et plateformes crypto par usage — comptes multidevises, cartes voyage, plateformes à frais réduits, staking et plus encore — établis selon le score de sentiment propre à NeoBase.",
+    "neobanks": "Néobanques",
+    "exchanges": "Plateformes crypto",
+    "allRankings": "Tous les classements",
+    "browseAll": "Tout parcourir →",
+    "noOptions": "Aucune option pour le moment.",
+    "rankedBy": "Classement établi selon le score de sentiment composite de NeoBase (avis + médias + mentions). Scores mis à jour chaque semaine.",
+    "optionCount": "{count, plural, one {# option} other {# options}}",
+    "reviewCount": "{count, plural, one {# avis} other {# avis}}",
+    "pageTitle": "{title} (2026) — classement par sentiment",
+    "pageDesc": "{blurb} Classement établi selon le score de sentiment client propre à NeoBase, calculé à partir de Trustpilot, Google Play, l'App Store, des médias et des réseaux sociaux."
+  },
+  "tags": {
+    "multi-currency-accounts": {
+      "chip": "Multidevise",
+      "title": "Meilleurs comptes multidevises",
+      "blurb": "Néobanques pour détenir et dépenser dans plusieurs devises."
+    },
+    "travel-cards": {
+      "chip": "Voyage",
+      "title": "Meilleures cartes voyage",
+      "blurb": "Cartes pour payer à l'étranger avec peu de frais et un change équitable."
+    },
+    "low-fee-neobanks": {
+      "chip": "Frais réduits",
+      "title": "Meilleures néobanques à frais réduits",
+      "blurb": "Comptes à frais minimes avec retraits gratuits au distributeur."
+    },
+    "business-accounts": {
+      "chip": "Pro",
+      "title": "Meilleurs comptes pro",
+      "blurb": "Néobanques conçues pour les entreprises et les PME."
+    },
+    "for-freelancers": {
+      "chip": "Indépendants",
+      "title": "Meilleurs comptes pour indépendants",
+      "blurb": "Comptes avec facturation et outils pour les travailleurs indépendants."
+    },
+    "savings-accounts": {
+      "chip": "Épargne",
+      "title": "Meilleurs comptes d'épargne à rendement élevé",
+      "blurb": "Néobanques avec une offre d'épargne solide et des taux attractifs."
+    },
+    "budgeting-apps": {
+      "chip": "Budget",
+      "title": "Meilleures applis de gestion de budget",
+      "blurb": "Néobanques avec des outils de budget et de gestion d'argent."
+    },
+    "for-students": {
+      "chip": "Étudiants",
+      "title": "Meilleurs comptes pour étudiants",
+      "blurb": "Comptes pensés pour les étudiants et la génération Z."
+    },
+    "credit-and-lending": {
+      "chip": "Crédit",
+      "title": "Meilleures offres de crédit et de prêt",
+      "blurb": "Néobanques proposant crédit, découvert ou construction d'historique de crédit."
+    },
+    "cashback-rewards": {
+      "chip": "Cashback",
+      "title": "Meilleurs comptes avec cashback et récompenses",
+      "blurb": "Comptes qui vous reversent une part de vos dépenses."
+    },
+    "investing-neobanks": {
+      "chip": "Investissement",
+      "title": "Meilleures néobanques pour investir",
+      "blurb": "Néobanques avec investissement en actions ou en actifs intégré."
+    },
+    "crypto-friendly-neobanks": {
+      "chip": "Crypto",
+      "title": "Meilleures néobanques crypto-friendly",
+      "blurb": "Néobanques avec des fonctionnalités crypto intégrées."
+    },
+    "money-transfer-apps": {
+      "chip": "Transferts",
+      "title": "Meilleures applis de transfert d'argent à l'international",
+      "blurb": "Envoyez de l'argent à l'étranger avec peu de frais et un taux de change juste."
+    },
+    "virtual-cards": {
+      "chip": "Cartes virtuelles",
+      "title": "Meilleures cartes virtuelles",
+      "blurb": "Néobanques proposant des cartes virtuelles et jetables instantanées."
+    },
+    "for-non-residents": {
+      "chip": "Non-résidents",
+      "title": "Meilleurs comptes bancaires pour non-résidents et expatriés",
+      "blurb": "Ouvrez un compte sans résidence locale."
+    },
+    "premium-accounts": {
+      "chip": "Premium",
+      "title": "Meilleurs comptes bancaires premium",
+      "blurb": "Offres premium avec avantages, salons d'aéroport et plafonds relevés."
+    },
+    "free-accounts": {
+      "chip": "Compte gratuit",
+      "title": "Meilleurs comptes bancaires gratuits",
+      "blurb": "Comptes sans frais mensuels."
+    },
+    "accounts-with-insurance": {
+      "chip": "Assurance",
+      "title": "Meilleurs comptes avec assurance voyage",
+      "blurb": "Cartes incluant une assurance voyage ou achats."
+    },
+    "for-teens": {
+      "chip": "Ados",
+      "title": "Meilleurs comptes bancaires pour adolescents",
+      "blurb": "Comptes et cartes pour enfants et adolescents."
+    },
+    "joint-accounts": {
+      "chip": "Comptes joints",
+      "title": "Meilleurs comptes joints",
+      "blurb": "Comptes partagés pour les couples et les foyers."
+    },
+    "get-paid-early": {
+      "chip": "Salaire anticipé",
+      "title": "Meilleures applis pour être payé en avance",
+      "blurb": "Accédez à votre salaire un ou deux jours plus tôt."
+    },
+    "expense-management": {
+      "chip": "Notes de frais",
+      "title": "Meilleurs comptes de gestion des dépenses",
+      "blurb": "Néobanques avec outils de dépenses pour les équipes et les indépendants."
+    },
+    "apple-google-pay": {
+      "chip": "Apple/Google Pay",
+      "title": "Meilleures néobanques pour Apple Pay et Google Pay",
+      "blurb": "Comptes compatibles avec les portefeuilles mobiles."
+    },
+    "spot-trading": {
+      "chip": "Spot",
+      "title": "Meilleures plateformes pour le trading spot",
+      "blurb": "Plateformes performantes sur les marchés spot."
+    },
+    "futures-derivatives": {
+      "chip": "Dérivés",
+      "title": "Meilleures plateformes pour les futures et dérivés",
+      "blurb": "Plateformes proposant des contrats à terme et des produits à effet de levier."
+    },
+    "staking-earn": {
+      "chip": "Staking",
+      "title": "Meilleures plateformes pour le staking et le rendement",
+      "blurb": "Plateformes avec staking et produits de rendement."
+    },
+    "nft-platforms": {
+      "chip": "NFT",
+      "title": "Meilleures plateformes pour les NFT",
+      "blurb": "Plateformes dotées de places de marché NFT."
+    },
+    "copy-trading": {
+      "chip": "Copy trading",
+      "title": "Meilleures plateformes pour le copy trading",
+      "blurb": "Plateformes avec fonctions de trading social et de copy trading."
+    },
+    "low-fee-exchanges": {
+      "chip": "Frais réduits",
+      "title": "Meilleures plateformes crypto à frais réduits",
+      "blurb": "Plateformes affichant les frais de transaction les plus bas."
+    },
+    "for-beginners": {
+      "chip": "Débutants",
+      "title": "Meilleures plateformes crypto pour débutants",
+      "blurb": "Plateformes simples et accessibles pour un premier achat."
+    },
+    "defi-web3": {
+      "chip": "DeFi et Web3",
+      "title": "Meilleures plateformes pour la DeFi et le Web3",
+      "blurb": "Plateformes donnant accès à la DeFi et aux portefeuilles Web3."
+    }
+  },
+  "home": {
+    "eyebrow": "Analyses fintech indépendantes",
+    "headline": "Suivez la performance réelle des <hl>néobanques</hl> du monde entier.",
+    "lead": "Notes, avis et sentiment client de plus de 100 néobanques et plateformes crypto — agrégés depuis Trustpilot et les stores d'applications, segmentés par pays, mis à jour chaque jour.",
+    "ctaReports": "Tester nos rapports — gratuit",
+    "ctaExplore": "Explorer les néobanques",
+    "realReviews": "De vrais avis issus de Trustpilot, Google Play et l'App Store",
+    "statFintechs": "Fintechs suivies",
+    "statRatings": "Notes analysées",
+    "statCountries": "Pays segmentés",
+    "statCadence": "Fréquence d'actualisation",
+    "statCadenceValue": "Quotidienne",
+    "topNeobanks": "Néobanques les mieux notées",
+    "topExchanges": "Plateformes crypto",
+    "viewAll": "Tout voir →",
+    "featChangeTitle": "Détection des changements",
+    "featChangeBody": "Repérez les évolutions de prix, d'offres et de positionnement de vos concurrents avant qu'elles ne vous atteignent.",
+    "featSentimentTitle": "Suivi du sentiment",
+    "featSentimentBody": "Voyez si l'humeur du marché bascule — positif contre négatif, pays par pays.",
+    "featMomentumTitle": "Dynamique des notes",
+    "featMomentumBody": "Suivez l'évolution des notes et du volume d'avis sur Trustpilot et les stores d'applications."
+  },
+  "about": {
+    "metaTitle": "À propos",
+    "metaDesc": "NeoBase est une plateforme d'analyse indépendante dédiée à l'écosystème mondial des néobanques et des plateformes crypto.",
+    "eyebrow": "À propos",
+    "headline": "Des <hl>analyses fintech</hl> indépendantes.",
+    "p1": "NeoBase suit l'écosystème mondial des néobanques et des plateformes crypto. Nous agrégeons les avis d'utilisateurs, les notes des stores d'applications et les signaux de marché pour offrir une vision impartiale et toujours à jour de la performance réelle de chaque acteur.",
+    "p2": "L'annuaire public est gratuit. En dessous se trouve une plateforme de monitoring : choisissez un pays et quelques concurrents, et recevez des données actualisées chaque jour ainsi que des synthèses IA de ce qui a changé — tarifs, offres, couverture médiatique et sentiment."
+  },
+  "monitoring": {
+    "metaTitle": "Monitoring de marché",
+    "metaDesc": "Veille concurrentielle quotidienne sur un pays et vos principaux concurrents, avec des synthèses IA.",
+    "eyebrow": "Monitoring",
+    "headline": "Surveillez un marché et ses <hl>concurrents</hl> — au quotidien.",
+    "lead": "Choisissez un pays et les concurrents qui comptent. NeoBase suit chaque jour leurs notes, avis, sentiment, tarifs et couverture médiatique, et Claude résume ce qui a changé.",
+    "popular": "Populaire",
+    "contactUs": "Nous contacter",
+    "startTrial": "Démarrer l'essai gratuit",
+    "billingNote": "Paiement via Paddle. Les tarifs affichés sont indicatifs — le tunnel de paiement sera branché lors d'une phase ultérieure.",
+    "perMonth": "/mois",
+    "starter": "Starter",
+    "pro": "Pro",
+    "scale": "Scale",
+    "priceCustom": "Sur devis",
+    "f1Country": "1 pays",
+    "f3Competitors": "3 concurrents",
+    "fDailyData": "Données quotidiennes",
+    "fWeeklyDigest": "Synthèse IA hebdomadaire",
+    "f3Countries": "3 pays",
+    "f10Competitors": "10 concurrents",
+    "fDailyWeeklyDigest": "Synthèse IA quotidienne et hebdomadaire",
+    "fAlerts": "Alertes sur les changements de prix et d'offres",
+    "fCustomCountries": "Pays au choix",
+    "fUnlimitedCompetitors": "Concurrents illimités",
+    "fApi": "Accès à l'API",
+    "fPriority": "Support prioritaire"
+  },
+  "micaPage": {
+    "metaTitle": "Prestataires crypto agréés MiCA — registre ESMA, classés par sentiment",
+    "metaDesc": "Consultez le registre européen MiCA des prestataires de services sur crypto-actifs (CASP) agréés — par pays, régulateur et service. Les plateformes agréées sont classées selon le score de sentiment client propre à NeoBase.",
+    "backExchanges": "Plateformes crypto",
+    "eyebrow": "Réglementation européenne",
+    "title": "Prestataires crypto agréés MiCA",
+    "lead": "Le registre européen des prestataires de services sur crypto-actifs (CASP) agréés au titre de MiCA, repris de l'ESMA. Recherchez par nom, pays, régulateur ou service — et découvrez les plateformes agréées que nous suivons, classées selon notre propre score de sentiment client.",
+    "statProviders": "Prestataires agréés",
+    "statCountries": "Pays",
+    "statRegulators": "Régulateurs",
+    "statTradingPlatforms": "Plateformes de négociation",
+    "statRanked": "Classés par sentiment",
+    "searchPlaceholder": "Rechercher un prestataire…",
+    "searchLabel": "Rechercher un prestataire",
+    "allCountries": "Tous les pays",
+    "allRegulators": "Tous les régulateurs",
+    "allServices": "Tous les services",
+    "serviceLabel": "Service MiCA",
+    "colProvider": "Prestataire",
+    "colScore": "Score NeoBase",
+    "colCountry": "Pays",
+    "colRegulator": "Régulateur",
+    "colServices": "Services",
+    "noMatch": "Aucun prestataire ne correspond à vos filtres."
+  },
+  "test": {
+    "metaTitle": "Testez nos rapports — briefing concurrentiel hebdomadaire gratuit",
+    "metaDesc": "Indiquez votre marque et quelques concurrents pour recevoir gratuitement un briefing hebdomadaire de veille concurrentielle — fondé sur des notes, un sentiment et des données médias réels.",
+    "eyebrow": "Test gratuit",
+    "headline": "Découvrez un briefing concurrentiel hebdomadaire sur <hl>votre marque</hl>.",
+    "lead": "Indiquez votre marque et quelques concurrents. Nous produisons un rapport de veille concurrentielle hebdomadaire — notes, sentiment, médias et signaux stratégiques — et vous en montrons la synthèse gratuitement. Sans compte, sans carte bancaire.",
+    "rateLimited": "Vous avez généré plusieurs briefings en peu de temps (limite de {max} par {minutes} minutes). Patientez un instant et réessayez — ou <link>contactez-nous</link> pour des rapports sans limite.",
+    "yourBrand": "Votre marque",
+    "brandPlaceholder": "ex. ZEN.COM",
+    "submit": "Générer mon briefing gratuit →",
+    "grounded": "Fondé sur de vraies notes multiplateformes et des données de sentiment client — nous n'inventons jamais d'événements. Le suivi des médias et des réseaux sociaux approfondit le briefing dans le cadre d'un projet payant."
+  }
+}
