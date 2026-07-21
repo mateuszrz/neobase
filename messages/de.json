@@ -76,7 +76,8 @@
     "faqTitle": "Häufige Fragen",
     "sample": "Beispiel",
     "samplePreviewWeekly": "Vorschau — nach dem Start wöchentlich aktualisiert",
-    "updatedWeekly": "Wöchentlich aktualisiert"
+    "updatedWeekly": "Wöchentlich aktualisiert",
+    "reviewCount": "{count, plural, one {1 Rezension} other {{formatted} Rezensionen}}"
   },
   "mica": {
     "question": "Hat {name} eine MiCA-Lizenz?",
