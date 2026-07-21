@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { isAuthorizedCron } from "@/lib/http";
 import { revalidateArticle } from "@/lib/blog/revalidate";
 import { routing } from "@/i18n/routing";
+import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,11 +18,21 @@ export const dynamic = "force-dynamic";
  *
  * Reuses the cron guard: same shared secret, same `Authorization: Bearer` or
  * `?token=` shape. This purges caches only — it cannot read or write content —
- * so the cron-level secret is proportionate.
+ * so the cron-level secret is proportionate. Unlike the cron routes, though, it
+ * refuses to serve at all when no secret is configured rather than defaulting
+ * to open; see the guard below.
  *
  *   POST /api/revalidate  { "items": [{ "locale": "de", "slug": "..." }] }
  */
 export async function POST(req: Request) {
+  // Fail closed. `isAuthorizedCron` waves everything through when CRON_SECRET
+  // is unset — a deliberate dev convenience — and CRON_SECRET turned out NOT to
+  // be set in production, so inheriting that default published an open
+  // cache-purge endpoint. Repeated purges would force constant regeneration of
+  // 1000+ pages, so this refuses to run without a configured secret instead.
+  if (!env.CRON_SECRET) {
+    return NextResponse.json({ error: "revalidation is not configured" }, { status: 503 });
+  }
   if (!isAuthorizedCron(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
   let body: unknown;
