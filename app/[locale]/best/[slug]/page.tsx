@@ -74,31 +74,59 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
         {rows.length === 0 ? (
           <p className="muted">{t("noOptions")} <Link href={backHref} style={{ color: "var(--cyan-edge)" }}>{t("browseAll")}</Link></p>
         ) : (
-          <div className="stack-8" style={{ maxWidth: 760 }}>
-            {rows.map((r, i) => (
-              <Link
-                key={r.id}
-                href={`/${kind}/${r.id}/`}
-                className="card"
-                style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 18px", textDecoration: "none", color: "inherit" }}
-              >
-                <span style={{ flex: "0 0 auto", width: 26, textAlign: "center", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: i < 3 ? "var(--ink-black)" : "var(--ash-gray)" }}>{i + 1}</span>
-                <BrandLogo src={r.logoSvg} website={r.website} name={r.name} size={40} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600 }}>{r.name}</div>
-                  <div className="muted" style={{ fontSize: 12 }}>
-                    {r.country ? `${flagEmoji(r.country)} ` : ""}{r.reviewCount != null ? t("reviewCount", { count: r.reviewCount }) : "—"}
-                  </div>
-                </div>
-                {r.sentiment != null ? (
-                  <span style={{ flex: "0 0 auto", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: scoreColor(r.sentiment) }} title="NeoBase sentiment score">
-                    {r.sentiment.toFixed(0)}
+          <div className="stack-8" style={{ maxWidth: 880 }}>
+            {rows.map((r, i) => {
+              const medal = i === 0 ? "#eab308" : i === 1 ? "#9ca3af" : i === 2 ? "#c2703d" : null;
+              return (
+                <Link
+                  key={r.id}
+                  href={`/${kind}/${r.id}/`}
+                  className="card"
+                  style={{ display: "grid", gridTemplateColumns: "34px 44px minmax(0,1fr) 76px", alignItems: "center", gap: 14, padding: "13px 18px", textDecoration: "none", color: "inherit" }}
+                >
+                  <span
+                    style={{
+                      justifySelf: "center", width: 28, height: 28, borderRadius: "var(--r-full)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700,
+                      color: medal ? "#fff" : "var(--ash-gray)", background: medal ?? "transparent",
+                    }}
+                  >
+                    {i + 1}
                   </span>
-                ) : (
-                  <span className="muted" style={{ flex: "0 0 auto" }}>—</span>
-                )}
-              </Link>
-            ))}
+                  <BrandLogo src={r.logoSvg} website={r.website} name={r.name} size={40} />
+                  <div style={{ minWidth: 0 }}>
+                    <div className="row" style={{ gap: 8, alignItems: "baseline" }}>
+                      <span style={{ fontWeight: 600, fontSize: 15 }}>{r.name}</span>
+                      {r.country && <span className="muted" style={{ fontSize: 12 }}>{flagEmoji(r.country)} {r.country}</span>}
+                    </div>
+                    <div className="muted" style={{ fontSize: 12, marginTop: 1, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                      {r.rating != null && <span><span style={{ color: "var(--cyan-signal)" }}>★</span> {r.rating.toFixed(1)}</span>}
+                      {r.rating != null && r.reviewCount != null && <span aria-hidden>·</span>}
+                      {r.reviewCount != null && <span>{t("reviewCount", { count: r.reviewCount })}</span>}
+                      {r.rating == null && r.reviewCount == null && <span>—</span>}
+                    </div>
+                    {r.sentiment != null && (
+                      <div className="meter" style={{ marginTop: 8, height: 6 }}>
+                        <span style={{ width: `${Math.max(2, Math.min(100, r.sentiment))}%`, background: scoreColor(r.sentiment) }} />
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    {r.sentiment != null ? (
+                      <>
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, lineHeight: 1, color: scoreColor(r.sentiment) }} title="NeoBase sentiment score">
+                          {r.sentiment.toFixed(0)}
+                        </div>
+                        <div className="muted" style={{ fontSize: 10, marginTop: 3 }}>/ 100</div>
+                      </>
+                    ) : (
+                      <span className="muted">—</span>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
 
