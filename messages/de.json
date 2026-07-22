@@ -53,7 +53,18 @@
     "metaTitleExchange": "{name} Test 2026 — Bewertungen der Krypto-Börse",
     "metaDescExchange": "{name} — TrustScore, Gebühren, Bewertungen und Nutzerstimmung.",
     "metaTitleNeobank": "{name} Test 2026 — Bewertungen und Erfahrungen",
-    "metaDescNeobank": "{name} — TrustScore, Bewertungen und Nutzerstimmung."
+    "metaDescNeobank": "{name} — TrustScore, Bewertungen und Nutzerstimmung.",
+    "atGlance": "Auf einen Blick",
+    "getApp": "{name}-App herunterladen",
+    "installs": "Installationen",
+    "ratingsWord": "Bewertungen",
+    "avgRating": "Ø Bewertung",
+    "sentimentLabel": "Sentiment",
+    "totalRatings": "Bewertungen gesamt",
+    "countryLabel": "Land",
+    "micaLicence": "MiCA-Lizenz",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "blog": {
     "title": "Blog",

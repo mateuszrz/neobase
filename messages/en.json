@@ -53,7 +53,18 @@
     "metaTitleExchange": "{name} Review 2026 — Crypto Exchange Ratings",
     "metaDescExchange": "{name} — TrustScore, fees, reviews and user sentiment.",
     "metaTitleNeobank": "{name} Review 2026 — Ratings & Reviews",
-    "metaDescNeobank": "{name} — TrustScore, reviews and sentiment."
+    "metaDescNeobank": "{name} — TrustScore, reviews and sentiment.",
+    "atGlance": "At a glance",
+    "getApp": "Download the {name} app",
+    "installs": "installs",
+    "ratingsWord": "ratings",
+    "avgRating": "Avg rating",
+    "sentimentLabel": "Sentiment",
+    "totalRatings": "Total ratings",
+    "countryLabel": "Country",
+    "micaLicence": "MiCA licence",
+    "yes": "Yes",
+    "no": "No"
   },
   "blog": {
     "title": "Blog",
