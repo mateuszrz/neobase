@@ -182,7 +182,12 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
       ((ok("founded") && !!ft.founded) || (ok("headquarters") && !!ft.headquarters) || (ok("employees") && !!ft.employees) ||
         (ok("valuationUsd") && !!ft.valuationUsd) || (ok("status") && !!ft.status) || (ok("ownership") && !!ft.ownership) ||
         (ok("country") && !!ft.country)));
-  const screenshots: string[] = Array.isArray((ft.screenshots as any)?.googlePlay) ? (ft.screenshots as any).googlePlay : [];
+  // Screenshots: prefer App Store (higher-fidelity marketing shots), fall back
+  // to Google Play. Label reflects whichever we're showing.
+  const ssData = (ft.screenshots && typeof ft.screenshots === "object" ? ft.screenshots : {}) as { googlePlay?: string[]; appStore?: string[] };
+  const screenshots: string[] =
+    Array.isArray(ssData.appStore) && ssData.appStore.length ? ssData.appStore : Array.isArray(ssData.googlePlay) ? ssData.googlePlay : [];
+  const screenshotsSource = Array.isArray(ssData.appStore) && ssData.appStore.length ? "App Store" : "Google Play";
 
   return (
     <main className="section" style={{ paddingTop: 12 }}>
@@ -309,25 +314,6 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
           </aside>
         </div>
 
-        {/* App screenshots — full-width scroll strip (Google Play listing) */}
-        {screenshots.length > 0 && (
-          <section style={{ marginTop: 24 }}>
-            <SecHead icon="app" title={tp("screenshots")} aux="Google Play" />
-            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "thin" }}>
-              {screenshots.map((src, i) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={i}
-                  src={src}
-                  alt={tp("screenshotAlt", { name: ft.name, n: i + 1 })}
-                  loading="lazy"
-                  style={{ height: 300, width: "auto", flex: "none", borderRadius: 12, border: "1px solid var(--stone-border)", background: "var(--stone-canvas)" }}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* Where the brand operates — markets with flags */}
         {availableIn.length > 0 && (
           <section style={{ marginTop: 24 }}>
@@ -368,6 +354,25 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             <SecHead icon="trend" title={tp("sentimentTrend")} aux="positive sentiment, by platform" />
             <PlatformSentimentChart series={platformSent} />
           </div>
+        )}
+
+        {/* App screenshots — full-width scroll strip (App Store, else Google Play) */}
+        {screenshots.length > 0 && (
+          <section style={{ marginTop: 24 }}>
+            <SecHead icon="app" title={tp("screenshots")} aux={screenshotsSource} />
+            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "thin" }}>
+              {screenshots.map((src, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src={src}
+                  alt={tp("screenshotAlt", { name: ft.name, n: i + 1 })}
+                  loading="lazy"
+                  style={{ height: 300, width: "auto", flex: "none", borderRadius: 12, border: "1px solid var(--stone-border)", background: "var(--stone-canvas)" }}
+                />
+              ))}
+            </div>
+          </section>
         )}
 
         {/* Public content signals — news / social / mentions, sample-first until live */}
