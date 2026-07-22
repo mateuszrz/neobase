@@ -27,6 +27,7 @@
     "crawl:test": "tsx scripts/crawl-test.ts",
     "apify:socials": "tsx scripts/collect-socials.ts",
     "social:seed": "tsx scripts/seed-social-sources.ts",
+    "social:backfill-linkedin": "tsx scripts/backfill-linkedin.ts",
     "social:test": "tsx scripts/social-test.ts",
     "news:test": "tsx scripts/news-test.ts",
     "mentions:test": "tsx scripts/mentions-test.ts",
