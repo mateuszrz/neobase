@@ -67,6 +67,28 @@ export function appStoreDailyInput(appId: string, storeCountry = "us"): Record<s
   return { mode: "ratings", id: Number(appId), country: APP_STORE_STOREFRONTS.has(cc) ? cc : "us" };
 }
 
+/** The storefront `appStoreDailyInput` will actually query for a country code. */
+export function appStoreStorefront(cc: string): string {
+  const c = cc.toLowerCase();
+  return APP_STORE_STOREFRONTS.has(c) ? c : "us";
+}
+
+/**
+ * Global storefronts to retry when the home store lists an app with zero
+ * ratings. A brand registered under a small MiCA jurisdiction (mt/cy/lv/lu…)
+ * frequently ships one global app that is only *rated* in the US/GB store; the
+ * numeric id is storefront-independent, so a US/GB rating pull is the same app.
+ */
+export const APP_STORE_FALLBACK_STORES = ["us", "gb"];
+
+/** Synchronously fetch one page of App Store `ratings` items for an app id. */
+export async function fetchAppStoreRatings(appId: string, storeCountry: string): Promise<Record<string, any>[]> {
+  const client = apify();
+  const run = await client.actor(env.APIFY_APPSTORE_ACTOR).call(appStoreDailyInput(appId, storeCountry), { waitSecs: 120 });
+  const { items } = await client.dataset(run.defaultDatasetId).listItems({ limit: 8 });
+  return items as Record<string, any>[];
+}
+
 /** kind → { actor env resolver, daily input builder } — drives the generic kickoff. */
 export const SOURCE_KINDS: Record<
   string,
