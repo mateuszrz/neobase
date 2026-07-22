@@ -89,6 +89,33 @@ async function search(actor: string, input: Record<string, unknown>): Promise<Re
   return items as Record<string, any>[];
 }
 
+/**
+ * Search the home storefront first, then fall back to the global US/GB stores —
+ * but only when the home storefront lists nothing at all. Many EU crypto
+ * exchanges are registered under a small jurisdiction (mt/cy/lv/sc) whose App
+ * Store returns zero results while the brand ships a single global app; the App
+ * Store id is storefront-independent, so a fallback hit is the same id. The
+ * empty-only trigger keeps this additive: a regional app that *does* surface at
+ * home (imagin/es, illimity/it) is never displaced by a US look-alike.
+ */
+const FALLBACK_STORES = ["us", "gb"];
+async function searchStores(
+  actor: string,
+  input: (country: string) => Record<string, unknown>,
+  home: string,
+): Promise<{ rows: Record<string, any>[]; home: boolean }> {
+  const tried = new Set<string>();
+  const order = [home, ...FALLBACK_STORES];
+  for (let i = 0; i < order.length; i++) {
+    const c = order[i];
+    if (tried.has(c)) continue;
+    tried.add(c);
+    const res = await search(actor, input(c)).catch(() => []);
+    if (res.length) return { rows: res, home: i === 0 };
+  }
+  return { rows: [], home: true };
+}
+
 interface Match {
   id: string;
   name: string;
@@ -116,10 +143,17 @@ async function resolve(ft: {
   // imagin/es) don't surface in the US store, and Binance-global isn't there.
   const country = (ft.country ?? "us").toLowerCase();
 
-  const [gpRes, asRes] = await Promise.all([
-    search(env.APIFY_GOOGLE_PLAY_ACTOR, { mode: "search", searchTerms: [ft.name], maxResults: 6, country, language: "en" }).catch(() => []),
-    search(env.APIFY_APPSTORE_ACTOR, { mode: "search", query: ft.name, maxResults: 6, country }).catch(() => []),
+  // A fallback-store hit is only ever reported, never auto-activated: the global
+  // US/GB stores are where clones and unrelated look-alikes of small-jurisdiction
+  // exchanges proliferate (a lookup once returned Houston's *trash-pickup* app for
+  // "HTX"), and the real global exchange app is often absent there too. Trust
+  // stays anchored to the home storefront; fallback results wait for human eyes.
+  const [gpr, asr] = await Promise.all([
+    searchStores(env.APIFY_GOOGLE_PLAY_ACTOR, (c) => ({ mode: "search", searchTerms: [ft.name], maxResults: 6, country: c, language: "en" }), country),
+    searchStores(env.APIFY_APPSTORE_ACTOR, (c) => ({ mode: "search", query: ft.name, maxResults: 6, country: c }), country),
   ]);
+  const gpRes = gpr.rows;
+  const asRes = asr.rows;
 
   // Google Play: exact developer-domain match, else the dev domain's brand label
   // CONTAINS the token (getchip.uk ⊃ "chip"; rejects unrelated dev domains), else
@@ -150,6 +184,11 @@ async function resolve(ft: {
   const asToken = asRes.find((c) => hit(c.appId) || hit(c.title) || hit(c.developer));
   const asPick = asDev ?? asToken;
   if (asPick) as = { id: String(asPick.id), developer: asPick.developer ?? "", via: asDev ? "gp-dev" : "token" };
+
+  // Demote any fallback-store hit to the untrusted "token" tier so it is reported
+  // but never auto-activated (see the searchStores note above).
+  if (gp && !gpr.home) gp.via = "token";
+  if (as && !asr.home) as.via = "token";
 
   return { id: ft.id, name: ft.name, needsGp: ft.needsGp, needsAs: ft.needsAs, gp, as };
 }
