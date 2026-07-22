@@ -427,5 +427,73 @@
     "brandPlaceholder": "ex. ZEN.COM",
     "submit": "Générer mon briefing gratuit →",
     "grounded": "Fondé sur de vraies notes multiplateformes et des données de sentiment client — nous n'inventons jamais d'événements. Le suivi des médias et des réseaux sociaux approfondit le briefing dans le cadre d'un projet payant."
+  },
+  "compare": {
+    "metaTitle": "{a} vs {b} : avis, sentiment et frais comparés",
+    "metaDesc": "Comparez {a} et {b} côte à côte — sentiment client, notes Trustpilot, Google Play et App Store, et régulation MiCA. Comparatif {type} indépendant de NeoBase.",
+    "eyebrow": "Comparatif",
+    "vs": "vs",
+    "subtitle": "Deux {type} comparés sur le sentiment client, les notes des stores et la régulation.",
+    "typeNeobank": "néobanques",
+    "typeExchange": "plateformes crypto",
+    "bestOn": "Meilleur en {category}",
+    "tie": "Égalité",
+    "viewDetails": "Voir {name} →",
+    "best": "MEILLEUR",
+    "yes": "Oui",
+    "no": "Non",
+    "ratingsUnit": "{count, plural, one {# avis} other {# avis}}",
+    "servicesUnit": "{count, plural, one {# service} other {# services}}",
+    "summaryTitle": "{a} vs {b} : le verdict",
+    "back": "← Toutes les {type}",
+    "disclaimer": "NeoBase est une plateforme d'information indépendante, sans lien avec les marques comparées. Les chiffres sont indicatifs et évoluent avec le temps.",
+    "category": {
+      "sentiment": "sentiment",
+      "ratings": "notes",
+      "app": "qualité de l'app",
+      "regulation": "régulation",
+      "reviews": "volume d'avis"
+    },
+    "section": {
+      "sentiment": "Sentiment client",
+      "ratings": "Notes des stores",
+      "company": "Entreprise",
+      "mica": "Régulation MiCA"
+    },
+    "metric": {
+      "sentiment": "Sentiment NeoBase",
+      "trustpilot": "Trustpilot",
+      "google_play": "Google Play",
+      "app_store": "App Store",
+      "reviewVolume": "Total des avis",
+      "founded": "Création",
+      "country": "Pays",
+      "headquarters": "Siège",
+      "status": "Statut",
+      "mica": "Licence MiCA",
+      "regulator": "Régulateur",
+      "micaServices": "Services agréés"
+    },
+    "prose": {
+      "intro": "{a} et {b} sont deux {type} suivies par NeoBase. Voici comment elles se comparent sur les signaux que nous mesurons — sentiment client, notes des stores et, pour les plateformes crypto, régulation MiCA.",
+      "sentimentLead": "{winner} mène au score de sentiment composite de NeoBase, {wScore} contre {lScore} sur 100.",
+      "sentimentTie": "Les deux avoisinent {score} sur 100 à l'indice de sentiment composite de NeoBase.",
+      "ratings": "{name} affiche de meilleures notes d'application sur Google Play et l'App Store.",
+      "micaBoth": "Les deux sont agréées sous le régime MiCA de l'UE et figurent au registre de l'ESMA.",
+      "micaOne": "{name} est agréée MiCA ({regulator}), tandis que {other} ne figure pas au registre de l'ESMA.",
+      "micaNone": "Aucune ne figure au registre MiCA de l'ESMA.",
+      "verdict": "Sur {total} métriques suivies, {winner} l'emporte sur {count}.",
+      "verdictTie": "Les deux sont à égalité — chacune mène sur le même nombre de métriques suivies."
+    },
+    "faq": {
+      "q1": "Comment le gagnant est-il déterminé ?",
+      "a1": "Pour chaque métrique, nous retenons la valeur la plus élevée — meilleur sentiment NeoBase, meilleure note de store, plus d'avis et l'agrément MiCA plutôt que son absence. Les données manquantes ne comptent pas.",
+      "q2": "D'où viennent les données ?",
+      "a2": "Les notes et le sentiment sont agrégés depuis Trustpilot, Google Play et l'App Store ; la régulation depuis le registre officiel MiCA de l'ESMA. Les scores sont mis à jour chaque semaine.",
+      "q3": "Puis-je comparer d'autres {type} ?",
+      "a3": "Oui — ouvrez deux profils de {type} du répertoire pour créer une comparaison côte à côte."
+    },
+    "similarHeading": "Comparer {name} à des {type} similaires",
+    "compareCta": "Comparer →"
   }
 }
