@@ -182,6 +182,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
       ((ok("founded") && !!ft.founded) || (ok("headquarters") && !!ft.headquarters) || (ok("employees") && !!ft.employees) ||
         (ok("valuationUsd") && !!ft.valuationUsd) || (ok("status") && !!ft.status) || (ok("ownership") && !!ft.ownership) ||
         (ok("country") && !!ft.country)));
+  const screenshots: string[] = Array.isArray((ft.screenshots as any)?.googlePlay) ? (ft.screenshots as any).googlePlay : [];
 
   return (
     <main className="section" style={{ paddingTop: 12 }}>
@@ -307,6 +308,25 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
             )}
           </aside>
         </div>
+
+        {/* App screenshots — full-width scroll strip (Google Play listing) */}
+        {screenshots.length > 0 && (
+          <section style={{ marginTop: 24 }}>
+            <SecHead icon="app" title={tp("screenshots")} aux="Google Play" />
+            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 6, scrollbarWidth: "thin" }}>
+              {screenshots.map((src, i) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src={src}
+                  alt={tp("screenshotAlt", { name: ft.name, n: i + 1 })}
+                  loading="lazy"
+                  style={{ height: 300, width: "auto", flex: "none", borderRadius: 12, border: "1px solid var(--stone-border)", background: "var(--stone-canvas)" }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Where the brand operates — markets with flags */}
         {availableIn.length > 0 && (

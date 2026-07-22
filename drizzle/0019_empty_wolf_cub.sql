@@ -1,0 +1,1 @@
+ALTER TABLE "fintechs" ADD COLUMN "screenshots" jsonb;

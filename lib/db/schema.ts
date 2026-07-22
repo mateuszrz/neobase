@@ -66,6 +66,9 @@ export const fintechs = pgTable(
     subsidiaries: jsonb("subsidiaries"),
     history: jsonb("history"),
     faqs: jsonb("faqs"),
+    // App-store screenshot URLs, { googlePlay: string[], appStore?: string[] }.
+    // Hotlinked from the store CDN; refreshed by scripts/collect-screenshots.ts.
+    screenshots: jsonb("screenshots"),
     // MiCA/ESMA CASP registry match (nullable; null = not found in the register).
     caspProviderId: bigint("casp_provider_id", { mode: "number" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

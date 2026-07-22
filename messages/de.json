@@ -64,7 +64,9 @@
     "countryLabel": "Land",
     "micaLicence": "MiCA-Lizenz",
     "yes": "Ja",
-    "no": "Nein"
+    "no": "Nein",
+    "screenshots": "App-Screenshots",
+    "screenshotAlt": "{name}-App-Screenshot {n}"
   },
   "blog": {
     "title": "Blog",

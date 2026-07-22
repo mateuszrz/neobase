@@ -134,6 +134,13 @@
       "when": 1784564189186,
       "tag": "0018_charming_azazel",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1784745399456,
+      "tag": "0019_empty_wolf_cub",
+      "breakpoints": true
     }
   ]
 }
