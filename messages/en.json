@@ -12,7 +12,8 @@
     "blog": "Blog",
     "about": "About",
     "testReports": "Test our reports",
-    "getMonitoring": "Get monitoring"
+    "getMonitoring": "Get monitoring",
+    "compare": "Compare"
   },
   "footer": {
     "tagline": "Independent neobank and crypto-exchange intelligence.",
@@ -494,6 +495,14 @@
       "a3": "Yes — open any two {type} profiles from the directory to build a side-by-side comparison."
     },
     "similarHeading": "Compare {name} with similar {type}",
-    "compareCta": "Compare →"
+    "compareCta": "Compare →",
+    "indexTitle": "Compare neobanks & crypto exchanges side by side",
+    "indexDesc": "Head-to-head comparisons of neobanks and crypto exchanges — customer sentiment, app-store ratings and MiCA regulation, side by side.",
+    "indexHeading": "Compare",
+    "indexLead": "Pick any two to see them side by side — sentiment, ratings and regulation, with a clear verdict.",
+    "popularNeobanks": "Popular neobank comparisons",
+    "popularExchanges": "Popular exchange comparisons",
+    "browseNeobanks": "Browse all neobanks →",
+    "browseExchanges": "Browse all exchanges →"
   }
 }

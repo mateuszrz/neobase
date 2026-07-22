@@ -12,7 +12,8 @@
     "blog": "Blog",
     "about": "Quiénes somos",
     "testReports": "Prueba nuestros informes",
-    "getMonitoring": "Contratar monitorización"
+    "getMonitoring": "Contratar monitorización",
+    "compare": "Comparar"
   },
   "footer": {
     "tagline": "Análisis independiente de neobancos y exchanges de criptomonedas.",
@@ -494,6 +495,14 @@
       "a3": "Sí — abre dos perfiles de {type} del directorio para crear una comparación en paralelo."
     },
     "similarHeading": "Compara {name} con {type} similares",
-    "compareCta": "Comparar →"
+    "compareCta": "Comparar →",
+    "indexTitle": "Compara neobancos y exchanges de cripto en paralelo",
+    "indexDesc": "Comparaciones directas de neobancos y exchanges de cripto — sentimiento de clientes, valoraciones en tiendas y regulación MiCA, en paralelo.",
+    "indexHeading": "Comparar",
+    "indexLead": "Elige dos para verlos en paralelo — sentimiento, valoraciones y regulación, con un veredicto claro.",
+    "popularNeobanks": "Comparaciones populares de neobancos",
+    "popularExchanges": "Comparaciones populares de exchanges",
+    "browseNeobanks": "Ver todos los neobancos →",
+    "browseExchanges": "Ver todos los exchanges →"
   }
 }

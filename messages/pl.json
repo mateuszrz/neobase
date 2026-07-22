@@ -12,7 +12,8 @@
     "blog": "Blog",
     "about": "O nas",
     "testReports": "Zobacz nasze raporty",
-    "getMonitoring": "Zamów monitoring"
+    "getMonitoring": "Zamów monitoring",
+    "compare": "Porównaj"
   },
   "footer": {
     "tagline": "Niezależne analizy neobanków i giełd kryptowalut.",
@@ -494,6 +495,14 @@
       "a3": "Tak — otwórz dowolne dwa profile ({type}) z katalogu, aby zbudować porównanie obok siebie."
     },
     "similarHeading": "Porównaj {name} z podobnymi {type}",
-    "compareCta": "Porównaj →"
+    "compareCta": "Porównaj →",
+    "indexTitle": "Porównaj neobanki i giełdy kryptowalut obok siebie",
+    "indexDesc": "Bezpośrednie porównania neobanków i giełd kryptowalut — sentyment klientów, oceny w sklepach i regulacja MiCA, obok siebie.",
+    "indexHeading": "Porównania",
+    "indexLead": "Wybierz dowolne dwa, aby zobaczyć je obok siebie — sentyment, oceny i regulacja, z jasnym werdyktem.",
+    "popularNeobanks": "Popularne porównania neobanków",
+    "popularExchanges": "Popularne porównania giełd",
+    "browseNeobanks": "Wszystkie neobanki →",
+    "browseExchanges": "Wszystkie giełdy →"
   }
 }

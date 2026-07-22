@@ -42,7 +42,7 @@ function entries(paths: string[], priority: number, changeFrequency: "daily" | "
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static routes, including the ones this file used to omit: /best/,
   // /exchanges/mica/ and the blog.
-  const staticPaths = ["/", "/neobanks/", "/exchanges/", "/exchanges/mica/", "/best/", "/blog/", "/about/", "/monitoring/"];
+  const staticPaths = ["/", "/neobanks/", "/exchanges/", "/exchanges/mica/", "/best/", "/compare/", "/blog/", "/about/", "/monitoring/"];
   const staticRoutes = entries(staticPaths, 0.7, "weekly");
   const rankings = entries(TAGS.map((t) => `/best/${t.slug}/`), 0.6, "weekly");
 

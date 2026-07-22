@@ -12,7 +12,8 @@
     "blog": "Blog",
     "about": "À propos",
     "testReports": "Tester nos rapports",
-    "getMonitoring": "Obtenir le monitoring"
+    "getMonitoring": "Obtenir le monitoring",
+    "compare": "Comparer"
   },
   "footer": {
     "tagline": "Analyses indépendantes des néobanques et des plateformes crypto.",
@@ -494,6 +495,14 @@
       "a3": "Oui — ouvrez deux profils de {type} du répertoire pour créer une comparaison côte à côte."
     },
     "similarHeading": "Comparer {name} à des {type} similaires",
-    "compareCta": "Comparer →"
+    "compareCta": "Comparer →",
+    "indexTitle": "Comparez néobanques et plateformes crypto côte à côte",
+    "indexDesc": "Comparatifs directs de néobanques et de plateformes crypto — sentiment client, notes des stores et régulation MiCA, côte à côte.",
+    "indexHeading": "Comparer",
+    "indexLead": "Choisissez-en deux pour les voir côte à côte — sentiment, notes et régulation, avec un verdict clair.",
+    "popularNeobanks": "Comparatifs de néobanques populaires",
+    "popularExchanges": "Comparatifs de plateformes populaires",
+    "browseNeobanks": "Toutes les néobanques →",
+    "browseExchanges": "Toutes les plateformes →"
   }
 }
