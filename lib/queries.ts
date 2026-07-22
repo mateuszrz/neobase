@@ -54,7 +54,7 @@ async function listWithLatest(
   const rows = await db.execute(sql`
     SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
            f.fact_confidence AS "factConfidence",
-           m.rating, m.review_count AS "reviewCount", si.composite AS sentiment
+           m.rating, tot.total AS "reviewCount", si.composite AS sentiment
     FROM fintechs f
     LEFT JOIN LATERAL (
       SELECT rating, review_count
@@ -63,6 +63,19 @@ async function listWithLatest(
       ORDER BY snapshot_date DESC
       LIMIT 1
     ) m ON true
+    -- Total review count = sum of the latest LIVE count per platform, matching
+    -- the profile's total and the sentiment volume. Trustpilot alone (what this
+    -- used to show) undercounts; the seeded history (raw NULL) overcounts.
+    LEFT JOIN LATERAL (
+      SELECT coalesce(sum(cnt), 0)::bigint AS total FROM (
+        SELECT DISTINCT ON (kind) review_count AS cnt
+        FROM metric_snapshots ms3
+        WHERE ms3.fintech_id = f.id AND ms3.country = 'ZZ'
+          AND ms3.kind IN ('trustpilot','google_play','app_store')
+          AND ms3.review_count IS NOT NULL AND ms3.raw IS NOT NULL
+        ORDER BY kind, snapshot_date DESC
+      ) x
+    ) tot ON true
     LEFT JOIN LATERAL (
       SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1
     ) si ON true
@@ -99,7 +112,8 @@ export async function getPlatformStats() {
       (SELECT coalesce(sum(cnt), 0)::bigint FROM (
         SELECT DISTINCT ON (fintech_id, kind) review_count AS cnt
         FROM metric_snapshots
-        WHERE country = 'ZZ' AND kind IN ('trustpilot','google_play','app_store') AND review_count IS NOT NULL
+        WHERE country = 'ZZ' AND kind IN ('trustpilot','google_play','app_store')
+          AND review_count IS NOT NULL AND raw IS NOT NULL
         ORDER BY fintech_id, kind, snapshot_date DESC
       ) t) AS ratings,
       (SELECT count(DISTINCT country) FROM metric_snapshots WHERE country <> 'ZZ')::int AS countries

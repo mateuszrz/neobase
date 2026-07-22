@@ -91,13 +91,18 @@ const iso = (d: Date) => d.toISOString().slice(0, 10);
 export async function computeComponents(fintechId: string, asOf: Date): Promise<SentimentComponents | null> {
   const asOfDate = iso(asOf);
 
-  // Review side: latest snapshot per platform on/before asOf, volume-weighted.
+  // Review side: latest LIVE snapshot per platform on/before asOf, volume-weighted.
+  // `raw IS NOT NULL` restricts this to pipeline-produced snapshots — the seeded
+  // monthly history (raw NULL) carries wildly inflated counts (a mis-seeded
+  // app_store row put zen at ~900k), and picking one up when a platform has no
+  // recent live snapshot yet is exactly what made the composite's review volume
+  // disagree with the profile's total (which already filters to live data).
   const rev = await db.execute(sql`
     SELECT DISTINCT ON (kind) kind, sentiment_pos AS pos, review_count AS cnt
     FROM metric_snapshots
     WHERE fintech_id = ${fintechId} AND country = 'ZZ'
       AND kind IN ('trustpilot','google_play','app_store')
-      AND sentiment_pos IS NOT NULL AND snapshot_date <= ${asOfDate}
+      AND sentiment_pos IS NOT NULL AND raw IS NOT NULL AND snapshot_date <= ${asOfDate}
     ORDER BY kind, snapshot_date DESC
   `);
   let rWeighted = 0;
