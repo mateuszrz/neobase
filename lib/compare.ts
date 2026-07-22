@@ -100,6 +100,28 @@ export async function featuredPairs(topN = 6): Promise<{ pair: string; type: Kin
   return [...combos(nb.map((f) => f.id), "neobank"), ...combos(ex.map((f) => f.id), "exchange")];
 }
 
+export interface FeaturedComparison {
+  pair: string;
+  a: Pick<FintechListItem, "id" | "name" | "logoSvg" | "website">;
+  b: Pick<FintechListItem, "id" | "name" | "logoSvg" | "website">;
+}
+
+/** Featured pairs with each side's name + logo, for the /compare/ index page. */
+export async function featuredComparisons(topN = 6): Promise<{ neobank: FeaturedComparison[]; exchange: FeaturedComparison[] }> {
+  const [nb, ex] = await Promise.all([getTopNeobanks(topN), getTopExchanges(topN)]);
+  const combos = (list: FintechListItem[]): FeaturedComparison[] => {
+    const out: FeaturedComparison[] = [];
+    for (let i = 0; i < list.length; i++)
+      for (let j = i + 1; j < list.length; j++) {
+        const [a, b] = list[i].id < list[j].id ? [list[i], list[j]] : [list[j], list[i]];
+        const pick = (f: FintechListItem) => ({ id: f.id, name: f.name, logoSvg: f.logoSvg, website: f.website });
+        out.push({ pair: pairSlug(a.id, b.id), a: pick(a), b: pick(b) });
+      }
+    return out;
+  };
+  return { neobank: combos(nb), exchange: combos(ex) };
+}
+
 function num(v: unknown): number | null {
   if (v == null) return null;
   const n = Number(v);

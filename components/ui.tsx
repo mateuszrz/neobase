@@ -22,6 +22,7 @@ export async function Nav() {
         <Link className="nav-link nav-hide-sm" href="/neobanks/">{t("neobanks")}</Link>
         <Link className="nav-link nav-hide-sm" href="/exchanges/">{t("exchanges")}</Link>
         <Link className="nav-link nav-hide-sm" href="/best/">{t("rankings")}</Link>
+        <Link className="nav-link nav-hide-sm" href="/compare/">{t("compare")}</Link>
         <Link className="nav-link nav-hide-sm" href="/blog/">{t("blog")}</Link>
         <Link className="nav-link nav-hide-sm" href="/about/">{t("about")}</Link>
         <Link className="btn btn-ghost nav-hide-sm" href="/test/">{t("testReports")}</Link>

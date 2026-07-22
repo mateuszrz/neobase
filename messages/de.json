@@ -12,7 +12,8 @@
     "blog": "Blog",
     "about": "Über uns",
     "testReports": "Reports testen",
-    "getMonitoring": "Monitoring buchen"
+    "getMonitoring": "Monitoring buchen",
+    "compare": "Vergleichen"
   },
   "footer": {
     "tagline": "Unabhängige Analysen zu Neobanken und Krypto-Börsen.",
@@ -494,6 +495,14 @@
       "a3": "Ja — öffne zwei beliebige {type}-Profile aus dem Verzeichnis, um einen Direktvergleich zu erstellen."
     },
     "similarHeading": "{name} mit ähnlichen {type} vergleichen",
-    "compareCta": "Vergleichen →"
+    "compareCta": "Vergleichen →",
+    "indexTitle": "Neobanken & Krypto-Börsen direkt vergleichen",
+    "indexDesc": "Direktvergleiche von Neobanken und Krypto-Börsen — Kundensentiment, App-Store-Bewertungen und MiCA-Regulierung, nebeneinander.",
+    "indexHeading": "Vergleiche",
+    "indexLead": "Wähle zwei aus, um sie nebeneinander zu sehen — Sentiment, Bewertungen und Regulierung, mit klarem Fazit.",
+    "popularNeobanks": "Beliebte Neobank-Vergleiche",
+    "popularExchanges": "Beliebte Börsen-Vergleiche",
+    "browseNeobanks": "Alle Neobanken →",
+    "browseExchanges": "Alle Börsen →"
   }
 }
