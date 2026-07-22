@@ -47,7 +47,13 @@ export async function runKickoff(cadence: Cadence, day = todayUtc()): Promise<Ki
 
   const summary: KickoffSummary = { cadence, reviews: 0, crawls: 0, social: 0, skipped: 0 };
 
-  for (const s of active) {
+  // Kick each source off. This used to be a sequential `for await` loop, which
+  // for the ~600-source public fleet spent ~600 Apify `.start()` round-trips
+  // back to back and blew past the 60s function limit — the tail of the fleet
+  // simply never got kicked off and its snapshots went stale. Fire them in
+  // bounded-concurrency waves so the whole fleet starts well within budget.
+  type Bucket = "reviews" | "crawls" | "social" | "skipped";
+  async function dispatch(s: (typeof active)[number]): Promise<Bucket> {
     if (SCRAPABLE_KINDS.includes(s.kind)) {
       // Project sources carry a real market in source.country → scrape that
       // storefront; public sources are global (ZZ) → use the fintech's home store.
@@ -56,22 +62,31 @@ export async function runKickoff(cadence: Cadence, day = todayUtc()): Promise<Ki
         { id: s.id, fintechId: s.fintechId, kind: s.kind, externalRef: s.externalRef, storeCountry },
         day,
       );
-      r === "enqueued" ? summary.reviews++ : summary.skipped++;
-    } else if ((CRAWL_KINDS as string[]).includes(s.kind)) {
+      return r === "enqueued" ? "reviews" : "skipped";
+    }
+    if ((CRAWL_KINDS as string[]).includes(s.kind)) {
       const r = await enqueueCrawlSource(
         { id: s.id, fintechId: s.fintechId, kind: s.kind, externalRef: s.externalRef, country: s.country },
         day,
       );
-      r === "enqueued" ? summary.crawls++ : summary.skipped++;
-    } else if (isSocialKind(s.kind)) {
+      return r === "enqueued" ? "crawls" : "skipped";
+    }
+    if (isSocialKind(s.kind)) {
       const r = await startSocialSource(
         { id: s.id, fintechId: s.fintechId, kind: s.kind, externalRef: s.externalRef },
         day,
       );
-      r === "enqueued" ? summary.social++ : summary.skipped++;
-    } else {
-      summary.skipped++;
+      return r === "enqueued" ? "social" : "skipped";
     }
+    return "skipped";
+  }
+
+  const CONCURRENCY = 12;
+  for (let i = 0; i < active.length; i += CONCURRENCY) {
+    const buckets = await Promise.all(
+      active.slice(i, i + CONCURRENCY).map((s) => dispatch(s).catch((): Bucket => "skipped")),
+    );
+    for (const b of buckets) summary[b]++;
   }
 
   return summary;
