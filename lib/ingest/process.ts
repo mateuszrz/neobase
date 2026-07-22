@@ -8,12 +8,17 @@
 import { and, desc, eq, lt } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { isApifyLive } from "@/lib/env";
-import { listDatasetPage } from "@/lib/apify";
+import {
+  listDatasetPage,
+  fetchAppStoreRatings,
+  appStoreStorefront,
+  APP_STORE_FALLBACK_STORES,
+} from "@/lib/apify";
 import { mockTrustpilotDay } from "./trustpilot";
 import { HANDLERS } from "./handlers";
 import { sentimentShare, type DaySummary, type NormalizedReview, type SourceAggregate } from "./types";
 
-const { fintechs, reviews, metricSnapshots } = schema;
+const { fintechs, sources, reviews, metricSnapshots } = schema;
 const PAGE_SIZE = 1000;
 
 export interface ProcessPayload {
@@ -125,6 +130,30 @@ export async function processDatasetJob(p: ProcessPayload): Promise<ProcessResul
     if (items.length === PAGE_SIZE) {
       done = false;
       nextOffset = offset + PAGE_SIZE;
+    }
+
+    // App Store home-store 0-ratings fallback: the run above queried the home
+    // storefront, which for small-jurisdiction brands lists the app with no
+    // ratings while it's rated in the US/GB store. Retry those (the id is
+    // storefront-independent) and adopt the first with ratings. Stateless — a
+    // handful of empty-home sources pay one extra cheap call per run.
+    if (offset === 0 && p.kind === "app_store" && !(summary.reviewCount != null && summary.reviewCount > 0)) {
+      const [src] = await db
+        .select({ ref: sources.externalRef, country: sources.country })
+        .from(sources)
+        .where(eq(sources.id, p.sourceId))
+        .limit(1);
+      if (src?.ref) {
+        const tried = appStoreStorefront(src.country !== "ZZ" ? src.country : ft?.country ?? "us");
+        for (const cc of APP_STORE_FALLBACK_STORES) {
+          if (cc === tried) continue;
+          const fb = handler.summarize(await fetchAppStoreRatings(src.ref, cc), []);
+          if (fb.reviewCount != null && fb.reviewCount > 0) {
+            summary = fb;
+            break;
+          }
+        }
+      }
     }
   }
 
