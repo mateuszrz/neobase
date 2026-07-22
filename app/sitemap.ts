@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { listNeobanks, listExchanges } from "@/lib/queries";
+import { featuredPairs } from "@/lib/compare";
 import { allPublishedArticleParams } from "@/lib/blog/articles";
 import { INDEXABLE_LOCALES } from "@/i18n/routing";
 import { localePath } from "@/lib/i18n/alternates";
@@ -46,12 +47,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const rankings = entries(TAGS.map((t) => `/best/${t.slug}/`), 0.6, "weekly");
 
   try {
-    const [neobanks, exchanges, articles] = await Promise.all([listNeobanks(), listExchanges(), allPublishedArticleParams()]);
+    const [neobanks, exchanges, articles, pairs] = await Promise.all([listNeobanks(), listExchanges(), allPublishedArticleParams(), featuredPairs()]);
     const profiles = entries(
       [...neobanks.map((f) => `/fintech/${f.id}/`), ...exchanges.map((f) => `/exchange/${f.id}/`)],
       0.6,
       "daily",
     );
+    // Curated head of "X vs Y" comparison pages; the long tail is indexable too
+    // (rendered on-demand) but kept out of the sitemap to bound its size.
+    const comparisons = entries(pairs.map((p) => `/compare/${p.pair}/`), 0.5, "weekly");
     // Articles are per-locale by nature — a Polish post has no English twin —
     // so they're listed individually rather than through entries().
     const b = base();
@@ -63,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "weekly" as const,
         priority: 0.6,
       }));
-    return [...staticRoutes, ...rankings, ...profiles, ...posts];
+    return [...staticRoutes, ...rankings, ...profiles, ...comparisons, ...posts];
   } catch {
     // DB unreachable — still serve the static routes rather than 500.
     return [...staticRoutes, ...rankings];

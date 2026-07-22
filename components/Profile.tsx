@@ -8,6 +8,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { normalizeTags } from "@/lib/tags";
 import { HIDE_COMPANY_FACTS, SUCCESSOR_LICENCE } from "@/lib/trust";
 import { getSentimentIndex } from "@/lib/sentiment";
+import { comparePeers, pairSlug } from "@/lib/compare";
 import { SentimentIndexCard } from "@/components/SentimentIndex";
 import {
   getFintech,
@@ -89,6 +90,9 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   ]);
   const mica = ft.type === "exchange" ? await getMicaStatus(slug) : null;
   const sentiment = await getSentimentIndex(slug);
+  const kindType = ft.type === "exchange" ? "exchange" : "neobank";
+  const peers = await comparePeers(slug, kindType);
+  const tc = await getTranslations("compare");
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
     trustpilot: "Trustpilot",
@@ -361,6 +365,33 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
         {/* FAQ — accordion + FAQPage structured data (MiCA Q&A for exchanges) */}
         <FaqSection items={allFaqs} />
+
+        {/* Compare with similar — head-to-head suggestions (SEO comparison pages) */}
+        {peers.length > 0 && (
+          <div style={{ marginTop: 40 }}>
+            <h2 className="subheading" style={{ marginBottom: 14 }}>
+              {tc("similarHeading", { name: ft.name, type: kindType === "exchange" ? tc("typeExchange") : tc("typeNeobank") })}
+            </h2>
+            <div className="grid grid-4">
+              {peers.map((peer) => (
+                <Link
+                  key={peer.id}
+                  href={`/compare/${pairSlug(slug, peer.id)}/`}
+                  className="card card-tight"
+                  style={{ textDecoration: "none", color: "inherit", display: "block" }}
+                >
+                  <div className="row" style={{ gap: 8, marginBottom: 10 }}>
+                    <BrandLogo src={ft.logoSvg} website={ft.website} name={ft.name} size={26} />
+                    <span className="muted" style={{ fontSize: 12 }}>{tc("vs")}</span>
+                    <BrandLogo src={peer.logoSvg} website={peer.website} name={peer.name} size={26} />
+                  </div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{ft.name} {tc("vs")} {peer.name}</div>
+                  <div style={{ color: "var(--cyan-edge)", fontSize: 13, marginTop: 4 }}>{tc("compareCta")}</div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <p className="muted" style={{ marginTop: 40, fontSize: 12 }}>
           Ratings &amp; sentiment aggregated from Trustpilot, Google Play and App Store — anonymised store
