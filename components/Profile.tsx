@@ -22,7 +22,6 @@ import {
   getMentions,
   getMicaStatus,
   getAiSummary,
-  getAppLinks,
 } from "@/lib/queries";
 import {
   SeriesChart,
@@ -127,7 +126,6 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
   const kindType = ft.type === "exchange" ? "exchange" : "neobank";
   const peers = await comparePeers(slug, kindType);
   const tc = await getTranslations("compare");
-  const appLinks = await getAppLinks(slug);
 
   const DIST_SOURCE_LABEL: Record<string, string> = {
     trustpilot: "Trustpilot",
@@ -175,9 +173,6 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
 
   // ── Redesign helpers ───────────────────────────────────────────────────────
   const scoreColor = (v: number) => (v >= 80 ? "#16a34a" : v >= 60 ? "var(--cyan-edge)" : v >= 40 ? "#b45309" : "var(--neg)");
-  const gpPlat = platforms.find((p) => p.kind === "google_play");
-  const asPlat = platforms.find((p) => p.kind === "app_store");
-  const hasApp = !!(appLinks.googlePlay || appLinks.appStore);
   const compositeScore = sentiment ? Math.round(sentiment.latest.composite) : null;
   // Company facts show only when the audit cleared them AND the brand isn't suppressed.
   const showFacts = !HIDE_COMPANY_FACTS.has(ft.id);
@@ -277,33 +272,6 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
                   ) : undefined}
                 />
                 <PlatformRatings items={platforms} />
-              </div>
-            )}
-
-            {hasApp && (
-              <div className="card">
-                <SecHead icon="app" title={tp("getApp", { name: ft.name })} />
-                <div className="appstores">
-                  {appLinks.googlePlay && (
-                    <a className="storecard" href={`https://play.google.com/store/apps/details?id=${appLinks.googlePlay}`} target="_blank" rel="noopener noreferrer" style={{ display: "block", color: "inherit" }}>
-                      <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>Google Play</div>
-                      {gpPlat?.rating != null && <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600 }}>{gpPlat.rating.toFixed(1)} <span style={{ fontSize: 12, color: "#34a853" }}>★</span></div>}
-                      <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
-                        {gpPlat?.count != null ? `${fmt(gpPlat.count)} ${tp("ratingsWord")}` : ""}
-                        {gpPlat?.installs ? ` · ${gpPlat.installs} ${tp("installs")}` : ""}
-                      </div>
-                      <span className="dl-btn">▶ Google Play</span>
-                    </a>
-                  )}
-                  {appLinks.appStore && (
-                    <a className="storecard" href={`https://apps.apple.com/app/id${appLinks.appStore}`} target="_blank" rel="noopener noreferrer" style={{ display: "block", color: "inherit" }}>
-                      <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>App Store</div>
-                      {asPlat?.rating != null && <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600 }}>{asPlat.rating.toFixed(1)} <span style={{ fontSize: 12, color: "var(--cyan-signal)" }}>★</span></div>}
-                      <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{asPlat?.count != null ? `${fmt(asPlat.count)} ${tp("ratingsWord")}` : ""}</div>
-                      <span className="dl-btn"> App Store</span>
-                    </a>
-                  )}
-                </div>
               </div>
             )}
           </div>
