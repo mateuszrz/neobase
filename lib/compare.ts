@@ -218,9 +218,10 @@ export async function getComparison(aId: string, bId: string, locale?: string): 
   // Company facts (both must clear the trust gate + brand not hidden).
   const showCompany = a.showCompanyFacts && b.showCompanyFacts;
   if (showCompany) {
-    // Older = more established → older wins.
-    const foundedWin: Winner = a.founded && b.founded ? (a.founded === b.founded ? "tie" : a.founded < b.founded ? "a" : "b") : a.founded ? "a" : b.founded ? "b" : null;
-    metrics.push({ key: "founded", section: "company", a: a.founded, b: b.founded, win: foundedWin, kind: "year" });
+    // Founding year is INFORMATIONAL ONLY — shown for both sides but never
+    // scored: an older company is not "better", so it gets no winner/BEST badge
+    // (win stays null), same as country/headquarters/status.
+    metrics.push({ key: "founded", section: "company", a: a.founded, b: b.founded, win: null, kind: "year" });
     metrics.push({ key: "country", section: "company", a: a.country, b: b.country, win: null, kind: "text" });
     metrics.push({ key: "headquarters", section: "company", a: a.headquarters, b: b.headquarters, win: null, kind: "text" });
     metrics.push({ key: "status", section: "company", a: a.status, b: b.status, win: null, kind: "text" });
