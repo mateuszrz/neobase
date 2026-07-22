@@ -8,6 +8,22 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
+ * GET /api/revalidate?path=/fintech/zen/&token=SECRET — purge the ISR cache for
+ * one arbitrary path (a profile, directory or ranking page). Same fail-closed
+ * cron-secret guard as the POST handler; cache-purge only, no content access.
+ * Pass the path once per locale variant (e.g. /fintech/zen/ and /pl/fintech/zen/).
+ */
+export async function GET(req: Request) {
+  if (!env.CRON_SECRET) return NextResponse.json({ error: "revalidation is not configured" }, { status: 503 });
+  if (!isAuthorizedCron(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const path = new URL(req.url).searchParams.get("path");
+  if (!path || !path.startsWith("/")) return NextResponse.json({ error: "expected a ?path= starting with /" }, { status: 400 });
+  const { revalidatePath } = await import("next/cache");
+  revalidatePath(path);
+  return NextResponse.json({ ok: true, revalidated: path });
+}
+
+/**
  * Purge the ISR cache for published articles.
  *
  * `revalidatePath` only works inside a Next request scope, so a standalone
