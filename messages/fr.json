@@ -53,7 +53,18 @@
     "metaTitleExchange": "{name} : avis 2026 — notes de la plateforme crypto",
     "metaDescExchange": "{name} — TrustScore, frais, avis et ressenti des utilisateurs.",
     "metaTitleNeobank": "{name} : avis 2026 — notes et avis",
-    "metaDescNeobank": "{name} — TrustScore, avis et ressenti des utilisateurs."
+    "metaDescNeobank": "{name} — TrustScore, avis et ressenti des utilisateurs.",
+    "atGlance": "En bref",
+    "getApp": "Télécharger l’app {name}",
+    "installs": "installations",
+    "ratingsWord": "avis",
+    "avgRating": "Note moyenne",
+    "sentimentLabel": "Sentiment",
+    "totalRatings": "Total des avis",
+    "countryLabel": "Pays",
+    "micaLicence": "Licence MiCA",
+    "yes": "Oui",
+    "no": "Non"
   },
   "blog": {
     "title": "Blog",

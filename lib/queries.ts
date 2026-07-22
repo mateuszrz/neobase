@@ -2,7 +2,7 @@
  * Server-side data access for the public directory. Read-only, used by RSC pages.
  */
 
-import { and, asc, desc, eq, isNotNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 
 import { sampleSocialPosts, type SocialPostView } from "@/lib/social/sample";
@@ -275,6 +275,23 @@ export async function getPlatformRatings(fintechId: string): Promise<PlatformRat
       installs: r.installs ?? null,
     }))
     .sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind));
+}
+
+export interface AppLinks {
+  googlePlay: string | null; // Google Play package id
+  appStore: string | null; // App Store numeric id
+}
+
+/** Store ids for the app-download links, from the active mobile sources. */
+export async function getAppLinks(fintechId: string): Promise<AppLinks> {
+  const rows = await db
+    .select({ kind: schema.sources.kind, ref: schema.sources.externalRef })
+    .from(schema.sources)
+    .where(and(eq(schema.sources.fintechId, fintechId), eq(schema.sources.active, true), inArray(schema.sources.kind, ["google_play", "app_store"])));
+  return {
+    googlePlay: rows.find((r) => r.kind === "google_play")?.ref ?? null,
+    appStore: rows.find((r) => r.kind === "app_store")?.ref ?? null,
+  };
 }
 
 export interface RatingDist {

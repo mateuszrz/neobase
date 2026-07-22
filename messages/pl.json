@@ -53,7 +53,18 @@
     "metaTitleExchange": "{name} — recenzja 2026, oceny giełdy kryptowalut",
     "metaDescExchange": "{name} — TrustScore, opłaty, opinie i nastroje użytkowników.",
     "metaTitleNeobank": "{name} — recenzja 2026, oceny i opinie",
-    "metaDescNeobank": "{name} — TrustScore, opinie i nastroje użytkowników."
+    "metaDescNeobank": "{name} — TrustScore, opinie i nastroje użytkowników.",
+    "atGlance": "W skrócie",
+    "getApp": "Pobierz aplikację {name}",
+    "installs": "instalacji",
+    "ratingsWord": "ocen",
+    "avgRating": "Ocena średnia",
+    "sentimentLabel": "Sentyment",
+    "totalRatings": "Łącznie ocen",
+    "countryLabel": "Kraj",
+    "micaLicence": "Licencja MiCA",
+    "yes": "Tak",
+    "no": "Nie"
   },
   "blog": {
     "title": "Blog",

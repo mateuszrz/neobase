@@ -53,7 +53,18 @@
     "metaTitleExchange": "{name}: análisis 2026 — valoraciones del exchange",
     "metaDescExchange": "{name} — TrustScore, comisiones, reseñas y opinión de los usuarios.",
     "metaTitleNeobank": "{name}: análisis 2026 — valoraciones y reseñas",
-    "metaDescNeobank": "{name} — TrustScore, reseñas y opinión de los usuarios."
+    "metaDescNeobank": "{name} — TrustScore, reseñas y opinión de los usuarios.",
+    "atGlance": "De un vistazo",
+    "getApp": "Descargar la app de {name}",
+    "installs": "instalaciones",
+    "ratingsWord": "valoraciones",
+    "avgRating": "Valoración media",
+    "sentimentLabel": "Sentimiento",
+    "totalRatings": "Valoraciones totales",
+    "countryLabel": "País",
+    "micaLicence": "Licencia MiCA",
+    "yes": "Sí",
+    "no": "No"
   },
   "blog": {
     "title": "Blog",
