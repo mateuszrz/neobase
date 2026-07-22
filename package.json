@@ -46,7 +46,8 @@
     "sentiment:backfill": "tsx scripts/sentiment-backfill.ts",
     "report:test": "tsx scripts/report-test.ts",
     "project:demo": "tsx scripts/project-demo.ts",
-    "sub:grant": "tsx scripts/grant-sub.ts"
+    "sub:grant": "tsx scripts/grant-sub.ts",
+    "apify:screenshots": "tsx scripts/collect-screenshots.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
