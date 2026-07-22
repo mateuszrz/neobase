@@ -188,7 +188,13 @@
     "optionCount": "{count, plural, one {# Eintrag} other {# Einträge}}",
     "reviewCount": "{count, plural, one {# Rezension} other {# Rezensionen}}",
     "pageTitle": "{title} (2026) — Ranking nach Stimmungsbild",
-    "pageDesc": "{blurb} Sortiert nach dem eigenen Kundenstimmungs-Score von NeoBase aus Trustpilot, Google Play, App Store, Medien und Social Media."
+    "pageDesc": "{blurb} Sortiert nach dem eigenen Kundenstimmungs-Score von NeoBase aus Trustpilot, Google Play, App Store, Medien und Social Media.",
+    "scoreName": "NeoBase-Score",
+    "scoreExplain": "Ein Wert von 0–100 aus Kundenbewertungen & -volumen sowie Nachrichten- und Social-Media-Stimmung — wöchentlich aktualisiert. Höher = zufriedenere Kunden.",
+    "tierExcellent": "Ausgezeichnet",
+    "tierGood": "Gut",
+    "tierMixed": "Gemischt",
+    "tierWeak": "Schwach"
   },
   "tags": {
     "multi-currency-accounts": {
