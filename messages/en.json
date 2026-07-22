@@ -188,7 +188,13 @@
     "optionCount": "{count, plural, one {# option} other {# options}}",
     "reviewCount": "{count, plural, one {# review} other {# reviews}}",
     "pageTitle": "{title} (2026) — Ranked by Sentiment",
-    "pageDesc": "{blurb} Ranked by NeoBase's own customer-sentiment score across Trustpilot, Google Play, App Store, news and social."
+    "pageDesc": "{blurb} Ranked by NeoBase's own customer-sentiment score across Trustpilot, Google Play, App Store, news and social.",
+    "scoreName": "NeoBase Score",
+    "scoreExplain": "A 0–100 score built from customer review ratings & volume, news and social sentiment — updated weekly. Higher means happier customers.",
+    "tierExcellent": "Excellent",
+    "tierGood": "Good",
+    "tierMixed": "Mixed",
+    "tierWeak": "Weak"
   },
   "tags": {
     "multi-currency-accounts": {

@@ -188,7 +188,13 @@
     "optionCount": "{count, plural, one {# opción} other {# opciones}}",
     "reviewCount": "{count, plural, one {# opinión} other {# opiniones}}",
     "pageTitle": "{title} (2026) — ranking por sentimiento",
-    "pageDesc": "{blurb} Ordenados según el índice propio de sentimiento del cliente de NeoBase, calculado a partir de Trustpilot, Google Play, App Store, medios y redes sociales."
+    "pageDesc": "{blurb} Ordenados según el índice propio de sentimiento del cliente de NeoBase, calculado a partir de Trustpilot, Google Play, App Store, medios y redes sociales.",
+    "scoreName": "Puntuación NeoBase",
+    "scoreExplain": "Una puntuación de 0–100 basada en valoraciones y volumen de reseñas, noticias y sentimiento social — actualizada cada semana. Más alta = clientes más satisfechos.",
+    "tierExcellent": "Excelente",
+    "tierGood": "Bueno",
+    "tierMixed": "Mixto",
+    "tierWeak": "Débil"
   },
   "tags": {
     "multi-currency-accounts": {

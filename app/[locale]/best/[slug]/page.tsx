@@ -67,9 +67,29 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
         </p>
         <p className="eyebrow" style={{ marginBottom: 10 }}>{tag.group === "exchange" ? t("exchanges") : t("neobanks")} · {t("eyebrow")}</p>
         <h1 className="h-sm">{tt(`${tag.slug}.title`)}</h1>
-        <p className="lead" style={{ marginTop: 10, marginBottom: 24, maxWidth: 760 }}>
+        <p className="lead" style={{ marginTop: 10, marginBottom: 18, maxWidth: 760 }}>
           {tt(`${tag.slug}.blurb`)} {t("optionCount", { count: rows.length })}
         </p>
+
+        {rows.length > 0 && (
+          <div className="card" style={{ padding: "15px 18px", marginBottom: 18, maxWidth: 880 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16, alignItems: "center" }}>
+              <div style={{ maxWidth: 470 }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 15, marginBottom: 3 }}>{t("scoreName")}</div>
+                <p className="muted" style={{ fontSize: 12.5, lineHeight: 1.5 }}>{t("scoreExplain")}</p>
+              </div>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                {([["#16a34a", t("tierExcellent"), "80+"], ["var(--cyan-edge)", t("tierGood"), "60–79"], ["#b45309", t("tierMixed"), "40–59"], ["var(--neg)", t("tierWeak"), "<40"]] as const).map(([c, label, range]) => (
+                  <div key={range} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+                    <span style={{ width: 11, height: 11, borderRadius: 3, background: c, flex: "none" }} />
+                    <span style={{ fontWeight: 600 }}>{label}</span>
+                    <span className="muted" style={{ fontVariantNumeric: "tabular-nums" }}>{range}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {rows.length === 0 ? (
           <p className="muted">{t("noOptions")} <Link href={backHref} style={{ color: "var(--cyan-edge)" }}>{t("browseAll")}</Link></p>
@@ -82,7 +102,7 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
                   key={r.id}
                   href={`/${kind}/${r.id}/`}
                   className="card"
-                  style={{ display: "grid", gridTemplateColumns: "34px 44px minmax(0,1fr) 76px", alignItems: "center", gap: 14, padding: "13px 18px", textDecoration: "none", color: "inherit" }}
+                  style={{ display: "grid", gridTemplateColumns: "34px 44px minmax(0,1fr) auto", alignItems: "center", gap: 14, padding: "13px 18px", textDecoration: "none", color: "inherit" }}
                 >
                   <span
                     style={{
@@ -107,18 +127,18 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
                       {r.rating == null && r.reviewCount == null && <span>—</span>}
                     </div>
                     {r.sentiment != null && (
-                      <div className="meter" style={{ marginTop: 8, height: 6 }}>
-                        <span style={{ width: `${Math.max(2, Math.min(100, r.sentiment))}%`, background: scoreColor(r.sentiment) }} />
+                      <div className="meter" style={{ marginTop: 9, height: 10 }}>
+                        <span style={{ width: `${Math.max(3, Math.min(100, r.sentiment))}%`, background: scoreColor(r.sentiment), boxShadow: `0 0 8px -2px ${scoreColor(r.sentiment)}` }} />
                       </div>
                     )}
                   </div>
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "right", maxWidth: 104 }}>
                     {r.sentiment != null ? (
                       <>
-                        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, lineHeight: 1, color: scoreColor(r.sentiment) }} title="NeoBase sentiment score">
-                          {r.sentiment.toFixed(0)}
+                        <div style={{ fontFamily: "var(--font-display)", fontSize: 27, fontWeight: 700, lineHeight: 1, color: scoreColor(r.sentiment) }}>
+                          {r.sentiment.toFixed(0)}<span className="muted" style={{ fontSize: 12, fontWeight: 400 }}> / 100</span>
                         </div>
-                        <div className="muted" style={{ fontSize: 10, marginTop: 3 }}>/ 100</div>
+                        <div className="muted" style={{ fontSize: 9.5, marginTop: 4, textTransform: "uppercase", letterSpacing: ".05em" }}>{t("scoreName")}</div>
                       </>
                     ) : (
                       <span className="muted">—</span>
