@@ -39,3 +39,9 @@ error.txt
 
 # Source prompt doc (kept locally, not in repo)
 prompt.docx
+
+# local research / scratch (competitor notes, sample data, screenshots — not app code)
+/casptracker_podsumowanie.md
+/fintechs.json
+/header.png
+/screencapture-*.png
