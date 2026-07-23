@@ -46,6 +46,8 @@ export async function Footer() {
           <Link href="/exchanges/">{t("nav.exchanges")}</Link>
           <Link href="/blog/">{t("nav.blog")}</Link>
           <Link href="/about/">{t("nav.about")}</Link>
+          <Link href="/terms/">{t("footer.terms")}</Link>
+          <Link href="/privacy/">{t("footer.privacy")}</Link>
           <LocaleSwitcher />
           <span className="muted">© 2026</span>
         </div>

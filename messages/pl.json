@@ -17,7 +17,9 @@
   },
   "footer": {
     "tagline": "Niezależne analizy neobanków i giełd kryptowalut.",
-    "rights": "Wszelkie prawa zastrzeżone."
+    "rights": "Wszelkie prawa zastrzeżone.",
+    "terms": "Regulamin",
+    "privacy": "Polityka prywatności"
   },
   "profile": {
     "backExchanges": "Giełdy",
@@ -523,5 +525,11 @@
     "popularExchanges": "Popularne porównania giełd",
     "browseNeobanks": "Wszystkie neobanki →",
     "browseExchanges": "Wszystkie giełdy →"
+  },
+  "legal": {
+    "termsTitle": "Regulamin",
+    "termsDesc": "Zasady korzystania z NeoBase — serwisu informacyjnego o neobankach i giełdach kryptowalut.",
+    "privacyTitle": "Polityka prywatności",
+    "privacyDesc": "Jak NeoBase przetwarza Twoje dane osobowe zgodnie z RODO."
   }
 }
