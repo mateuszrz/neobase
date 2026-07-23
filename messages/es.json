@@ -546,5 +546,15 @@
     "verifyRetry": "¿No te llegó? Revisa el spam o <retry>inténtalo de nuevo</retry>.",
     "verifyMetaTitle": "Revisa tu correo",
     "verifyMetaDesc": "Un enlace de acceso está en camino."
+  },
+  "sentimentCard": {
+    "title": "Índice de sentimiento",
+    "subtitle": "nuestra puntuación · actualizada cada semana",
+    "trendAria": "Tendencia del índice de sentimiento",
+    "lastWeek": "la semana pasada",
+    "firstReading": "primera lectura — el cambio se verá la próxima semana",
+    "reviews": "Reseñas · {count} valoraciones",
+    "news": "Noticias",
+    "mentions": "Menciones"
   }
 }

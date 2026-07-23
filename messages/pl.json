@@ -546,5 +546,15 @@
     "verifyRetry": "Nie dotarł? Sprawdź spam lub <retry>spróbuj ponownie</retry>.",
     "verifyMetaTitle": "Sprawdź skrzynkę",
     "verifyMetaDesc": "Link logujący jest w drodze."
+  },
+  "sentimentCard": {
+    "title": "Indeks sentymentu",
+    "subtitle": "nasz wskaźnik · aktualizowany co tydzień",
+    "trendAria": "Trend indeksu sentymentu",
+    "lastWeek": "zeszły tydzień",
+    "firstReading": "pierwszy odczyt — zmiana pojawi się za tydzień",
+    "reviews": "Opinie · {count} ocen",
+    "news": "Wiadomości",
+    "mentions": "Wzmianki"
   }
 }

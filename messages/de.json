@@ -546,5 +546,15 @@
     "verifyRetry": "Nicht erhalten? Prüfen Sie den Spam-Ordner oder <retry>versuchen Sie es erneut</retry>.",
     "verifyMetaTitle": "Prüfen Sie Ihre E-Mails",
     "verifyMetaDesc": "Ein Anmeldelink ist unterwegs."
+  },
+  "sentimentCard": {
+    "title": "Sentiment-Index",
+    "subtitle": "unser Score · wöchentlich aktualisiert",
+    "trendAria": "Verlauf des Sentiment-Index",
+    "lastWeek": "letzte Woche",
+    "firstReading": "erster Wert — Änderung nächste Woche",
+    "reviews": "Rezensionen · {count} Bewertungen",
+    "news": "Nachrichten",
+    "mentions": "Erwähnungen"
   }
 }

@@ -1,3 +1,4 @@
+import { getLocale, getTranslations } from "next-intl/server";
 import type { SentimentIndexView } from "@/lib/sentiment";
 import { Delta } from "@/components/ui";
 
@@ -6,7 +7,7 @@ import { Delta } from "@/components/ui";
  * component. The *methodology* — how the sub-scores are weighted into the
  * composite — is deliberately not shown on the public brand page (no weights). */
 
-function Spark({ points }: { points: { week: string; composite: number }[] }) {
+function Spark({ points, label }: { points: { week: string; composite: number }[]; label: string }) {
   if (points.length < 2) return null;
   const W = 260;
   const H = 56;
@@ -22,7 +23,7 @@ function Spark({ points }: { points: { week: string; composite: number }[] }) {
   const area = `${line} L${x(n - 1).toFixed(1)},${H - P} L${x(0).toFixed(1)},${H - P} Z`;
   const last = points[n - 1];
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label="Sentiment index trend" style={{ maxWidth: W }}>
+    <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label={label} style={{ maxWidth: W }}>
       <defs>
         <linearGradient id="siFill" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--sky-wash)" stopOpacity="0.7" />
@@ -52,13 +53,16 @@ function Component({ label, score }: { label: string; score: number | null }) {
   );
 }
 
-export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
+export async function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
   const { latest, deltaWoW, series } = data;
+  const t = await getTranslations("sentimentCard");
+  const locale = await getLocale();
+  const ratings = new Intl.NumberFormat(locale).format(latest.reviewVolume);
   return (
     <div className="card" style={{ borderLeft: "3px solid var(--cyan-signal)" }}>
       <div className="spread" style={{ marginBottom: 14, alignItems: "baseline" }}>
-        <h2 className="subheading">Sentiment index</h2>
-        <span className="muted" style={{ fontSize: 12 }}>our score · updated weekly</span>
+        <h2 className="subheading">{t("title")}</h2>
+        <span className="muted" style={{ fontSize: 12 }}>{t("subtitle")}</span>
       </div>
 
       <div className="row" style={{ gap: 24, alignItems: "flex-end", flexWrap: "wrap" }}>
@@ -71,21 +75,21 @@ export function SentimentIndexCard({ data }: { data: SentimentIndexView }) {
           </div>
           <div style={{ marginTop: 6 }}>
             {deltaWoW != null ? (
-              <Delta value={deltaWoW} since="last week" />
+              <Delta value={deltaWoW} since={t("lastWeek")} />
             ) : (
-              <span className="muted" style={{ fontSize: 13 }}>first reading — change shows next week</span>
+              <span className="muted" style={{ fontSize: 13 }}>{t("firstReading")}</span>
             )}
           </div>
         </div>
         <div style={{ flex: 1, minWidth: 200 }}>
-          <Spark points={series} />
+          <Spark points={series} label={t("trendAria")} />
         </div>
       </div>
 
       <div className="row" style={{ gap: 24, marginTop: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
-        <Component label={`Reviews · ${new Intl.NumberFormat("en").format(latest.reviewVolume)} ratings`} score={latest.reviewScore} />
-        <Component label="News" score={latest.newsScore} />
-        <Component label="Mentions" score={latest.mentionScore} />
+        <Component label={t("reviews", { count: ratings })} score={latest.reviewScore} />
+        <Component label={t("news")} score={latest.newsScore} />
+        <Component label={t("mentions")} score={latest.mentionScore} />
       </div>
     </div>
   );
