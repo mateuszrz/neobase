@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { auth, signIn } from "@/lib/auth";
+import { Link } from "@/i18n/navigation";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -46,6 +47,11 @@ export default async function LoginPage() {
             Send magic link
           </button>
         </form>
+        <p className="muted" style={{ marginTop: 16, fontSize: 13, lineHeight: 1.6 }}>
+          By continuing you agree to our{" "}
+          <Link href="/terms/" style={{ color: "var(--cyan-edge)" }}>Terms of Service</Link> and{" "}
+          <Link href="/privacy/" style={{ color: "var(--cyan-edge)" }}>Privacy Policy</Link>.
+        </p>
       </div>
     </main>
   );
