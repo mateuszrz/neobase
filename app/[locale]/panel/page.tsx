@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { localeRedirect as redirect } from "@/lib/i18n/redirect";
 import { desc, eq, sql } from "drizzle-orm";
@@ -11,7 +12,10 @@ export const metadata: Metadata = { title: "Panel" };
 
 const { subscriptions, projects, projectBrands, projectMarkets } = schema;
 
-export default async function PanelPage() {
+export default async function PanelPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("panel");
   const session = await auth();
   const userId = (session?.user as { id?: string } | undefined)?.id;
   if (!userId) return redirect("/login/");
@@ -63,9 +67,9 @@ export default async function PanelPage() {
     <main className="section">
       <div className="wrap" style={{ maxWidth: 820 }}>
         <div className="spread" style={{ alignItems: "baseline" }}>
-          <p className="eyebrow" style={{ marginBottom: 14 }}>Your panel</p>
+          <p className="eyebrow" style={{ marginBottom: 14 }}>{t("yourPanel")}</p>
           <form action={doSignOut}>
-            <button className="btn btn-ghost" type="submit" style={{ fontSize: 13 }}>Sign out</button>
+            <button className="btn btn-ghost" type="submit" style={{ fontSize: 13 }}>{t("signOut")}</button>
           </form>
         </div>
         <h1 className="display" style={{ fontSize: "2rem" }}>{session?.user?.email}</h1>
@@ -73,25 +77,25 @@ export default async function PanelPage() {
         {/* Subscription */}
         <div className="card" style={{ marginTop: 28 }}>
           <div className="spread">
-            <h2 className="subheading">Subscription</h2>
+            <h2 className="subheading">{t("subscription")}</h2>
             {sub && (
               <span className={`pill ${entitled ? "pill-score" : ""}`}>{sub.status}</span>
             )}
           </div>
           {pkg ? (
             <p style={{ marginTop: 12 }} className="muted">
-              <strong style={{ color: "inherit" }}>{pkg.name}</strong> — up to {pkg.brandSlots} brands · {pkg.marketSlots} markets per project.
+              <strong style={{ color: "inherit" }}>{pkg.name}</strong> — {t("pkgLine", { brands: pkg.brandSlots, markets: pkg.marketSlots })}
             </p>
           ) : (
             <p style={{ marginTop: 12 }} className="muted">
-              No active subscription. <Link href="/monitoring/" style={{ color: "var(--cyan-signal)" }}>Choose a plan</Link> to start tracking brands.
+              {t.rich("noSub", { link: (c) => <Link href="/monitoring/" style={{ color: "var(--cyan-signal)" }}>{c}</Link> })}
             </p>
           )}
         </div>
 
         {/* Projects */}
         <div className="spread" style={{ marginTop: 36 }}>
-          <h2 className="subheading">Projects</h2>
+          <h2 className="subheading">{t("projects")}</h2>
         </div>
 
         {projs.length > 0 && (
@@ -99,7 +103,7 @@ export default async function PanelPage() {
             {projs.map((p) => (
               <Link key={p.id} href={`/panel/project/${p.id}/`} className="card row spread" style={{ textDecoration: "none", color: "inherit" }}>
                 <strong>{p.name}</strong>
-                <span className="muted" style={{ fontSize: 14 }}>{p.brands} brands · {p.markets} markets →</span>
+                <span className="muted" style={{ fontSize: 14 }}>{t("projectMeta", { brands: p.brands, markets: p.markets })}</span>
               </Link>
             ))}
           </div>
@@ -110,14 +114,14 @@ export default async function PanelPage() {
             <input
               name="name"
               required
-              placeholder="New project name — e.g. Q3 competitor watch"
+              placeholder={t("newProjectPlaceholder")}
               style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "1px solid var(--stone-border)", fontSize: 15 }}
             />
-            <button className="btn btn-cyan" type="submit">Create project</button>
+            <button className="btn btn-cyan" type="submit">{t("createProject")}</button>
           </form>
         ) : (
           <p className="muted" style={{ marginTop: 12 }}>
-            An active subscription is required to create projects. <Link href="/monitoring/" style={{ color: "var(--cyan-signal)" }}>Choose a plan</Link>.
+            {t.rich("needSub", { link: (c) => <Link href="/monitoring/" style={{ color: "var(--cyan-signal)" }}>{c}</Link> })}
           </p>
         )}
       </div>

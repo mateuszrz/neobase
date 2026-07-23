@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { isAdmin } from "@/lib/auth/admin";
 import { listAllArticles } from "@/lib/blog/articles";
@@ -8,7 +9,10 @@ import { routing } from "@/i18n/routing";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Blog", robots: { index: false, follow: false } };
 
-export default async function BlogAdminList() {
+export default async function BlogAdminList({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("panel");
   // 404 rather than redirect: a customer poking at /panel/blog/ shouldn't learn
   // the editor exists.
   if (!(await isAdmin())) notFound();
@@ -17,14 +21,14 @@ export default async function BlogAdminList() {
   return (
     <main className="section">
       <div className="wrap" style={{ maxWidth: 820 }}>
-        <p className="eyebrow" style={{ marginBottom: 14 }}>Editorial</p>
+        <p className="eyebrow" style={{ marginBottom: 14 }}>{t("editorial")}</p>
         <div className="spread" style={{ alignItems: "baseline" }}>
-          <h1 className="display" style={{ fontSize: "2rem" }}>Blog posts</h1>
-          <Link className="btn btn-cyan" href="/panel/blog/new/">New post</Link>
+          <h1 className="display" style={{ fontSize: "2rem" }}>{t("blogPosts")}</h1>
+          <Link className="btn btn-cyan" href="/panel/blog/new/">{t("newPost")}</Link>
         </div>
 
         {posts.length === 0 ? (
-          <p className="muted" style={{ marginTop: 20 }}>No posts yet.</p>
+          <p className="muted" style={{ marginTop: 20 }}>{t("noPosts")}</p>
         ) : (
           <div className="stack-8" style={{ marginTop: 20 }}>
             {posts.map((p) => (
@@ -45,8 +49,7 @@ export default async function BlogAdminList() {
         )}
 
         <p className="muted" style={{ fontSize: 12, marginTop: 28 }}>
-          Locales: {routing.locales.join(", ")}. Each language is its own post — a Polish article
-          does not need an English counterpart.
+          {t("localesNote", { locales: routing.locales.join(", ") })}
         </p>
       </div>
     </main>
