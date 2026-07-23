@@ -38,6 +38,17 @@ const REVIEW_KINDS = ["trustpilot", "google_play", "app_store"] as const;
 const REVIEW_PRIOR = 78; // μ — where a brand with no review evidence sits
 const REVIEW_SMOOTH = 200; // m — reviews of prior-equivalent weight (half-shrink point)
 
+// Weak-platform penalty: an average star rating below the threshold on ANY of the
+// three review platforms drags the review score (and thus the composite) down
+// harder than volume-weighting alone would — a low-volume bad platform otherwise
+// barely moves a brand carrying millions of good ratings elsewhere. The WORST
+// below-threshold platform's shortfall × points-per-star is subtracted from the
+// (shrunk) review score. A minimum review count keeps a single angry review from
+// triggering it.
+const WEAK_RATING_THRESHOLD = 4; // stars; a platform averaging below this is "weak"
+const WEAK_PENALTY_PER_STAR = 12; // review-score points removed per star below the threshold
+const WEAK_MIN_REVIEWS = 10; // a platform needs at least this many reviews to count
+
 // A single positive article/mention must not swing the score. News and mentions
 // only contribute once there are at least this many in the window; below it the
 // sub-score is dropped (not enough signal to be worth anything).
@@ -129,7 +140,7 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   // recent live snapshot yet is exactly what made the composite's review volume
   // disagree with the profile's total (which already filters to live data).
   const rev = await db.execute(sql`
-    SELECT DISTINCT ON (kind) kind, sentiment_pos AS pos, review_count AS cnt
+    SELECT DISTINCT ON (kind) kind, sentiment_pos AS pos, review_count AS cnt, rating
     FROM metric_snapshots
     WHERE fintech_id = ${fintechId} AND country = 'ZZ'
       AND kind IN ('trustpilot','google_play','app_store')
@@ -138,6 +149,7 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   `);
   let rWeighted = 0;
   let reviewVolume = 0;
+  let weakPenalty = 0; // worst below-threshold platform's shortfall × points-per-star
   for (const r of rev.rows as any[]) {
     const pos = num(r.pos);
     const cnt = num(r.cnt) ?? 0;
@@ -146,16 +158,24 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     const w = cnt > 0 ? cnt : 1;
     rWeighted += pos * w;
     reviewVolume += cnt > 0 ? cnt : 0;
+    // A genuine sub-4★ average on any one platform penalises harder than its volume
+    // share would — take the worst offender's shortfall.
+    const rating = num(r.rating);
+    if (rating != null && rating < WEAK_RATING_THRESHOLD && cnt >= WEAK_MIN_REVIEWS) {
+      weakPenalty = Math.max(weakPenalty, (WEAK_RATING_THRESHOLD - rating) * WEAK_PENALTY_PER_STAR);
+    }
   }
   const reviewDenom = (rev.rows as any[]).reduce((s, r) => s + (num(r.cnt) && num(r.cnt)! > 0 ? num(r.cnt)! : num(r.pos) != null ? 1 : 0), 0);
   const reviewScoreRaw = reviewDenom > 0 ? rWeighted / reviewDenom : null;
-  // Shrink the raw %positive toward the population prior by real review volume.
-  // A bare rating with no count (reviewVolume 0) lands at the prior — no volume,
-  // no confidence — while a 100k-review brand keeps essentially its raw score.
-  const reviewScore =
+  // Shrink the raw %positive toward the population prior by real review volume,
+  // then subtract the weak-platform penalty. A bare rating with no count
+  // (reviewVolume 0) lands at the prior — no volume, no confidence — while a
+  // 100k-review brand keeps essentially its raw score (minus any weak-platform hit).
+  const reviewShrunk =
     reviewScoreRaw == null
       ? null
       : (reviewVolume * reviewScoreRaw + REVIEW_SMOOTH * REVIEW_PRIOR) / (reviewVolume + REVIEW_SMOOTH);
+  const reviewScore = reviewShrunk == null ? null : Math.max(0, Math.min(100, reviewShrunk - weakPenalty));
 
   // News/mentions deviate from the brand's own level; with no reviews, from the prior.
   const externalAnchor = reviewScore ?? REVIEW_PRIOR;
