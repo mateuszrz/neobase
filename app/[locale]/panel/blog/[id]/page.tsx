@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { revalidateArticle } from "@/lib/blog/revalidate";
 import { eq } from "drizzle-orm";
 import { Link } from "@/i18n/navigation";
@@ -109,12 +110,14 @@ export default async function BlogEditor({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
   searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
   if (!(await isAdmin())) notFound();
 
-  const { id } = await params;
+  const { locale, id } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("panel");
   const { saved, error } = await searchParams;
   const isNew = id === "new";
   const post = isNew ? null : await getArticleById(Number(id));
@@ -124,36 +127,36 @@ export default async function BlogEditor({
     <main className="section">
       <div className="wrap" style={{ maxWidth: 760 }}>
         <p style={{ fontSize: 13, marginBottom: 12 }}>
-          <Link href="/panel/blog/" style={{ color: "var(--cyan-edge)" }}>← All posts</Link>
+          <Link href="/panel/blog/" style={{ color: "var(--cyan-edge)" }}>{t("allPosts")}</Link>
         </p>
-        <h1 className="h-sm" style={{ marginBottom: 20 }}>{isNew ? "New post" : post!.title}</h1>
+        <h1 className="h-sm" style={{ marginBottom: 20 }}>{isNew ? t("newPost") : post!.title}</h1>
 
-        {saved && <p className="pill pill-score" style={{ display: "inline-block", marginBottom: 16 }}>Saved</p>}
-        {error === "title" && <p style={{ color: "var(--neg)" }}>A title is required.</p>}
-        {error === "slug" && <p style={{ color: "var(--neg)" }}>That slug already exists in this language.</p>}
+        {saved && <p className="pill pill-score" style={{ display: "inline-block", marginBottom: 16 }}>{t("saved")}</p>}
+        {error === "title" && <p style={{ color: "var(--neg)" }}>{t("errTitle")}</p>}
+        {error === "slug" && <p style={{ color: "var(--neg)" }}>{t("errSlug")}</p>}
 
         <form action={save} className="card">
           <input type="hidden" name="id" value={isNew ? 0 : post!.id} />
 
-          <Field label="Language">
+          <Field label={t("fLanguage")}>
             <select name="locale" defaultValue={post?.locale ?? routing.defaultLocale} style={input}>
               {routing.locales.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
           </Field>
 
-          <Field label="Title">
+          <Field label={t("fTitle")}>
             <input name="title" required defaultValue={post?.title ?? ""} style={input} />
           </Field>
 
-          <Field label="Slug" hint="Leave blank to derive it from the title. Write it in the post's own language.">
+          <Field label={t("fSlug")} hint={t("fSlugHint")}>
             <input name="slug" defaultValue={post?.slug ?? ""} placeholder="najlepsze-gieldy-kryptowalut" style={input} />
           </Field>
 
-          <Field label="Excerpt" hint="Shown on the blog index and used as the meta description fallback.">
+          <Field label={t("fExcerpt")} hint={t("fExcerptHint")}>
             <textarea name="excerpt" rows={2} defaultValue={post?.excerpt ?? ""} style={input} />
           </Field>
 
-          <Field label="Body (Markdown)" hint="Markdown with tables and lists. Raw HTML is escaped, not rendered.">
+          <Field label={t("fBody")} hint={t("fBodyHint")}>
             <textarea
               name="bodyMd"
               rows={20}
@@ -162,36 +165,36 @@ export default async function BlogEditor({
             />
           </Field>
 
-          <Field label="Cover image URL" hint="Full URL — there is no upload yet.">
+          <Field label={t("fCover")} hint={t("fCoverHint")}>
             <input name="coverUrl" type="url" defaultValue={post?.coverUrl ?? ""} style={input} />
           </Field>
 
-          <Field label="Author">
+          <Field label={t("fAuthor")}>
             <input name="author" defaultValue={post?.author ?? ""} style={input} />
           </Field>
 
-          <Field label="SEO title" hint="Falls back to the title.">
+          <Field label={t("fSeoTitle")} hint={t("fSeoTitleHint")}>
             <input name="seoTitle" defaultValue={post?.seoTitle ?? ""} style={input} />
           </Field>
 
-          <Field label="SEO description" hint="Falls back to the excerpt.">
+          <Field label={t("fSeoDesc")} hint={t("fSeoDescHint")}>
             <textarea name="seoDescription" rows={2} defaultValue={post?.seoDescription ?? ""} style={input} />
           </Field>
 
-          <Field label="Status">
+          <Field label={t("fStatus")}>
             <select name="status" defaultValue={post?.status ?? "draft"} style={input}>
-              <option value="draft">Draft — invisible to the public</option>
-              <option value="published">Published</option>
+              <option value="draft">{t("statusDraft")}</option>
+              <option value="published">{t("statusPublished")}</option>
             </select>
           </Field>
 
-          <button className="btn btn-cyan" type="submit">Save</button>
+          <button className="btn btn-cyan" type="submit">{t("save")}</button>
         </form>
 
         {!isNew && (
           <form action={remove} style={{ marginTop: 16 }}>
             <input type="hidden" name="id" value={post!.id} />
-            <button className="btn btn-ghost" type="submit" style={{ color: "var(--neg)" }}>Delete post</button>
+            <button className="btn btn-ghost" type="submit" style={{ color: "var(--neg)" }}>{t("deletePost")}</button>
           </form>
         )}
       </div>
