@@ -177,7 +177,7 @@
     "all": "Toutes",
     "countWorldwide": "{count, plural, one {# société} other {# sociétés}} dans le monde, classées par NeoBase Score.",
     "countInCountry": "{count, plural, one {# société} other {# sociétés}} en {country}, classées par NeoBase Score.",
-    "exchangesLead": "{count, plural, one {# plateforme} other {# plateformes}}, classées selon notre propre score de sentiment.",
+    "exchangesLead": "{count, plural, one {# plateforme} other {# plateformes}}, classées par NeoBase Score.",
     "micaCta": "🇪🇺 Registre des agréments MiCA →"
   },
   "rankings": {
