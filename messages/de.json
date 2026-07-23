@@ -175,8 +175,8 @@
     "exchangesMetaTitle": "Verzeichnis der Krypto-Börsen",
     "exchangesMetaDesc": "Die führenden Krypto-Börsen im Vergleich — nach Bewertung, Rezensionen und Nutzerstimmung.",
     "all": "Alle",
-    "countWorldwide": "{count, plural, one {# Unternehmen} other {# Unternehmen}} weltweit, sortiert nach TrustScore.",
-    "countInCountry": "{count, plural, one {# Unternehmen} other {# Unternehmen}} in {country}, sortiert nach TrustScore.",
+    "countWorldwide": "{count, plural, one {# Unternehmen} other {# Unternehmen}} weltweit, sortiert nach NeoBase Score.",
+    "countInCountry": "{count, plural, one {# Unternehmen} other {# Unternehmen}} in {country}, sortiert nach NeoBase Score.",
     "exchangesLead": "{count, plural, one {# Börse} other {# Börsen}}, sortiert nach unserem eigenen Sentiment-Score.",
     "micaCta": "🇪🇺 MiCA-Lizenzregister →"
   },

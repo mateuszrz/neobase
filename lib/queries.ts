@@ -103,7 +103,9 @@ async function listWithLatest(
 export const getTopNeobanks = (limit = 12) => listWithLatest("neobank", limit, "sentiment");
 export const getTopExchanges = (limit = 8) => listWithLatest("exchange", limit, "sentiment");
 export const getAllFintechs = () => listWithLatest(null);
-export const listNeobanks = () => listWithLatest("neobank");
+// Both directories rank by (and surface) our composite sentiment score, not a
+// third-party TrustScore — consistent with the homepage and the product's signal.
+export const listNeobanks = () => listWithLatest("neobank", undefined, "sentiment");
 export const listExchanges = () => listWithLatest("exchange", undefined, "sentiment");
 
 export async function getPlatformStats() {
