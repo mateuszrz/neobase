@@ -17,7 +17,9 @@
   },
   "footer": {
     "tagline": "Analyses indépendantes des néobanques et des plateformes crypto.",
-    "rights": "Tous droits réservés."
+    "rights": "Tous droits réservés.",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité"
   },
   "profile": {
     "backExchanges": "Plateformes crypto",
@@ -523,5 +525,11 @@
     "popularExchanges": "Comparatifs de plateformes populaires",
     "browseNeobanks": "Toutes les néobanques →",
     "browseExchanges": "Toutes les plateformes →"
+  },
+  "legal": {
+    "termsTitle": "Conditions d'utilisation",
+    "termsDesc": "Conditions régissant l'utilisation de NeoBase — notre service d'information sur les néobanques et les plateformes crypto.",
+    "privacyTitle": "Politique de confidentialité",
+    "privacyDesc": "Comment NeoBase traite vos données personnelles conformément au RGPD."
   }
 }

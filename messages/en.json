@@ -17,7 +17,9 @@
   },
   "footer": {
     "tagline": "Independent neobank and crypto-exchange intelligence.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   },
   "profile": {
     "backExchanges": "Exchanges",
@@ -523,5 +525,11 @@
     "popularExchanges": "Popular exchange comparisons",
     "browseNeobanks": "Browse all neobanks →",
     "browseExchanges": "Browse all exchanges →"
+  },
+  "legal": {
+    "termsTitle": "Terms of Service",
+    "termsDesc": "Terms governing your use of NeoBase — our information service on neobanks and crypto exchanges.",
+    "privacyTitle": "Privacy Policy",
+    "privacyDesc": "How NeoBase handles your personal data under the GDPR."
   }
 }

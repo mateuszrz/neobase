@@ -17,7 +17,9 @@
   },
   "footer": {
     "tagline": "Análisis independiente de neobancos y exchanges de criptomonedas.",
-    "rights": "Todos los derechos reservados."
+    "rights": "Todos los derechos reservados.",
+    "terms": "Términos del servicio",
+    "privacy": "Política de privacidad"
   },
   "profile": {
     "backExchanges": "Exchanges",
@@ -523,5 +525,11 @@
     "popularExchanges": "Comparaciones populares de exchanges",
     "browseNeobanks": "Ver todos los neobancos →",
     "browseExchanges": "Ver todos los exchanges →"
+  },
+  "legal": {
+    "termsTitle": "Términos del servicio",
+    "termsDesc": "Términos que rigen el uso de NeoBase — nuestro servicio de información sobre neobancos y exchanges de criptomonedas.",
+    "privacyTitle": "Política de privacidad",
+    "privacyDesc": "Cómo NeoBase trata tus datos personales conforme al RGPD."
   }
 }

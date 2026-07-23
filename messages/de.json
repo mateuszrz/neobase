@@ -17,7 +17,9 @@
   },
   "footer": {
     "tagline": "Unabhängige Analysen zu Neobanken und Krypto-Börsen.",
-    "rights": "Alle Rechte vorbehalten."
+    "rights": "Alle Rechte vorbehalten.",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzerklärung"
   },
   "profile": {
     "backExchanges": "Krypto-Börsen",
@@ -523,5 +525,11 @@
     "popularExchanges": "Beliebte Börsen-Vergleiche",
     "browseNeobanks": "Alle Neobanken →",
     "browseExchanges": "Alle Börsen →"
+  },
+  "legal": {
+    "termsTitle": "Nutzungsbedingungen",
+    "termsDesc": "Bedingungen für die Nutzung von NeoBase — unserem Informationsdienst zu Neobanken und Krypto-Börsen.",
+    "privacyTitle": "Datenschutzerklärung",
+    "privacyDesc": "Wie NeoBase Ihre personenbezogenen Daten gemäß der DSGVO verarbeitet."
   }
 }
