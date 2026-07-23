@@ -17,14 +17,15 @@ export type LegalKind = "terms" | "privacy";
 export const LEGAL_UPDATED = "2026-07-23"; // ISO date of the last substantive change
 
 // ── Fill these in one place; both documents reference them. ──────────────────
-// Operator / data controller identity. The remaining bracketed values still
-// need filling. NeoBase is run by a Polish sole proprietorship (CEIDG), so the
-// registration descriptor is worded per language.
+// Operator / data controller identity. NeoBase is run by a Polish sole
+// proprietorship (CEIDG); by the operator's decision NIP, REGON and the
+// registered address are not published — contact is by email only. NOTE for the
+// legal review: Polish law (UŚUDE art. 5, consumer-protection rules) generally
+// expects the provider's address to be available, especially for paid services.
 const OPERATOR = "The Clarity Mateusz Rzetecki";
-const OPERATOR_REG_EN = "a sole proprietorship registered in the Polish Central Registration and Information on Business (CEIDG), NIP [NIP], REGON [REGON]";
-const OPERATOR_REG_PL = "prowadzącego jednoosobową działalność gospodarczą wpisaną do CEIDG, NIP [NIP], REGON [REGON]";
-const OPERATOR_ADDRESS = "[ADRES SIEDZIBY — ul. Przykładowa 1, 00-000 Miasto, Polska]";
-const CONTACT_EMAIL = "[kontakt@neobase.co]";
+const OPERATOR_REG_EN = "a sole proprietorship registered in the Polish Central Registration and Information on Business (CEIDG)";
+const OPERATOR_REG_PL = "prowadzącego jednoosobową działalność gospodarczą wpisaną do CEIDG";
+const CONTACT_EMAIL = "contact@neobase.co";
 
 const TERMS_EN = `# Terms of Service
 
@@ -32,7 +33,7 @@ _Last updated: ${LEGAL_UPDATED}_
 
 ## 1. Who we are
 
-These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERATOR}, ${OPERATOR_REG_EN}, with its registered office at ${OPERATOR_ADDRESS} (the "Operator", "we", "us"). By using the Service you agree to these Terms; if you do not agree, please do not use the Service.
+These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERATOR}, ${OPERATOR_REG_EN} (the "Operator", "we", "us"), reachable at ${CONTACT_EMAIL}. By using the Service you agree to these Terms; if you do not agree, please do not use the Service.
 
 ## 2. What the Service does
 
@@ -80,7 +81,7 @@ These Terms are governed by Polish law and applicable EU law, without prejudice 
 
 ## 12. Contact
 
-${OPERATOR}, ${OPERATOR_ADDRESS} — ${CONTACT_EMAIL}.
+${OPERATOR} — ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_EN = `# Privacy Policy
@@ -91,7 +92,7 @@ This policy explains how we handle personal data under the GDPR (Regulation (EU)
 
 ## 1. Controller
 
-The controller of your personal data is ${OPERATOR}, ${OPERATOR_REG_EN}, ${OPERATOR_ADDRESS}. Contact: ${CONTACT_EMAIL}.
+The controller of your personal data is ${OPERATOR}, ${OPERATOR_REG_EN}. Contact: ${CONTACT_EMAIL}.
 
 ## 2. What we collect
 
@@ -148,7 +149,7 @@ _Ostatnia aktualizacja: ${LEGAL_UPDATED}_
 
 ## 1. Kto świadczy usługę
 
-Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis"), prowadzonego przez ${OPERATOR}, ${OPERATOR_REG_PL}, z siedzibą pod adresem ${OPERATOR_ADDRESS} ("Usługodawca", "my"). Korzystając z Serwisu, akceptujesz Regulamin; jeżeli się z nim nie zgadzasz, nie korzystaj z Serwisu.
+Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis"), prowadzonego przez ${OPERATOR}, ${OPERATOR_REG_PL} ("Usługodawca", "my"), z którym można kontaktować się pod adresem ${CONTACT_EMAIL}. Korzystając z Serwisu, akceptujesz Regulamin; jeżeli się z nim nie zgadzasz, nie korzystaj z Serwisu.
 
 ## 2. Czym jest Serwis
 
@@ -196,7 +197,7 @@ Regulamin podlega prawu polskiemu oraz właściwemu prawu UE, bez uszczerbku dla
 
 ## 12. Kontakt
 
-${OPERATOR}, ${OPERATOR_ADDRESS} — ${CONTACT_EMAIL}.
+${OPERATOR} — ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_PL = `# Polityka prywatności
@@ -207,7 +208,7 @@ Niniejsza polityka wyjaśnia, jak przetwarzamy dane osobowe zgodnie z RODO (Rozp
 
 ## 1. Administrator
 
-Administratorem Twoich danych osobowych jest ${OPERATOR}, ${OPERATOR_REG_PL}, ${OPERATOR_ADDRESS}. Kontakt: ${CONTACT_EMAIL}.
+Administratorem Twoich danych osobowych jest ${OPERATOR}, ${OPERATOR_REG_PL}. Kontakt: ${CONTACT_EMAIL}.
 
 ## 2. Jakie dane zbieramy
 
