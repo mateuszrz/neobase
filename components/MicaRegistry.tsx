@@ -56,11 +56,11 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
           style={{ ...selStyle, flex: 1, minWidth: 220 }}
           aria-label={t("searchLabel")}
         />
-        <select value={country} onChange={(e) => setCountry(e.target.value)} style={selStyle} aria-label="Country">
+        <select value={country} onChange={(e) => setCountry(e.target.value)} style={selStyle} aria-label={t("countryFilter")}>
           <option value="">{t("allCountries")}</option>
           {countries.map((c) => <option key={c} value={c}>{countryFlag(c)} {c}</option>)}
         </select>
-        <select value={regulator} onChange={(e) => setRegulator(e.target.value)} style={selStyle} aria-label="Regulator">
+        <select value={regulator} onChange={(e) => setRegulator(e.target.value)} style={selStyle} aria-label={t("regulatorFilter")}>
           <option value="">{t("allRegulators")}</option>
           {regulators.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
@@ -123,9 +123,9 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
                   <td style={{ padding: "10px" }}>{r.regulator}</td>
                   <td style={{ padding: "10px" }}>
                     {tradingPlatform && (
-                      <span className="badge" style={{ borderColor: "#16a34a", color: "#16a34a", marginRight: 6 }}>Trading platform</span>
+                      <span className="badge" style={{ borderColor: "#16a34a", color: "#16a34a", marginRight: 6 }}>{t("tradingPlatform")}</span>
                     )}
-                    <span className="muted" style={{ fontSize: 12 }}>{r.services.length} service{r.services.length === 1 ? "" : "s"}</span>
+                    <span className="muted" style={{ fontSize: 12 }}>{t("services", { count: r.services.length })}</span>
                   </td>
                 </tr>
               );

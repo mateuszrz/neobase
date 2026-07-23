@@ -93,7 +93,11 @@
     "sample": "Przykład",
     "samplePreviewWeekly": "Podgląd — po uruchomieniu odświeżane co tydzień",
     "updatedWeekly": "Aktualizowane co tydzień",
-    "reviewCount": "{count, plural, one {1 opinia} few {{formatted} opinie} many {{formatted} opinii} other {{formatted} opinii}}"
+    "reviewCount": "{count, plural, one {1 opinia} few {{formatted} opinie} many {{formatted} opinii} other {{formatted} opinii}}",
+    "ratingsCount": "{count} ocen",
+    "percentPositive": "{pct}% pozytywnych",
+    "installsCount": "{count} instalacji",
+    "language": "Język"
   },
   "mica": {
     "question": "Czy {name} ma licencję MiCA?",
@@ -436,7 +440,11 @@
     "colCountry": "Kraj",
     "colRegulator": "Regulator",
     "colServices": "Usługi",
-    "noMatch": "Żaden dostawca nie pasuje do filtrów."
+    "noMatch": "Żaden dostawca nie pasuje do filtrów.",
+    "countryFilter": "Kraj",
+    "regulatorFilter": "Regulator",
+    "tradingPlatform": "Platforma handlowa",
+    "services": "{count, plural, one {# usługa} few {# usługi} many {# usług} other {# usług}}"
   },
   "test": {
     "metaTitle": "Przetestuj nasze raporty — darmowy tygodniowy przegląd konkurencji",
@@ -556,5 +564,16 @@
     "reviews": "Opinie · {count} ocen",
     "news": "Wiadomości",
     "mentions": "Wzmianki"
+  },
+  "picker": {
+    "markets": "Rynki",
+    "marketsHint": "{count}/{max} wybrano — rynki, które zbieramy codziennie dla tego projektu.",
+    "competitors": "Konkurenci",
+    "competitorsHint": "Wybierz do {max} spośród marek, które śledzimy — stamtąd pochodzą dane demo.",
+    "searchPlaceholder": "Szukaj marek — np. Revolut, Wise, N26…",
+    "atMax": "Wybrano maksymalnie {max}",
+    "searchAria": "Szukaj marek konkurentów",
+    "remove": "Usuń {name}",
+    "noMatch": "Żadna śledzona marka nie pasuje do „{query}”."
   }
 }

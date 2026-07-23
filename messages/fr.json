@@ -93,7 +93,11 @@
     "sample": "Exemple",
     "samplePreviewWeekly": "Aperçu — actualisé chaque semaine après la mise en service",
     "updatedWeekly": "Mis à jour chaque semaine",
-    "reviewCount": "{count, plural, one {1 avis} other {{formatted} avis}}"
+    "reviewCount": "{count, plural, one {1 avis} other {{formatted} avis}}",
+    "ratingsCount": "{count} notes",
+    "percentPositive": "{pct}% positifs",
+    "installsCount": "{count} installations",
+    "language": "Langue"
   },
   "mica": {
     "question": "{name} dispose-t-il d'un agrément MiCA ?",
@@ -436,7 +440,11 @@
     "colCountry": "Pays",
     "colRegulator": "Régulateur",
     "colServices": "Services",
-    "noMatch": "Aucun prestataire ne correspond à vos filtres."
+    "noMatch": "Aucun prestataire ne correspond à vos filtres.",
+    "countryFilter": "Pays",
+    "regulatorFilter": "Régulateur",
+    "tradingPlatform": "Plateforme de trading",
+    "services": "{count, plural, one {# service} other {# services}}"
   },
   "test": {
     "metaTitle": "Testez nos rapports — briefing concurrentiel hebdomadaire gratuit",
@@ -556,5 +564,16 @@
     "reviews": "Avis · {count} notes",
     "news": "Actualités",
     "mentions": "Mentions"
+  },
+  "picker": {
+    "markets": "Marchés",
+    "marketsHint": "{count}/{max} sélectionnés — les marchés que nous collectons chaque jour pour ce projet.",
+    "competitors": "Concurrents",
+    "competitorsHint": "Choisissez jusqu'à {max} parmi les marques que nous suivons — c'est de là que viennent les données de démonstration.",
+    "searchPlaceholder": "Rechercher des marques — p. ex. Revolut, Wise, N26…",
+    "atMax": "Jusqu'à {max} sélectionnés",
+    "searchAria": "Rechercher des marques concurrentes",
+    "remove": "Retirer {name}",
+    "noMatch": "Aucune marque suivie ne correspond à « {query} »."
   }
 }

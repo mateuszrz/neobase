@@ -93,7 +93,11 @@
     "sample": "Sample",
     "samplePreviewWeekly": "Preview — refreshed weekly once live",
     "updatedWeekly": "Updated weekly",
-    "reviewCount": "{count, plural, one {1 review} other {{formatted} reviews}}"
+    "reviewCount": "{count, plural, one {1 review} other {{formatted} reviews}}",
+    "ratingsCount": "{count} ratings",
+    "percentPositive": "{pct}% positive",
+    "installsCount": "{count} installs",
+    "language": "Language"
   },
   "mica": {
     "question": "Does {name} have a MiCA licence?",
@@ -436,7 +440,11 @@
     "colCountry": "Country",
     "colRegulator": "Regulator",
     "colServices": "Services",
-    "noMatch": "No providers match your filters."
+    "noMatch": "No providers match your filters.",
+    "countryFilter": "Country",
+    "regulatorFilter": "Regulator",
+    "tradingPlatform": "Trading platform",
+    "services": "{count, plural, one {# service} other {# services}}"
   },
   "test": {
     "metaTitle": "Test our reports — free weekly competitive brief",
@@ -556,5 +564,16 @@
     "reviews": "Reviews · {count} ratings",
     "news": "News",
     "mentions": "Mentions"
+  },
+  "picker": {
+    "markets": "Markets",
+    "marketsHint": "{count}/{max} selected — the markets we collect daily for this project.",
+    "competitors": "Competitors",
+    "competitorsHint": "Pick up to {max} from the brands we track — that's where the demo data comes from.",
+    "searchPlaceholder": "Search brands — e.g. Revolut, Wise, N26…",
+    "atMax": "Up to {max} selected",
+    "searchAria": "Search competitor brands",
+    "remove": "Remove {name}",
+    "noMatch": "No tracked brand matches “{query}”."
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 /**
  * Multi-select for markets (ISO2), chosen from a fixed list, capped at the
@@ -18,6 +19,7 @@ function flag(cc: string): string {
 }
 
 export function MarketPicker({ options, max, initial = [] }: { options: MarketOption[]; max: number; initial?: string[] }) {
+  const t = useTranslations("picker");
   const [selected, setSelected] = useState<string[]>(initial.map((c) => c.toUpperCase()));
   const byCode = useMemo(() => new Map(options.map((o) => [o.code, o])), [options]);
   const atMax = selected.length >= max;
@@ -28,7 +30,7 @@ export function MarketPicker({ options, max, initial = [] }: { options: MarketOp
 
   return (
     <div className="stack-8">
-      <span style={{ fontWeight: 500, fontSize: 14 }}>Markets</span>
+      <span style={{ fontWeight: 500, fontSize: 14 }}>{t("markets")}</span>
 
       {selected.map((code) => (
         <input key={code} type="hidden" name="marketCodes" value={code} />
@@ -57,7 +59,7 @@ export function MarketPicker({ options, max, initial = [] }: { options: MarketOp
       </div>
 
       <span className="muted" style={{ fontSize: 12 }}>
-        {selected.length}/{max} selected — the markets we collect daily for this project.
+        {t("marketsHint", { count: selected.length, max })}
       </span>
     </div>
   );

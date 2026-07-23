@@ -234,7 +234,8 @@ function PlatformIcon({ kind, color }: { kind: string; color: string }) {
 }
 
 /** A row of per-platform rating tiles (Trustpilot / Google Play / App Store). */
-export function PlatformRatings({ items }: { items: PlatformRating[] }) {
+export async function PlatformRatings({ items }: { items: PlatformRating[] }) {
+  const t = await getTranslations();
   const shown = items.filter((p) => p.rating != null);
   if (!shown.length) return null;
   return (
@@ -260,11 +261,11 @@ export function PlatformRatings({ items }: { items: PlatformRating[] }) {
               </div>
             )}
             <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
-              {p.count != null ? `${fmt(p.count)} ratings` : "—"}
-              {pos != null && ` · ${pos.toFixed(0)}% positive`}
+              {p.count != null ? t("ui.ratingsCount", { count: fmt(p.count) }) : "—"}
+              {pos != null && ` · ${t("ui.percentPositive", { pct: pos.toFixed(0) })}`}
             </div>
             {p.installs && (
-              <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{fmtInstalls(p.installs)} installs</div>
+              <div className="muted" style={{ fontSize: 12, marginTop: 3 }}>{t("ui.installsCount", { count: fmtInstalls(p.installs) })}</div>
             )}
           </div>
         );

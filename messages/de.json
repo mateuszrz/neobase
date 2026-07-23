@@ -93,7 +93,11 @@
     "sample": "Beispiel",
     "samplePreviewWeekly": "Vorschau — nach dem Start wöchentlich aktualisiert",
     "updatedWeekly": "Wöchentlich aktualisiert",
-    "reviewCount": "{count, plural, one {1 Rezension} other {{formatted} Rezensionen}}"
+    "reviewCount": "{count, plural, one {1 Rezension} other {{formatted} Rezensionen}}",
+    "ratingsCount": "{count} Bewertungen",
+    "percentPositive": "{pct}% positiv",
+    "installsCount": "{count} Installationen",
+    "language": "Sprache"
   },
   "mica": {
     "question": "Hat {name} eine MiCA-Lizenz?",
@@ -436,7 +440,11 @@
     "colCountry": "Land",
     "colRegulator": "Aufsichtsbehörde",
     "colServices": "Dienstleistungen",
-    "noMatch": "Kein Anbieter passt zu den Filtern."
+    "noMatch": "Kein Anbieter passt zu den Filtern.",
+    "countryFilter": "Land",
+    "regulatorFilter": "Regulierungsbehörde",
+    "tradingPlatform": "Handelsplattform",
+    "services": "{count, plural, one {# Dienst} other {# Dienste}}"
   },
   "test": {
     "metaTitle": "Reports testen — kostenloser wöchentlicher Wettbewerbsreport",
@@ -556,5 +564,16 @@
     "reviews": "Rezensionen · {count} Bewertungen",
     "news": "Nachrichten",
     "mentions": "Erwähnungen"
+  },
+  "picker": {
+    "markets": "Märkte",
+    "marketsHint": "{count}/{max} ausgewählt — die Märkte, die wir für dieses Projekt täglich erfassen.",
+    "competitors": "Wettbewerber",
+    "competitorsHint": "Wählen Sie bis zu {max} aus den von uns beobachteten Marken — daher stammen die Demo-Daten.",
+    "searchPlaceholder": "Marken suchen — z. B. Revolut, Wise, N26…",
+    "atMax": "Bis zu {max} ausgewählt",
+    "searchAria": "Wettbewerber-Marken suchen",
+    "remove": "{name} entfernen",
+    "noMatch": "Keine beobachtete Marke passt zu „{query}“."
   }
 }
