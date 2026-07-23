@@ -45,15 +45,24 @@ const MENTION_MIN = 3;
 
 // Importance factors — scale each source's evidence BEFORE normalising, so reviews
 // (the anchor) dominate and news/mentions carry deliberately lower weight.
-const REVIEW_FACTOR = 1;
+const REVIEW_FACTOR = 1.5;
 const NEWS_FACTOR = 0.5;
 const MENTION_FACTOR = 0.35;
 const TREND_FACTOR = 0.6; // week-over-week 1–2★ review-share momentum — a meaningful signal
 
+// Hard ceiling on the combined news + mention weight. Reviews are the anchor, so
+// third-party chatter (which can saturate its evidence off a handful of items)
+// must never dominate: whatever review volume a brand has, news + mentions
+// together stay under this share and the freed weight goes back to review + trend.
+const MAX_EXTERNAL = 0.25;
+
 // 1–2★ trend: how sharply a week-over-week change in the bad-review share moves the
-// sub-score away from its review-score anchor. A +1pp rise ≈ −15 points on the trend
-// sub-score (≈ −4 on the composite at its weight); a falling share nudges it up.
-const TREND_K = 1500;
+// sub-score away from its review-score anchor. A +1pp rise ≈ −8 points on the trend
+// sub-score; a falling share nudges it up. The move is CAPPED at ±MAX_TREND_DRAG so
+// a noisy cumulative-share jump (often a re-scrape artifact, not real sentiment)
+// can't saturate the sub-score to 0/100 the way TREND_K=1500 uncapped did.
+const TREND_K = 800;
+const MAX_TREND_DRAG = 15;
 
 // positive=100 / neutral=50 / negative=0 — shared by news and mention sentiment.
 const NEWS_VALUE: Record<string, number> = { positive: 100, neutral: 50, negative: 0 };
@@ -189,7 +198,8 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   let trendScore: number | null = null;
   if (badNow != null && badPrev != null && reviewScore != null) {
     const delta = badNow - badPrev; // positive = more 1–2★ reviews than last week
-    trendScore = Math.max(0, Math.min(100, reviewScore - delta * TREND_K));
+    const drag = Math.max(-MAX_TREND_DRAG, Math.min(MAX_TREND_DRAG, delta * TREND_K));
+    trendScore = Math.max(0, Math.min(100, reviewScore - drag));
   }
 
   // Evidence-based weights across the four sources, scaled by importance factors and
@@ -207,10 +217,27 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   const tE = (trendScore != null ? Math.min(1, reviewVolume / REVIEW_REF) : 0) * TREND_FACTOR;
   const total = rE + nE + mE + tE;
   if (total === 0) return null;
-  const reviewWeight = rE / total;
-  const newsWeight = nE / total;
-  const mentionWeight = mE / total;
-  const trendWeight = tE / total;
+  let reviewWeight = rE / total;
+  let newsWeight = nE / total;
+  let mentionWeight = mE / total;
+  let trendWeight = tE / total;
+  // Cap the combined third-party (news + mention) weight, handing the freed weight
+  // back to the review-anchored pair (review + trend) in proportion. Keeps reviews
+  // dominant even when a brand has little review volume but lots of news/mentions.
+  const external = newsWeight + mentionWeight;
+  if (external > MAX_EXTERNAL) {
+    const scale = MAX_EXTERNAL / external;
+    newsWeight *= scale;
+    mentionWeight *= scale;
+    const freed = external - (newsWeight + mentionWeight);
+    const internal = reviewWeight + trendWeight;
+    if (internal > 0) {
+      reviewWeight += freed * (reviewWeight / internal);
+      trendWeight += freed * (trendWeight / internal);
+    } else {
+      reviewWeight += freed;
+    }
+  }
   const composite =
     reviewWeight * (reviewScore ?? 0) +
     newsWeight * (newsScore ?? 0) +
