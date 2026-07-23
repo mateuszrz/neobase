@@ -17,8 +17,11 @@ import { gatherContext } from "@/lib/summary/generate";
 import { sampleNews } from "@/lib/news/sample";
 import { sampleSocialPosts } from "@/lib/social/sample";
 import { matchFintechs, type Candidate } from "./match";
-import { REPORT_SYSTEM, buildUserMessage } from "./prompt";
+import { reportSystem, buildUserMessage } from "./prompt";
 import type { BrandData, Report, ReportBrandFocus, Severity } from "./types";
+
+/** Locale → the language Claude writes the report prose in. */
+const LANGUAGE: Record<string, string> = { en: "English", pl: "Polish", de: "German", es: "Spanish", fr: "French" };
 
 const { reportRequests, socialPosts } = schema;
 
@@ -90,7 +93,7 @@ function extractJson(text: string): any {
   return JSON.parse(body.slice(start, end + 1));
 }
 
-async function writeWithClaude(brand: string, brands: BrandData[]): Promise<Partial<Report>> {
+async function writeWithClaude(brand: string, brands: BrandData[], language: string): Promise<Partial<Report>> {
   // Haiku 4.5 by default: fast enough for a synchronous form POST. No `effort`
   // (it 400s on Haiku) and no thinking. A hard 45s timeout with no retries caps
   // the wall-clock so the request can never hang past the function budget — on
@@ -99,7 +102,7 @@ async function writeWithClaude(brand: string, brands: BrandData[]): Promise<Part
     {
       model: env.ANTHROPIC_REPORT_MODEL,
       max_tokens: 2500,
-      system: REPORT_SYSTEM,
+      system: reportSystem(language),
       messages: [{ role: "user", content: buildUserMessage(brand, brands) }],
     },
     { timeout: 45_000, maxRetries: 0 },
@@ -203,7 +206,7 @@ export interface GenerateResult {
  * Generate + persist a report for a brand and its competitors. Returns the row
  * id (the shareable teaser URL is /test/<id>).
  */
-export async function generateReport(brandInput: string, competitorInputs: string[], ip?: string | null): Promise<GenerateResult> {
+export async function generateReport(brandInput: string, competitorInputs: string[], ip?: string | null, locale = "en"): Promise<GenerateResult> {
   const [brandC] = await matchFintechs([brandInput]);
   const compCs = (await matchFintechs(competitorInputs)).filter((c) => !brandC || c.fintechId !== brandC.fintechId);
 
@@ -219,7 +222,7 @@ export async function generateReport(brandInput: string, competitorInputs: strin
   let model: string;
   if (isClaudeLive()) {
     try {
-      partial = await writeWithClaude(brandName, brands);
+      partial = await writeWithClaude(brandName, brands, LANGUAGE[locale] ?? "English");
       model = env.ANTHROPIC_REPORT_MODEL;
     } catch {
       partial = composeReport(brandName, brands); // network/parse failure → grounded fallback

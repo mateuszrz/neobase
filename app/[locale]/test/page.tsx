@@ -47,7 +47,7 @@ export default async function TestReportPage({
     const ip = await clientIp();
     if (!(await withinRateLimit(ip))) return redirect("/test/?slow=1");
 
-    const { id } = await generateReport(brand, competitors, ip);
+    const { id } = await generateReport(brand, competitors, ip, locale);
     return redirect(`/test/${id}/`);
   }
 
