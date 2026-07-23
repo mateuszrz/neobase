@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 /**
  * Searchable multi-select for competitors, chosen from the tracked-fintech set
@@ -19,7 +20,7 @@ export function CompetitorPicker({
   options,
   max = 8,
   initial = [],
-  label = "Competitors",
+  label,
   hint,
   inputName = "competitorIds",
 }: {
@@ -30,6 +31,7 @@ export function CompetitorPicker({
   hint?: string;
   inputName?: string;
 }) {
+  const t = useTranslations("picker");
   const [selected, setSelected] = useState<string[]>(initial);
   const [query, setQuery] = useState("");
   const byId = useMemo(() => new Map(options.map((o) => [o.id, o])), [options]);
@@ -55,7 +57,7 @@ export function CompetitorPicker({
 
   return (
     <div className="stack-8">
-      <span style={{ fontWeight: 500, fontSize: 14 }}>{label}</span>
+      <span style={{ fontWeight: 500, fontSize: 14 }}>{label ?? t("competitors")}</span>
 
       {/* Selected chips (each carries a hidden input for the server action) */}
       {selected.length > 0 && (
@@ -70,7 +72,7 @@ export function CompetitorPicker({
                 <button
                   type="button"
                   onClick={() => remove(id)}
-                  aria-label={`Remove ${o?.name ?? id}`}
+                  aria-label={t("remove", { name: o?.name ?? id })}
                   style={{ border: "none", background: "none", cursor: "pointer", fontSize: 15, lineHeight: 1, color: "inherit", padding: 0 }}
                 >
                   ×
@@ -85,9 +87,9 @@ export function CompetitorPicker({
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={atMax ? `Up to ${max} selected` : "Search brands — e.g. Revolut, Wise, N26…"}
+        placeholder={atMax ? t("atMax", { max }) : t("searchPlaceholder")}
         disabled={atMax}
-        aria-label="Search competitor brands"
+        aria-label={t("searchAria")}
         style={{
           width: "100%",
           padding: "12px 14px",
@@ -102,7 +104,7 @@ export function CompetitorPicker({
       {!atMax && query.trim() !== "" && (
         <div className="card" style={{ padding: 6, marginTop: 2 }}>
           {matches.length === 0 ? (
-            <p className="muted" style={{ margin: 0, padding: "8px 10px", fontSize: 13 }}>No tracked brand matches “{query}”.</p>
+            <p className="muted" style={{ margin: 0, padding: "8px 10px", fontSize: 13 }}>{t("noMatch", { query })}</p>
           ) : (
             matches.map((o) => (
               <button
@@ -125,7 +127,7 @@ export function CompetitorPicker({
       )}
 
       <span className="muted" style={{ fontSize: 12 }}>
-        {hint ?? `Pick up to ${max} from the brands we track — that's where the demo data comes from.`}
+        {hint ?? t("competitorsHint", { max })}
       </span>
     </div>
   );

@@ -93,7 +93,11 @@
     "sample": "Ejemplo",
     "samplePreviewWeekly": "Vista previa — se actualizará cada semana tras el lanzamiento",
     "updatedWeekly": "Actualizado semanalmente",
-    "reviewCount": "{count, plural, one {1 reseña} other {{formatted} reseñas}}"
+    "reviewCount": "{count, plural, one {1 reseña} other {{formatted} reseñas}}",
+    "ratingsCount": "{count} valoraciones",
+    "percentPositive": "{pct}% positivas",
+    "installsCount": "{count} instalaciones",
+    "language": "Idioma"
   },
   "mica": {
     "question": "¿Tiene {name} licencia MiCA?",
@@ -436,7 +440,11 @@
     "colCountry": "País",
     "colRegulator": "Regulador",
     "colServices": "Servicios",
-    "noMatch": "Ningún proveedor coincide con los filtros."
+    "noMatch": "Ningún proveedor coincide con los filtros.",
+    "countryFilter": "País",
+    "regulatorFilter": "Regulador",
+    "tradingPlatform": "Plataforma de trading",
+    "services": "{count, plural, one {# servicio} other {# servicios}}"
   },
   "test": {
     "metaTitle": "Prueba nuestros informes — resumen competitivo semanal gratis",
@@ -556,5 +564,16 @@
     "reviews": "Reseñas · {count} valoraciones",
     "news": "Noticias",
     "mentions": "Menciones"
+  },
+  "picker": {
+    "markets": "Mercados",
+    "marketsHint": "{count}/{max} seleccionados — los mercados que recopilamos a diario para este proyecto.",
+    "competitors": "Competidores",
+    "competitorsHint": "Elige hasta {max} de las marcas que seguimos — de ahí provienen los datos de demostración.",
+    "searchPlaceholder": "Busca marcas — p. ej. Revolut, Wise, N26…",
+    "atMax": "Hasta {max} seleccionados",
+    "searchAria": "Buscar marcas competidoras",
+    "remove": "Eliminar {name}",
+    "noMatch": "Ninguna marca seguida coincide con «{query}»."
   }
 }
