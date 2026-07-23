@@ -531,5 +531,20 @@
     "termsDesc": "Términos que rigen el uso de NeoBase — nuestro servicio de información sobre neobancos y exchanges de criptomonedas.",
     "privacyTitle": "Política de privacidad",
     "privacyDesc": "Cómo NeoBase trata tus datos personales conforme al RGPD."
+  },
+  "login": {
+    "account": "Cuenta",
+    "title": "Inicia sesión en NeoBase",
+    "lead": "Introduce tu correo y te enviaremos un enlace mágico — sin contraseña.",
+    "placeholder": "tu@empresa.com",
+    "submit": "Enviar enlace mágico",
+    "metaTitle": "Iniciar sesión",
+    "metaDesc": "Inicia sesión en tu cuenta de NeoBase.",
+    "consent": "Al continuar, aceptas nuestros <terms>Términos del servicio</terms> y la <privacy>Política de privacidad</privacy>.",
+    "verifyTitle": "Revisa tu correo",
+    "verifyLead": "Hemos enviado un enlace mágico a tu bandeja de entrada. Haz clic en él para completar el inicio de sesión — el enlace caduca en 24 horas.",
+    "verifyRetry": "¿No te llegó? Revisa el spam o <retry>inténtalo de nuevo</retry>.",
+    "verifyMetaTitle": "Revisa tu correo",
+    "verifyMetaDesc": "Un enlace de acceso está en camino."
   }
 }

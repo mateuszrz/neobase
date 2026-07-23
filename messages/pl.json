@@ -531,5 +531,20 @@
     "termsDesc": "Zasady korzystania z NeoBase — serwisu informacyjnego o neobankach i giełdach kryptowalut.",
     "privacyTitle": "Polityka prywatności",
     "privacyDesc": "Jak NeoBase przetwarza Twoje dane osobowe zgodnie z RODO."
+  },
+  "login": {
+    "account": "Konto",
+    "title": "Zaloguj się do NeoBase",
+    "lead": "Podaj e-mail, a wyślemy Ci link logujący — bez hasła.",
+    "placeholder": "ty@firma.pl",
+    "submit": "Wyślij link logujący",
+    "metaTitle": "Logowanie",
+    "metaDesc": "Zaloguj się do swojego konta NeoBase.",
+    "consent": "Kontynuując, akceptujesz nasz <terms>Regulamin</terms> oraz <privacy>Politykę prywatności</privacy>.",
+    "verifyTitle": "Sprawdź skrzynkę",
+    "verifyLead": "Wysłaliśmy link logujący na Twoją skrzynkę. Kliknij go, aby dokończyć logowanie — link wygasa po 24 godzinach.",
+    "verifyRetry": "Nie dotarł? Sprawdź spam lub <retry>spróbuj ponownie</retry>.",
+    "verifyMetaTitle": "Sprawdź skrzynkę",
+    "verifyMetaDesc": "Link logujący jest w drodze."
   }
 }

@@ -531,5 +531,20 @@
     "termsDesc": "Conditions régissant l'utilisation de NeoBase — notre service d'information sur les néobanques et les plateformes crypto.",
     "privacyTitle": "Politique de confidentialité",
     "privacyDesc": "Comment NeoBase traite vos données personnelles conformément au RGPD."
+  },
+  "login": {
+    "account": "Compte",
+    "title": "Se connecter à NeoBase",
+    "lead": "Saisissez votre e-mail et nous vous enverrons un lien magique — sans mot de passe.",
+    "placeholder": "vous@entreprise.com",
+    "submit": "Envoyer le lien magique",
+    "metaTitle": "Se connecter",
+    "metaDesc": "Connectez-vous à votre compte NeoBase.",
+    "consent": "En continuant, vous acceptez nos <terms>Conditions d'utilisation</terms> et notre <privacy>Politique de confidentialité</privacy>.",
+    "verifyTitle": "Vérifiez votre e-mail",
+    "verifyLead": "Nous avons envoyé un lien magique dans votre boîte de réception. Cliquez dessus pour terminer la connexion — le lien expire dans 24 heures.",
+    "verifyRetry": "Vous ne l'avez pas reçu ? Vérifiez les spams ou <retry>réessayez</retry>.",
+    "verifyMetaTitle": "Vérifiez votre e-mail",
+    "verifyMetaDesc": "Un lien de connexion est en route."
   }
 }
