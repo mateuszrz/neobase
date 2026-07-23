@@ -177,7 +177,7 @@
     "all": "Todos",
     "countWorldwide": "{count, plural, one {# empresa} other {# empresas}} en todo el mundo, ordenadas por NeoBase Score.",
     "countInCountry": "{count, plural, one {# empresa} other {# empresas}} en {country}, ordenadas por NeoBase Score.",
-    "exchangesLead": "{count, plural, one {# exchange} other {# exchanges}}, ordenados por nuestro índice de sentimiento.",
+    "exchangesLead": "{count, plural, one {# exchange} other {# exchanges}}, ordenados por NeoBase Score.",
     "micaCta": "🇪🇺 Registro de licencias MiCA →"
   },
   "rankings": {
