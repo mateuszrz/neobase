@@ -7,7 +7,8 @@
  *    CONFIDENCE-SHRUNK toward the population prior by volume (see REVIEW_PRIOR /
  *    REVIEW_SMOOTH) so a thin-sample brand can't score like a huge one.
  *  - NEWS sentiment: article sentiment (Claude-derived) over a trailing window,
- *    mapped positive=100 / neutral=50 / negative=0.
+ *    as a DEVIATION from the review anchor — net (pos−neg)/total × EXTERNAL_SPAN,
+ *    so neutral coverage leaves the score put instead of dragging it toward 50.
  *
  * The two are blended by DYNAMIC, EVIDENCE-BASED weights: each side's weight
  * scales with how much data it has (capped at a reference volume) and the two are
@@ -64,8 +65,13 @@ const MAX_EXTERNAL = 0.25;
 const TREND_K = 800;
 const MAX_TREND_DRAG = 15;
 
-// positive=100 / neutral=50 / negative=0 — shared by news and mention sentiment.
-const NEWS_VALUE: Record<string, number> = { positive: 100, neutral: 50, negative: 0 };
+// News and mention sentiment are treated as a DEVIATION from the brand's review
+// anchor, not an absolute level. net = (pos − neg) / total ∈ [−1, 1] (neutrals
+// count in the denominator, so mostly-neutral coverage nets ~0 and doesn't move
+// the score); subScore = clamp(anchor + net · EXTERNAL_SPAN, 0, 100). This is why
+// a page of neutral articles no longer drags a 90-scoring brand down toward 50 —
+// the old positive=100/neutral=50/negative=0 absolute mapping did exactly that.
+const EXTERNAL_SPAN = 30; // max points news/mentions can pull a score from its anchor
 
 export interface SentimentComponents {
   composite: number;
@@ -151,6 +157,10 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
       ? null
       : (reviewVolume * reviewScoreRaw + REVIEW_SMOOTH * REVIEW_PRIOR) / (reviewVolume + REVIEW_SMOOTH);
 
+  // News/mentions deviate from the brand's own level; with no reviews, from the prior.
+  const externalAnchor = reviewScore ?? REVIEW_PRIOR;
+  const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
+
   // News side: article sentiment over the trailing window.
   const start = new Date(asOf.getTime() - NEWS_WINDOW_DAYS * 86_400_000);
   const news = await db.execute(sql`
@@ -160,15 +170,19 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
       AND coalesce(published_at, created_at) BETWEEN ${iso(start)} AND ${asOfDate}
     GROUP BY sentiment
   `);
-  let newsWeighted = 0;
+  let newsPos = 0;
+  let newsNeg = 0;
   let newsVolume = 0;
   for (const r of news.rows as any[]) {
     const n = num(r.n) ?? 0;
-    newsWeighted += (NEWS_VALUE[r.sentiment] ?? 50) * n;
+    if (r.sentiment === "positive") newsPos += n;
+    else if (r.sentiment === "negative") newsNeg += n;
     newsVolume += n;
   }
-  // Gate on an absolute minimum so one lucky article can't set the tone.
-  const newsScore = newsVolume >= NEWS_MIN ? newsWeighted / newsVolume : null;
+  // Gate on an absolute minimum so one lucky article can't set the tone, then map
+  // NET sentiment as a deviation from the anchor (neutral coverage → ~anchor).
+  const newsScore =
+    newsVolume >= NEWS_MIN ? clamp(externalAnchor + ((newsPos - newsNeg) / newsVolume) * EXTERNAL_SPAN, 0, 100) : null;
 
   // Mention side: third-party mention sentiment (toward the brand) over the window.
   const mStart = new Date(asOf.getTime() - MENTION_WINDOW_DAYS * 86_400_000);
@@ -180,14 +194,19 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
       AND coalesce(posted_at, created_at) <= ${asOf.toISOString()}
     GROUP BY sentiment
   `);
-  let mentionWeighted = 0;
+  let mentionPos = 0;
+  let mentionNeg = 0;
   let mentionVolume = 0;
   for (const r of men.rows as any[]) {
     const n = num(r.n) ?? 0;
-    mentionWeighted += (NEWS_VALUE[r.sentiment] ?? 50) * n;
+    if (r.sentiment === "positive") mentionPos += n;
+    else if (r.sentiment === "negative") mentionNeg += n;
     mentionVolume += n;
   }
-  const mentionScore = mentionVolume >= MENTION_MIN ? mentionWeighted / mentionVolume : null;
+  const mentionScore =
+    mentionVolume >= MENTION_MIN
+      ? clamp(externalAnchor + ((mentionPos - mentionNeg) / mentionVolume) * EXTERNAL_SPAN, 0, 100)
+      : null;
 
   // 1–2★ review-share TREND: week-over-week change in the share of 1–2★ reviews.
   // Anchored on the review score so NO movement is neutral (= reviewScore, no drag);
