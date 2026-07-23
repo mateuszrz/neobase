@@ -175,8 +175,8 @@
     "exchangesMetaTitle": "Annuaire des plateformes crypto",
     "exchangesMetaDesc": "Comparez les principales plateformes d'échange de cryptomonnaies par note, avis et sentiment des utilisateurs.",
     "all": "Toutes",
-    "countWorldwide": "{count, plural, one {# société} other {# sociétés}} dans le monde, classées par TrustScore.",
-    "countInCountry": "{count, plural, one {# société} other {# sociétés}} en {country}, classées par TrustScore.",
+    "countWorldwide": "{count, plural, one {# société} other {# sociétés}} dans le monde, classées par NeoBase Score.",
+    "countInCountry": "{count, plural, one {# société} other {# sociétés}} en {country}, classées par NeoBase Score.",
     "exchangesLead": "{count, plural, one {# plateforme} other {# plateformes}}, classées selon notre propre score de sentiment.",
     "micaCta": "🇪🇺 Registre des agréments MiCA →"
   },

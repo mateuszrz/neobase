@@ -49,6 +49,12 @@ const WEAK_RATING_THRESHOLD = 4; // stars; a platform averaging below this is "w
 const WEAK_PENALTY_PER_STAR = 12; // review-score points removed per star below the threshold
 const WEAK_MIN_REVIEWS = 10; // a platform needs at least this many reviews to count
 
+// Absence of a Trustpilot presence is itself a negative signal (Trustpilot is the
+// key independent trust source for fintechs). A brand that has other review data
+// but no live Trustpilot rating takes this flat hit, on top of any weak-platform
+// penalty. Only ~13% of scored brands lack it, so this is a real differentiator.
+const MISSING_TRUSTPILOT_PENALTY = 10; // review-score points off when there's no live Trustpilot rating
+
 // A single positive article/mention must not swing the score. News and mentions
 // only contribute once there are at least this many in the window; below it the
 // sub-score is dropped (not enough signal to be worth anything).
@@ -150,6 +156,7 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
   let rWeighted = 0;
   let reviewVolume = 0;
   let weakPenalty = 0; // worst below-threshold platform's shortfall × points-per-star
+  let hasTrustpilot = false;
   for (const r of rev.rows as any[]) {
     const pos = num(r.pos);
     const cnt = num(r.cnt) ?? 0;
@@ -164,8 +171,12 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     if (rating != null && rating < WEAK_RATING_THRESHOLD && cnt >= WEAK_MIN_REVIEWS) {
       weakPenalty = Math.max(weakPenalty, (WEAK_RATING_THRESHOLD - rating) * WEAK_PENALTY_PER_STAR);
     }
+    if (r.kind === "trustpilot" && rating != null) hasTrustpilot = true;
   }
   const reviewDenom = (rev.rows as any[]).reduce((s, r) => s + (num(r.cnt) && num(r.cnt)! > 0 ? num(r.cnt)! : num(r.pos) != null ? 1 : 0), 0);
+  // No Trustpilot at all is a negative signal in its own right — but only for a
+  // brand that actually has other review data to score from.
+  const missingTpPenalty = reviewDenom > 0 && !hasTrustpilot ? MISSING_TRUSTPILOT_PENALTY : 0;
   const reviewScoreRaw = reviewDenom > 0 ? rWeighted / reviewDenom : null;
   // Shrink the raw %positive toward the population prior by real review volume,
   // then subtract the weak-platform penalty. A bare rating with no count
@@ -175,7 +186,7 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     reviewScoreRaw == null
       ? null
       : (reviewVolume * reviewScoreRaw + REVIEW_SMOOTH * REVIEW_PRIOR) / (reviewVolume + REVIEW_SMOOTH);
-  const reviewScore = reviewShrunk == null ? null : Math.max(0, Math.min(100, reviewShrunk - weakPenalty));
+  const reviewScore = reviewShrunk == null ? null : Math.max(0, Math.min(100, reviewShrunk - weakPenalty - missingTpPenalty));
 
   // News/mentions deviate from the brand's own level; with no reviews, from the prior.
   const externalAnchor = reviewScore ?? REVIEW_PRIOR;

@@ -175,8 +175,8 @@
     "exchangesMetaTitle": "Katalog giełd kryptowalut",
     "exchangesMetaDesc": "Porównaj największe giełdy kryptowalut według ocen, opinii i sentymentu użytkowników.",
     "all": "Wszystkie",
-    "countWorldwide": "{count, plural, one {# firma} few {# firmy} many {# firm} other {# firmy}} na świecie, według TrustScore.",
-    "countInCountry": "{count, plural, one {# firma} few {# firmy} many {# firm} other {# firmy}} w kraju {country}, według TrustScore.",
+    "countWorldwide": "{count, plural, one {# firma} few {# firmy} many {# firm} other {# firmy}} na świecie, według NeoBase Score.",
+    "countInCountry": "{count, plural, one {# firma} few {# firmy} many {# firm} other {# firmy}} w kraju {country}, według NeoBase Score.",
     "exchangesLead": "{count, plural, one {# giełda} few {# giełdy} many {# giełd} other {# giełdy}}, według naszego wskaźnika sentymentu.",
     "micaCta": "🇪🇺 Rejestr licencji MiCA →"
   },

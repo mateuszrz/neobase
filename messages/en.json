@@ -175,8 +175,8 @@
     "exchangesMetaTitle": "Crypto Exchange Directory",
     "exchangesMetaDesc": "Compare top cryptocurrency exchanges by rating, reviews and user sentiment.",
     "all": "All",
-    "countWorldwide": "{count, plural, one {# company} other {# companies}} worldwide, ranked by TrustScore.",
-    "countInCountry": "{count, plural, one {# company} other {# companies}} in {country}, ranked by TrustScore.",
+    "countWorldwide": "{count, plural, one {# company} other {# companies}} worldwide, ranked by NeoBase Score.",
+    "countInCountry": "{count, plural, one {# company} other {# companies}} in {country}, ranked by NeoBase Score.",
     "exchangesLead": "{count, plural, one {# exchange} other {# exchanges}}, ranked by our own sentiment score.",
     "micaCta": "🇪🇺 MiCA licence registry →"
   },
