@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { and, asc, desc, eq, ne } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
@@ -11,12 +12,13 @@ const { fintechs, metricSnapshots } = schema;
 
 type Point = { date: string; rating: number | null; count: number | null; pos: number | null };
 
-function LineChart({ points }: { points: Point[] }) {
+async function LineChart({ points }: { points: Point[] }) {
+  const t = await getTranslations("panel");
   const W = 760;
   const H = 220;
   const P = 32;
   const rated = points.filter((p) => p.rating != null);
-  if (rated.length < 2) return <p style={{ color: "#64748b" }}>Not enough data to chart yet.</p>;
+  if (rated.length < 2) return <p style={{ color: "#64748b" }}>{t("dbgNoData")}</p>;
 
   const xs = (i: number) => P + (i / (points.length - 1)) * (W - 2 * P);
   const ratingY = (r: number) => H - P - ((r - 1) / 4) * (H - 2 * P); // rating scale 1..5
@@ -40,23 +42,25 @@ function LineChart({ points }: { points: Point[] }) {
         p.rating == null ? null : <circle key={i} cx={xs(i)} cy={ratingY(p.rating)} r={2.5} fill="#34d399" />,
       )}
       <text x={P} y={16} fill="#34d399" fontSize={11}>
-        ● Trustpilot rating (1–5)
+        {t("dbgLegendRating")}
       </text>
       <text x={P + 180} y={16} fill="#38bdf8" fontSize={11}>
-        ● Total review count
+        {t("dbgLegendCount")}
       </text>
     </svg>
   );
 }
 
-export default async function DebugPage({ params }: { params: Promise<{ fintechId: string }> }) {
-  const { fintechId } = await params;
+export default async function DebugPage({ params }: { params: Promise<{ locale: string; fintechId: string }> }) {
+  const { locale, fintechId } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("panel");
 
   const [ft] = await db.select().from(fintechs).where(eq(fintechs.id, fintechId)).limit(1);
   if (!ft) {
     return (
       <main style={{ maxWidth: 820, margin: "0 auto", padding: "48px 20px" }}>
-        <h1>Unknown fintech: {fintechId}</h1>
+        <h1>{t("dbgUnknown", { id: fintechId })}</h1>
       </main>
     );
   }
@@ -112,20 +116,20 @@ export default async function DebugPage({ params }: { params: Promise<{ fintechI
       </Link>
       <h1 style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 4 }}>{ft.name}</h1>
       <p style={{ color: "#64748b", fontSize: 14, marginTop: 0 }}>
-        {ft.type} · {ft.country ?? "—"} · {points.length} Trustpilot snapshots
+        {ft.type} · {ft.country ?? "—"} · {t("dbgSnapshots", { count: points.length })}
       </p>
 
-      <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>Trustpilot history (global)</h2>
+      <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>{t("dbgHistory")}</h2>
       <LineChart points={points} />
 
-      <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>Most recent snapshots</h2>
+      <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>{t("dbgRecent")}</h2>
       <table style={{ borderCollapse: "collapse", fontSize: 14, width: "100%" }}>
         <thead>
           <tr style={{ textAlign: "left", color: "#64748b" }}>
-            <th style={{ padding: "6px 12px" }}>Date</th>
-            <th style={{ padding: "6px 12px" }}>Rating</th>
-            <th style={{ padding: "6px 12px" }}>Reviews</th>
-            <th style={{ padding: "6px 12px" }}>Positive %</th>
+            <th style={{ padding: "6px 12px" }}>{t("dbgDate")}</th>
+            <th style={{ padding: "6px 12px" }}>{t("dbgRating")}</th>
+            <th style={{ padding: "6px 12px" }}>{t("dbgReviews")}</th>
+            <th style={{ padding: "6px 12px" }}>{t("dbgPositive")}</th>
           </tr>
         </thead>
         <tbody>
@@ -142,7 +146,7 @@ export default async function DebugPage({ params }: { params: Promise<{ fintechI
 
       {perCountry.length > 0 && (
         <>
-          <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>Recent by reviewer country</h2>
+          <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>{t("dbgByCountry")}</h2>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {perCountry.slice(0, 24).map((c, i) => (
               <span
@@ -155,7 +159,7 @@ export default async function DebugPage({ params }: { params: Promise<{ fintechI
                   fontSize: 13,
                 }}
               >
-                {c.country} · {String(c.date).slice(5)} · {c.count ?? 0} rev · ⭐{c.rating ?? "—"}
+                {c.country} · {String(c.date).slice(5)} · {t("dbgRev", { count: c.count ?? 0 })} · ⭐{c.rating ?? "—"}
               </span>
             ))}
           </div>

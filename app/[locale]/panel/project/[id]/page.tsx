@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { localeRedirect as redirect } from "@/lib/i18n/redirect";
@@ -42,10 +43,12 @@ export default async function ProjectPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ locale: string; id: string }>;
   searchParams: Promise<{ saved?: string; error?: string }>;
 }) {
-  const { id } = await params;
+  const { locale, id } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("panel");
   const { saved, error } = await searchParams;
 
   const session = await auth();
@@ -127,31 +130,31 @@ export default async function ProjectPage({
 
   const dailySources = currentBrands.length * currentMarkets.length * PROJECT_KINDS.length;
   const errMsg: Record<string, string> = {
-    limit: `That exceeds your ${pkg.name} plan limits (${pkg.brandSlots} brands · ${pkg.marketSlots} markets).`,
-    entitlement: "Your subscription is no longer active.",
-    save: "Couldn't save — please try again.",
+    limit: t("errLimit", { plan: pkg.name, brands: pkg.brandSlots, markets: pkg.marketSlots }),
+    entitlement: t("errEntitlement"),
+    save: t("errSave"),
   };
 
   return (
     <main className="section">
       <div className="wrap" style={{ maxWidth: 760 }}>
-        <Link href="/panel/" className="nav-link" style={{ padding: 0, color: "var(--cyan-edge)", fontSize: 13 }}>← Panel</Link>
+        <Link href="/panel/" className="nav-link" style={{ padding: 0, color: "var(--cyan-edge)", fontSize: 13 }}>{t("backPanel")}</Link>
         <div className="spread" style={{ alignItems: "baseline", marginTop: 10 }}>
           <h1 className="display" style={{ fontSize: "2rem" }}>{project.name}</h1>
           <span className="pill pill-score">{pkg.name}</span>
         </div>
         <p className="muted" style={{ marginTop: 6 }}>
-          {pkg.brandSlots} brand slots · {pkg.marketSlots} market slots · collected daily.
+          {t("prjSlots", { brands: pkg.brandSlots, markets: pkg.marketSlots })}
         </p>
 
         {saved && (
           <p className="card" style={{ marginTop: 16, padding: "10px 14px", borderLeft: "3px solid var(--cyan-signal)", fontSize: 14 }}>
-            Saved {saved}. Coverage reconciled — the daily collection picks it up.
+            {t("prjSaved")}
           </p>
         )}
         {error && (
           <p className="card" style={{ marginTop: 16, padding: "10px 14px", borderLeft: "3px solid var(--neg)", color: "var(--neg)", fontSize: 14 }}>
-            {errMsg[error] ?? "Something went wrong."}
+            {errMsg[error] ?? t("prjError")}
           </p>
         )}
 
@@ -161,26 +164,24 @@ export default async function ProjectPage({
             options={options}
             max={pkg.brandSlots}
             initial={currentBrands}
-            label="Brands"
+            label={t("prjBrands")}
             inputName="brandIds"
-            hint={`Pick up to ${pkg.brandSlots} brands to track daily across your markets.`}
+            hint={t("prjBrandsHint", { max: pkg.brandSlots })}
           />
-          <button className="btn btn-cyan" type="submit" style={{ alignSelf: "flex-start" }}>Save brands</button>
+          <button className="btn btn-cyan" type="submit" style={{ alignSelf: "flex-start" }}>{t("prjSaveBrands")}</button>
         </form>
 
         {/* Markets */}
         <form action={saveMarkets} className="card stack-16" style={{ marginTop: 20, padding: 24 }}>
           <MarketPicker options={MARKETS} max={pkg.marketSlots} initial={currentMarkets} />
-          <button className="btn btn-cyan" type="submit" style={{ alignSelf: "flex-start" }}>Save markets</button>
+          <button className="btn btn-cyan" type="submit" style={{ alignSelf: "flex-start" }}>{t("prjSaveMarkets")}</button>
         </form>
 
         {/* Coverage */}
         <div className="card" style={{ marginTop: 20, padding: 24 }}>
-          <h2 className="subheading" style={{ marginBottom: 8 }}>Coverage</h2>
+          <h2 className="subheading" style={{ marginBottom: 8 }}>{t("prjCoverage")}</h2>
           <p className="muted" style={{ margin: 0 }}>
-            {currentBrands.length} brand{currentBrands.length === 1 ? "" : "s"} × {currentMarkets.length} market
-            {currentMarkets.length === 1 ? "" : "s"} → <strong style={{ color: "inherit" }}>{dailySources}</strong> daily-collected sources
-            {dailySources === 0 && " (add brands and markets to start collecting)"}.
+            {t(dailySources === 0 ? "prjCoverageEmpty" : "prjCoverageLine", { brands: currentBrands.length, markets: currentMarkets.length, sources: dailySources })}
           </p>
         </div>
 
@@ -197,7 +198,7 @@ export default async function ProjectPage({
 
         {/* Danger zone */}
         <form action={deleteProject} style={{ marginTop: 24 }}>
-          <button className="btn btn-ghost" type="submit" style={{ fontSize: 13, color: "var(--neg)" }}>Delete project</button>
+          <button className="btn btn-ghost" type="submit" style={{ fontSize: 13, color: "var(--neg)" }}>{t("deleteProject")}</button>
         </form>
       </div>
     </main>
