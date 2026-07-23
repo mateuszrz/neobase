@@ -18,8 +18,9 @@
  */
 
 import "dotenv/config";
-import { eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, or, sql } from "drizzle-orm";
 import { db, schema } from "../lib/db/index.ts";
+import { apify } from "../lib/apify/index.ts";
 
 const { fintechs } = schema;
 
@@ -138,22 +139,76 @@ async function fetchHome(website: string): Promise<string | null> {
   return null;
 }
 
+/**
+ * Second-pass fetch via Apify's website-content-crawler — a headless render with
+ * anti-bot and residential proxies. Gets the footer of JS-rendered SPAs (binance,
+ * htx, mexc) and the pages that block a datacenter-IP fetch (coinbase, bitvavo).
+ * Slower and paid, so it only runs under --render. saveHtml keeps the raw <a>
+ * hrefs the extractor needs (markdown would drop icon-only footer links).
+ */
+async function renderFetch(website: string): Promise<string | null> {
+  let url = website.trim();
+  if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+  try {
+    const client = apify();
+    const run = await client.actor("apify/website-content-crawler").call(
+      {
+        startUrls: [{ url }],
+        maxCrawlDepth: 0,
+        maxCrawlPages: 1,
+        crawlerType: "playwright:adaptive",
+        saveHtml: true,
+        // Keep the WHOLE page: the default readability transform + element removal
+        // strip nav/footer, which is exactly where the social links live.
+        htmlTransformer: "none",
+        removeElementsCssSelector: "",
+      },
+      { waitSecs: 150 },
+    );
+    const { items } = await client.dataset(run.defaultDatasetId).listItems({ limit: 1, clean: true });
+    const html = String((items[0] as Record<string, any> | undefined)?.html ?? "");
+    return html.length > 200 ? html : null;
+  } catch {
+    return null;
+  }
+}
+
 const args = process.argv.slice(2);
 const doAll = args.includes("--all");
+const missesMode = args.includes("--misses");
+const doRender = args.includes("--render") || missesMode;
 const onlyId = args.find((a) => a.startsWith("--id="))?.slice(5);
 
-const where = onlyId ? eq(fintechs.id, onlyId) : doAll ? undefined : isNull(fintechs.socials);
+// --misses targets the brands the plain-fetch pass left without a linkedin OR
+// facebook handle (what the social pipeline actually needs) and always renders.
+const missWhere = or(
+  isNull(fintechs.socials),
+  and(sql`coalesce(${fintechs.socials}->>'linkedin','') = ''`, sql`coalesce(${fintechs.socials}->>'facebook','') = ''`),
+);
+const where = onlyId ? eq(fintechs.id, onlyId) : missesMode ? missWhere : doAll ? undefined : isNull(fintechs.socials);
 const rows = await db
-  .select({ id: fintechs.id, name: fintechs.name, website: fintechs.website })
+  .select({ id: fintechs.id, name: fintechs.name, website: fintechs.website, socials: fintechs.socials })
   .from(fintechs)
   .where(where as any);
 
-console.log(`crawling ${rows.length} fintech homepage(s) for socials…\n`);
+console.log(`crawling ${rows.length} fintech homepage(s) for socials${doRender ? " (render fallback on)" : ""}…\n`);
 
-const CONCURRENCY = 8;
+// Render is slow/paid; run it narrow. Plain-fetch pass stays wide.
+const CONCURRENCY = missesMode ? 3 : 8;
 let found = 0;
 let miss = 0;
 let nofound = 0;
+
+/** Keep existing non-empty handles, fill only the ones we newly discovered. */
+function merge(cur: unknown, found: Socials): Socials {
+  const base = cur && typeof cur === "object" ? (cur as Record<string, unknown>) : {};
+  const out = emptySocials();
+  for (const n of NETWORKS) {
+    const existing = typeof base[n] === "string" ? (base[n] as string) : "";
+    out[n] = existing || found[n] || "";
+  }
+  return out;
+}
 
 async function run(row: (typeof rows)[number]): Promise<void> {
   if (!row.website) {
@@ -161,22 +216,31 @@ async function run(row: (typeof rows)[number]): Promise<void> {
     miss++;
     return;
   }
-  const html = await fetchHome(row.website);
+  let html = await fetchHome(row.website);
+  let via = "fetch";
+  let scraped = html ? extractSocials(html) : emptySocials();
+  // Escalate to the headless render when the cheap fetch didn't yield the two
+  // networks the pipeline needs (linkedin/facebook).
+  if (doRender && !scraped.linkedin && !scraped.facebook) {
+    const rendered = await renderFetch(row.website);
+    if (rendered) { html = rendered; scraped = extractSocials(rendered); via = "render"; }
+  }
   if (!html) {
     console.log(`  ${row.id.padEnd(22)} — fetch failed (${row.website})`);
     miss++;
     return;
   }
-  const socials = extractSocials(html);
-  const hits = NETWORKS.filter((n) => socials[n]);
-  if (hits.length === 0) {
-    console.log(`  ${row.id.padEnd(22)} — no social links on page`);
+  const fresh = NETWORKS.filter((n) => scraped[n]);
+  if (fresh.length === 0) {
+    console.log(`  ${row.id.padEnd(22)} — no social links on page (${via})`);
     nofound++;
     return;
   }
+  const socials = merge(row.socials, scraped);
+  const hits = NETWORKS.filter((n) => socials[n]);
   await db.update(fintechs).set({ socials }).where(eq(fintechs.id, row.id));
   found++;
-  console.log(`  ${row.id.padEnd(22)} ✓ [${hits.join(", ")}]`);
+  console.log(`  ${row.id.padEnd(22)} ✓ [${hits.join(", ")}] (${via})`);
 }
 
 for (let i = 0; i < rows.length; i += CONCURRENCY) {

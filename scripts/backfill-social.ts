@@ -21,20 +21,28 @@ import { db } from "../lib/db/index.ts";
 import { ingestSocial } from "../lib/social/apify.ts";
 import type { SocialNetwork } from "../lib/social/sample.ts";
 
-const network = (process.argv[2] as SocialNetwork) ?? "linkedin";
+const argv = process.argv.slice(2);
+const network = (argv.find((a) => !a.startsWith("--")) as SocialNetwork) ?? "linkedin";
+const force = argv.includes("--force");
 if (network !== "linkedin" && network !== "facebook") {
-  console.error(`unknown network "${network}" — use linkedin | facebook`);
+  console.error(`unknown network "${network}" — use linkedin | facebook [--force]`);
   process.exit(1);
 }
 const CONCURRENCY = network === "facebook" ? 3 : 4;
 
+// Incremental by default: skip brands that already have posts for this network
+// (a re-run after adding more socials then only pays for the new brands). --force
+// re-ingests everyone.
 const rows = (
-  await db.execute(
-    sql`SELECT id FROM fintechs WHERE coalesce(socials->>${network},'') <> '' ORDER BY id`,
-  )
+  await db.execute(sql`
+    SELECT f.id FROM fintechs f
+    WHERE coalesce(f.socials->>${network},'') <> ''
+      ${force ? sql`` : sql`AND NOT EXISTS (SELECT 1 FROM social_posts sp WHERE sp.fintech_id = f.id AND sp.network = ${network})`}
+    ORDER BY f.id
+  `)
 ).rows as { id: string }[];
 
-console.log(`backfilling ${network} for ${rows.length} fintech(s) (concurrency ${CONCURRENCY})…\n`);
+console.log(`backfilling ${network} for ${rows.length} fintech(s)${force ? " (force)" : " (new only)"} (concurrency ${CONCURRENCY})…\n`);
 
 let ok = 0;
 let empty = 0;
