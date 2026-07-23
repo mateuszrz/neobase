@@ -97,7 +97,10 @@ async function listWithLatest(
   }));
 }
 
-export const getTopNeobanks = (limit = 12) => listWithLatest("neobank", limit);
+// Both rank by OUR composite sentiment score (and surface it on the cards) — it's
+// the product's own signal, not a third-party rating. Falls back to the Trustpilot
+// rating only for brands without a score yet (NULLS LAST keeps those off the top).
+export const getTopNeobanks = (limit = 12) => listWithLatest("neobank", limit, "sentiment");
 export const getTopExchanges = (limit = 8) => listWithLatest("exchange", limit, "sentiment");
 export const getAllFintechs = () => listWithLatest(null);
 export const listNeobanks = () => listWithLatest("neobank");
