@@ -546,5 +546,15 @@
     "verifyRetry": "Didn't get it? Check spam, or <retry>try again</retry>.",
     "verifyMetaTitle": "Check your email",
     "verifyMetaDesc": "A sign-in link is on its way."
+  },
+  "sentimentCard": {
+    "title": "Sentiment index",
+    "subtitle": "our score · updated weekly",
+    "trendAria": "Sentiment index trend",
+    "lastWeek": "last week",
+    "firstReading": "first reading — change shows next week",
+    "reviews": "Reviews · {count} ratings",
+    "news": "News",
+    "mentions": "Mentions"
   }
 }

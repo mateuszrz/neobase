@@ -546,5 +546,15 @@
     "verifyRetry": "Vous ne l'avez pas reçu ? Vérifiez les spams ou <retry>réessayez</retry>.",
     "verifyMetaTitle": "Vérifiez votre e-mail",
     "verifyMetaDesc": "Un lien de connexion est en route."
+  },
+  "sentimentCard": {
+    "title": "Indice de sentiment",
+    "subtitle": "notre score · mis à jour chaque semaine",
+    "trendAria": "Tendance de l'indice de sentiment",
+    "lastWeek": "la semaine dernière",
+    "firstReading": "première mesure — l'évolution apparaît la semaine prochaine",
+    "reviews": "Avis · {count} notes",
+    "news": "Actualités",
+    "mentions": "Mentions"
   }
 }
