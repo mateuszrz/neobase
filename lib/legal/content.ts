@@ -2,12 +2,16 @@
  * Terms of Service + Privacy Policy content, as Markdown per locale, rendered by
  * the /terms and /privacy pages through <Markdown>.
  *
- * ⚠️ DRAFT — legal review required before this is binding. Every `[BRACKETED]`
- * token is a placeholder for a real value the operator must fill in (legal
- * entity, address, contact email, registration numbers). English + Polish are
- * authored here; other locales fall back to English until a reviewed
- * translation exists — machine-translating un-reviewed legal text isn't worth
- * the risk. Keep LEGAL_UPDATED in step with any substantive edit.
+ * ⚠️ DRAFT — legal review required before this is relied on. English + Polish are
+ * authored; German, Spanish and French are machine translations of the English
+ * and must be reviewed before they can be relied on in those markets.
+ *
+ * Operator's decision: publish name + CEIDG sole-proprietorship form + contact
+ * email only; NIP, REGON and registered address are omitted. NOTE for the legal
+ * review: Polish law (UŚUDE art. 5, consumer-protection rules) generally expects
+ * the provider's address to be available, especially for paid services.
+ *
+ * Keep LEGAL_UPDATED in step with any substantive edit.
  */
 
 import { routing } from "@/i18n/routing";
@@ -16,24 +20,26 @@ export type LegalKind = "terms" | "privacy";
 
 export const LEGAL_UPDATED = "2026-07-23"; // ISO date of the last substantive change
 
-// ── Fill these in one place; both documents reference them. ──────────────────
-// Operator / data controller identity. NeoBase is run by a Polish sole
-// proprietorship (CEIDG); by the operator's decision NIP, REGON and the
-// registered address are not published — contact is by email only. NOTE for the
-// legal review: Polish law (UŚUDE art. 5, consumer-protection rules) generally
-// expects the provider's address to be available, especially for paid services.
 const OPERATOR = "The Clarity Mateusz Rzetecki";
-const OPERATOR_REG_EN = "a sole proprietorship registered in the Polish Central Registration and Information on Business (CEIDG)";
-const OPERATOR_REG_PL = "prowadzącego jednoosobową działalność gospodarczą wpisaną do CEIDG";
 const CONTACT_EMAIL = "contact@neobase.co";
 
+// Sole-proprietorship (CEIDG) descriptor, worded per language.
+const REG: Record<string, string> = {
+  en: "a sole proprietorship registered in the Polish Central Registration and Information on Business (CEIDG)",
+  pl: "prowadzącego jednoosobową działalność gospodarczą wpisaną do CEIDG",
+  de: "ein im polnischen Gewerberegister (CEIDG) eingetragenes Einzelunternehmen",
+  es: "una empresa individual inscrita en el Registro Central de Actividad Económica de Polonia (CEIDG)",
+  fr: "une entreprise individuelle enregistrée au registre polonais des entreprises (CEIDG)",
+};
+
+// ── English ──────────────────────────────────────────────────────────────────
 const TERMS_EN = `# Terms of Service
 
 _Last updated: ${LEGAL_UPDATED}_
 
 ## 1. Who we are
 
-These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERATOR}, ${OPERATOR_REG_EN} (the "Operator", "we", "us"), reachable at ${CONTACT_EMAIL}. By using the Service you agree to these Terms; if you do not agree, please do not use the Service.
+These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERATOR}, ${REG.en} (the "Operator", "we", "us"), reachable at ${CONTACT_EMAIL}. By using the Service you agree to these Terms; if you do not agree, please do not use the Service.
 
 ## 2. What the Service does
 
@@ -92,7 +98,7 @@ This policy explains how we handle personal data under the GDPR (Regulation (EU)
 
 ## 1. Controller
 
-The controller of your personal data is ${OPERATOR}, ${OPERATOR_REG_EN}. Contact: ${CONTACT_EMAIL}.
+The controller of your personal data is ${OPERATOR}, ${REG.en}. Contact: ${CONTACT_EMAIL}.
 
 ## 2. What we collect
 
@@ -143,13 +149,14 @@ We may update this policy; the "last updated" date shows the current version. Ma
 Questions about this policy: ${CONTACT_EMAIL}.
 `;
 
+// ── Polish ───────────────────────────────────────────────────────────────────
 const TERMS_PL = `# Regulamin
 
 _Ostatnia aktualizacja: ${LEGAL_UPDATED}_
 
 ## 1. Kto świadczy usługę
 
-Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis"), prowadzonego przez ${OPERATOR}, ${OPERATOR_REG_PL} ("Usługodawca", "my"), z którym można kontaktować się pod adresem ${CONTACT_EMAIL}. Korzystając z Serwisu, akceptujesz Regulamin; jeżeli się z nim nie zgadzasz, nie korzystaj z Serwisu.
+Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis"), prowadzonego przez ${OPERATOR}, ${REG.pl} ("Usługodawca", "my"), z którym można kontaktować się pod adresem ${CONTACT_EMAIL}. Korzystając z Serwisu, akceptujesz Regulamin; jeżeli się z nim nie zgadzasz, nie korzystaj z Serwisu.
 
 ## 2. Czym jest Serwis
 
@@ -208,7 +215,7 @@ Niniejsza polityka wyjaśnia, jak przetwarzamy dane osobowe zgodnie z RODO (Rozp
 
 ## 1. Administrator
 
-Administratorem Twoich danych osobowych jest ${OPERATOR}, ${OPERATOR_REG_PL}. Kontakt: ${CONTACT_EMAIL}.
+Administratorem Twoich danych osobowych jest ${OPERATOR}, ${REG.pl}. Kontakt: ${CONTACT_EMAIL}.
 
 ## 2. Jakie dane zbieramy
 
@@ -259,13 +266,364 @@ Możemy aktualizować tę politykę; data "ostatniej aktualizacji" wskazuje obow
 Pytania dotyczące polityki: ${CONTACT_EMAIL}.
 `;
 
-const TERMS: Record<string, string> = { en: TERMS_EN, pl: TERMS_PL };
-const PRIVACY: Record<string, string> = { en: PRIVACY_EN, pl: PRIVACY_PL };
+// ── German (machine translation — review pending) ────────────────────────────
+const TERMS_DE = `# Nutzungsbedingungen
+
+_Zuletzt aktualisiert: ${LEGAL_UPDATED}_
+
+## 1. Wer wir sind
+
+Diese Nutzungsbedingungen regeln Ihre Nutzung von **NeoBase** (der „Dienst"), betrieben von ${OPERATOR}, ${REG.de} (der „Betreiber", „wir", „uns"), erreichbar unter ${CONTACT_EMAIL}. Mit der Nutzung des Dienstes stimmen Sie diesen Bedingungen zu; wenn Sie nicht einverstanden sind, nutzen Sie den Dienst bitte nicht.
+
+## 2. Was der Dienst tut
+
+NeoBase bündelt **öffentlich zugängliche Informationen** über Neobanken und Krypto-Börsen — Bewertungen und Bewertungszahlen von Drittplattformen (z. B. Trustpilot, Google Play, App Store), öffentliche Nachrichten, Social-Media- und Regulierungsdaten — und fasst sie zu eigenen zusammengesetzten Kennzahlen zusammen, einschließlich des **NeoBase Score**. Wir bieten außerdem optionale Konten, Wettbewerbsberichte und kostenpflichtiges Monitoring an.
+
+## 3. Art der Informationen — keine Beratung
+
+Der Dienst wird **ausschließlich zu Informationszwecken** bereitgestellt.
+
+- Die Informationen stammen aus Dritt- und öffentlichen Quellen und **können unvollständig, verzögert oder ungenau sein**. Wir übernehmen keine Gewähr für ihre Richtigkeit oder Vollständigkeit.
+- Der **NeoBase Score ist unsere eigene redaktionelle Kennzahl**, berechnet aus den oben beschriebenen Daten. Es handelt sich nicht um ein offizielles Rating und er ist nicht von den beschriebenen Marken bestätigt.
+- Nichts im Dienst stellt eine **Anlage-, Finanz-, Rechts- oder Steuerberatung** dar, noch eine Empfehlung, ein Produkt oder eine Dienstleistung zu nutzen, zu kaufen oder zu verkaufen. Entscheidungen, die Sie auf Grundlage des Dienstes treffen, liegen in Ihrer eigenen Verantwortung.
+
+## 4. Konten
+
+Einige Funktionen erfordern ein Konto. Wir nutzen eine passwortlose Anmeldung: Sie geben Ihre E-Mail-Adresse ein und erhalten einen einmaligen Anmeldelink. Sie sind für die Sicherheit des Zugangs zu Ihrem E-Mail-Postfach und für Aktivitäten unter Ihrem Konto verantwortlich. Sie können Ihr Konto jederzeit schließen, indem Sie sich an ${CONTACT_EMAIL} wenden.
+
+## 5. Kostenpflichtige Dienste
+
+Kostenpflichtige Pläne (z. B. Monitoring, Berichte) — sofern angeboten — werden zum Zeitpunkt des Kaufs beschrieben, einschließlich Preis und Abrechnungszeitraum. Zahlungen werden von unserem Zahlungsdienstleister abgewickelt; für die Transaktion gelten dessen Bedingungen. Gesetzliche Widerrufsrechte für Verbraucher gelten, soweit gesetzlich vorgeschrieben; Einzelheiten werden beim Bezahlvorgang mitgeteilt.
+
+## 6. Zulässige Nutzung
+
+Sie verpflichten sich, nicht: den Dienst rechtswidrig zu nutzen; Daten außerhalb der von uns bereitgestellten Schnittstellen zu scrapen, massenhaft herunterzuladen oder systematisch zu extrahieren; die Sicherheit des Dienstes zu stören oder zu testen; den NeoBase Score als offizielles Rating darzustellen; oder unsere Rechte oder die Rechte Dritter zu verletzen.
+
+## 7. Geistiges Eigentum
+
+Der Dienst, sein Design, seine Texte sowie die Methodik und Ergebnisse des NeoBase Score sind gesetzlich geschützt. Zugrunde liegende Drittbewertungen und Marken gehören ihren jeweiligen Inhabern. Sie dürfen unsere Seiten zu nicht-kommerziellen Zwecken mit Quellenangabe teilen und verlinken; jede andere Nutzung bedarf unserer Zustimmung.
+
+## 8. Haftung
+
+Soweit gesetzlich zulässig, haften wir nicht für Entscheidungen, die im Vertrauen auf den Dienst getroffen werden, für die Richtigkeit von Drittdaten oder für mittelbare Schäden oder Folgeschäden. Nichts hierin beschränkt eine Haftung, die gesetzlich nicht beschränkt werden kann (auch gegenüber Verbrauchern).
+
+## 9. Beschwerden
+
+Sie können eine Beschwerde unter ${CONTACT_EMAIL} einreichen. Wir bemühen uns, innerhalb von 14 Tagen zu antworten.
+
+## 10. Änderungen
+
+Wir können diese Bedingungen aktualisieren; das Datum „zuletzt aktualisiert" gibt die aktuelle Fassung an. Wesentliche Änderungen, die registrierte Nutzer betreffen, werden per E-Mail oder im Dienst mitgeteilt.
+
+## 11. Anwendbares Recht
+
+Diese Bedingungen unterliegen polnischem Recht und dem anwendbaren EU-Recht, unbeschadet zwingender Verbraucherschutzvorschriften Ihres Wohnsitzlandes. Streitigkeiten unterliegen den zuständigen Gerichten, vorbehaltlich der gesetzlichen Rechte der Verbraucher.
+
+## 12. Kontakt
+
+${OPERATOR} — ${CONTACT_EMAIL}.
+`;
+
+const PRIVACY_DE = `# Datenschutzerklärung
+
+_Zuletzt aktualisiert: ${LEGAL_UPDATED}_
+
+Diese Erklärung beschreibt, wie wir personenbezogene Daten nach der DSGVO (Verordnung (EU) 2016/679) verarbeiten.
+
+## 1. Verantwortlicher
+
+Verantwortlicher für Ihre personenbezogenen Daten ist ${OPERATOR}, ${REG.de}. Kontakt: ${CONTACT_EMAIL}.
+
+## 2. Welche Daten wir erheben
+
+- **E-Mail-Adresse** — wenn Sie sich anmelden (passwortloser Magic Link) oder einen Bericht anfordern. Dies ist das einzige identifizierende Datum, um das wir Sie bitten.
+- **Technische Daten** — übliche Server-Logs (IP-Adresse, User-Agent, Zeitstempel), die bei Ihrem Besuch anfallen und der Sicherheit und Zuverlässigkeit dienen.
+- **Notwendiges Cookie** — ein Sitzungs-Cookie, das Sie angemeldet hält. Es werden keine Werbe- oder Drittanbieter-Analyse-Cookies verwendet.
+
+Wir erheben **keine** besonderen Kategorien personenbezogener Daten; die Marken-/Bewertungsdaten im Dienst betreffen Unternehmen, nicht Sie.
+
+## 3. Zwecke und Rechtsgrundlagen
+
+- Bereitstellung des Dienstes und Ihres Kontos — Art. 6 Abs. 1 lit. b (Vertragserfüllung).
+- Sicherheit, Missbrauchsprävention und Zuverlässigkeit des Dienstes — Art. 6 Abs. 1 lit. f (berechtigtes Interesse).
+- Versand eines von Ihnen angeforderten Berichts und damit verbundene Kontaktaufnahme — Art. 6 Abs. 1 lit. b/a (Vertrag / Einwilligung, die Sie jederzeit widerrufen können).
+
+## 4. Empfänger / Auftragsverarbeiter
+
+Wir setzen geprüfte Auftragsverarbeiter ein, die auf unsere Weisung handeln:
+
+- **Vercel Inc.** — Hosting und Bereitstellung des Dienstes.
+- **Neon Inc.** — verwaltete Datenbankspeicherung.
+- **Resend** — Versand von Transaktions-E-Mails (Anmeldelinks, angeforderte Berichte).
+
+Dienste, die **öffentliche Markendaten** liefern (z. B. Apify, DataForSEO), sowie unser KI-Anbieter verarbeiten Informationen über Marken, nicht Ihre personenbezogenen Daten.
+
+## 5. Übermittlungen außerhalb des EWR
+
+Einige Auftragsverarbeiter befinden sich in den Vereinigten Staaten. Solche Übermittlungen stützen sich auf geeignete Garantien nach der DSGVO (z. B. Standardvertragsklauseln und, sofern zutreffend, den EU-US Data Privacy Framework).
+
+## 6. Speicherdauer
+
+Kontodaten speichern wir, solange Ihr Konto besteht, und löschen sie bei dessen Schließung. Daten aus Berichtsanfragen werden nur so lange gespeichert, wie es zur Erfüllung der Anfrage und für einen angemessenen Nachbearbeitungszeitraum erforderlich ist. Server-Logs werden aus Sicherheitsgründen für einen begrenzten Zeitraum aufbewahrt.
+
+## 7. Ihre Rechte
+
+Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Datenübertragbarkeit sowie das Recht, eine Einwilligung jederzeit zu widerrufen. Zur Ausübung wenden Sie sich an ${CONTACT_EMAIL}. Sie haben zudem das Recht, sich bei einer Aufsichtsbehörde zu beschweren — in Polen beim Präsidenten des Amtes für den Schutz personenbezogener Daten (**PUODO**), ul. Stawki 2, 00-193 Warschau.
+
+## 8. Cookies
+
+Wir verwenden ausschließlich ein **unbedingt erforderliches** Sitzungs-Cookie für die Anmeldung. Da wir keine Marketing- oder Analyse-Cookies einsetzen, ist dafür kein Einwilligungsbanner erforderlich.
+
+## 9. Änderungen
+
+Wir können diese Erklärung aktualisieren; das Datum „zuletzt aktualisiert" zeigt die aktuelle Fassung. Über wesentliche Änderungen werden registrierte Nutzer informiert.
+
+## 10. Kontakt
+
+Fragen zu dieser Erklärung: ${CONTACT_EMAIL}.
+`;
+
+// ── Spanish (machine translation — review pending) ───────────────────────────
+const TERMS_ES = `# Términos del servicio
+
+_Última actualización: ${LEGAL_UPDATED}_
+
+## 1. Quiénes somos
+
+Estos Términos rigen tu uso de **NeoBase** (el «Servicio»), operado por ${OPERATOR}, ${REG.es} (el «Operador», «nosotros»), con contacto en ${CONTACT_EMAIL}. Al usar el Servicio aceptas estos Términos; si no estás de acuerdo, no utilices el Servicio.
+
+## 2. Qué hace el Servicio
+
+NeoBase agrega **información disponible públicamente** sobre neobancos y exchanges de criptomonedas — valoraciones y número de reseñas de plataformas de terceros (p. ej. Trustpilot, Google Play, App Store), noticias públicas, datos de redes sociales y regulatorios — y los combina en nuestros propios indicadores compuestos, incluido el **NeoBase Score**. También ofrecemos cuentas opcionales, informes competitivos y monitorización de pago.
+
+## 3. Naturaleza de la información — sin asesoramiento
+
+El Servicio se presta **únicamente con fines informativos**.
+
+- La información se agrega de fuentes de terceros y públicas y **puede estar incompleta, retrasada o ser inexacta**. No garantizamos su exactitud ni su integridad.
+- El **NeoBase Score es nuestro propio indicador editorial**, calculado a partir de los datos descritos. No es una calificación oficial ni está respaldado por las marcas que describe.
+- Nada en el Servicio constituye **asesoramiento de inversión, financiero, legal o fiscal**, ni una recomendación para usar, comprar o vender ningún producto o servicio. Las decisiones que tomes basándote en el Servicio son tu propia responsabilidad.
+
+## 4. Cuentas
+
+Algunas funciones requieren una cuenta. Usamos inicio de sesión sin contraseña: introduces tu correo y recibes un enlace de acceso de un solo uso. Eres responsable de mantener seguro el acceso a tu correo y de la actividad en tu cuenta. Puedes cerrar tu cuenta en cualquier momento escribiendo a ${CONTACT_EMAIL}.
+
+## 5. Servicios de pago
+
+Los planes de pago (p. ej. monitorización, informes) — cuando se ofrezcan — se describen en el momento de la compra, incluidos el precio y el periodo de facturación. Los pagos los gestiona nuestro proveedor de pagos; sus condiciones se aplican a la transacción. Los derechos legales de desistimiento para consumidores se aplican cuando lo exija la ley; los detalles se facilitan al finalizar la compra.
+
+## 6. Uso aceptable
+
+Te comprometes a no: usar el Servicio de forma ilícita; hacer scraping, descargar de forma masiva o extraer datos sistemáticamente salvo mediante las interfaces que proporcionamos; interrumpir o sondear la seguridad del Servicio; presentar el NeoBase Score como una calificación oficial; o infringir nuestros derechos o los de terceros.
+
+## 7. Propiedad intelectual
+
+El Servicio, su diseño, sus textos y la metodología y resultados del NeoBase Score están protegidos por la ley. Las valoraciones y marcas subyacentes de terceros pertenecen a sus respectivos titulares. Puedes compartir y enlazar nuestras páginas con fines no comerciales citando la fuente; cualquier otro uso requiere nuestro consentimiento.
+
+## 8. Responsabilidad
+
+En la máxima medida permitida por la ley, no somos responsables de las decisiones tomadas confiando en el Servicio, de la exactitud de los datos de terceros ni de daños indirectos o consecuentes. Nada de lo aquí dispuesto limita la responsabilidad que no pueda limitarse por ley (incluido frente a consumidores).
+
+## 9. Reclamaciones
+
+Puedes presentar una reclamación en ${CONTACT_EMAIL}. Procuramos responder en un plazo de 14 días.
+
+## 10. Cambios
+
+Podemos actualizar estos Términos; la fecha de «última actualización» refleja la versión vigente. Los cambios sustanciales que afecten a los usuarios registrados se comunicarán por correo o en el Servicio.
+
+## 11. Ley aplicable
+
+Estos Términos se rigen por la legislación polaca y el Derecho aplicable de la UE, sin perjuicio de las normas imperativas de protección al consumidor de tu país de residencia. Las controversias se someten a los tribunales competentes, sin perjuicio de los derechos legales de los consumidores.
+
+## 12. Contacto
+
+${OPERATOR} — ${CONTACT_EMAIL}.
+`;
+
+const PRIVACY_ES = `# Política de privacidad
+
+_Última actualización: ${LEGAL_UPDATED}_
+
+Esta política explica cómo tratamos los datos personales conforme al RGPD (Reglamento (UE) 2016/679).
+
+## 1. Responsable
+
+El responsable de tus datos personales es ${OPERATOR}, ${REG.es}. Contacto: ${CONTACT_EMAIL}.
+
+## 2. Qué recopilamos
+
+- **Dirección de correo electrónico** — cuando inicias sesión (enlace mágico sin contraseña) o solicitas un informe. Es el único dato identificativo que te pedimos.
+- **Datos técnicos** — registros estándar del servidor (dirección IP, agente de usuario, marcas de tiempo) generados durante tu visita, usados por seguridad y fiabilidad.
+- **Cookie esencial** — una cookie de sesión que te mantiene con la sesión iniciada. No se usan cookies publicitarias ni de analítica de terceros.
+
+**No** recopilamos categorías especiales de datos, y los datos de marcas/reseñas del Servicio se refieren a empresas, no a ti.
+
+## 3. Fines y bases jurídicas
+
+- Prestación del Servicio y de tu cuenta — art. 6.1.b (ejecución de un contrato).
+- Seguridad, prevención de abusos y fiabilidad del Servicio — art. 6.1.f (interés legítimo).
+- Envío de un informe que hayas solicitado y contacto relacionado — art. 6.1.b/a (contrato / consentimiento, que puedes retirar en cualquier momento).
+
+## 4. Destinatarios / encargados
+
+Utilizamos encargados verificados que actúan según nuestras instrucciones:
+
+- **Vercel Inc.** — alojamiento y entrega del Servicio.
+- **Neon Inc.** — almacenamiento de base de datos gestionado.
+- **Resend** — envío de correos transaccionales (enlaces de acceso, informes solicitados).
+
+Los servicios que aportan **datos públicos de marcas** (p. ej. Apify, DataForSEO) y nuestro proveedor de IA tratan información sobre marcas, no tus datos personales.
+
+## 5. Transferencias fuera del EEE
+
+Algunos encargados están ubicados en los Estados Unidos. Dichas transferencias se basan en garantías adecuadas conforme al RGPD (p. ej. cláusulas contractuales tipo y, cuando proceda, el Marco de Privacidad de Datos UE-EE. UU.).
+
+## 6. Conservación
+
+Conservamos los datos de la cuenta mientras exista tu cuenta y los eliminamos al cerrarla. Los datos de la solicitud de informe se conservan solo el tiempo necesario para atender la solicitud y durante un periodo razonable de seguimiento. Los registros del servidor se conservan un tiempo limitado por seguridad.
+
+## 7. Tus derechos
+
+Tienes derecho de acceso, rectificación, supresión, limitación, oposición y portabilidad, y a retirar el consentimiento en cualquier momento. Para ejercerlos, escribe a ${CONTACT_EMAIL}. También tienes derecho a presentar una reclamación ante una autoridad de control — en Polonia, el Presidente de la Oficina de Protección de Datos Personales (**PUODO**), ul. Stawki 2, 00-193 Varsovia.
+
+## 8. Cookies
+
+Usamos únicamente una cookie de sesión **estrictamente necesaria** para el inicio de sesión. Como no usamos cookies de marketing ni de analítica, no se requiere banner de consentimiento para ella.
+
+## 9. Cambios
+
+Podemos actualizar esta política; la fecha de «última actualización» muestra la versión vigente. Los cambios sustanciales se comunicarán a los usuarios registrados.
+
+## 10. Contacto
+
+Consultas sobre esta política: ${CONTACT_EMAIL}.
+`;
+
+// ── French (machine translation — review pending) ────────────────────────────
+const TERMS_FR = `# Conditions d'utilisation
+
+_Dernière mise à jour : ${LEGAL_UPDATED}_
+
+## 1. Qui nous sommes
+
+Les présentes Conditions régissent votre utilisation de **NeoBase** (le « Service »), exploité par ${OPERATOR}, ${REG.fr} (l'« Exploitant », « nous »), joignable à ${CONTACT_EMAIL}. En utilisant le Service, vous acceptez ces Conditions ; si vous n'êtes pas d'accord, veuillez ne pas utiliser le Service.
+
+## 2. Ce que fait le Service
+
+NeoBase agrège des **informations accessibles au public** sur les néobanques et les plateformes d'échange de cryptomonnaies — notes et nombres d'avis provenant de plateformes tierces (par ex. Trustpilot, Google Play, App Store), actualités publiques, données de réseaux sociaux et données réglementaires — et les combine en nos propres indicateurs composites, dont le **NeoBase Score**. Nous proposons également des comptes optionnels, des rapports concurrentiels et une surveillance payante.
+
+## 3. Nature des informations — pas de conseil
+
+Le Service est fourni **à titre purement informatif**.
+
+- Les informations sont agrégées à partir de sources tierces et publiques et **peuvent être incomplètes, tardives ou inexactes**. Nous ne garantissons ni leur exactitude ni leur exhaustivité.
+- Le **NeoBase Score est notre propre indicateur éditorial**, calculé à partir des données décrites ci-dessus. Ce n'est pas une notation officielle et il n'est pas approuvé par les marques qu'il décrit.
+- Rien dans le Service ne constitue un **conseil en investissement, financier, juridique ou fiscal**, ni une recommandation d'utiliser, d'acheter ou de vendre un produit ou service. Les décisions que vous prenez sur la base du Service relèvent de votre seule responsabilité.
+
+## 4. Comptes
+
+Certaines fonctionnalités nécessitent un compte. Nous utilisons une connexion sans mot de passe : vous saisissez votre e-mail et recevez un lien de connexion à usage unique. Vous êtes responsable de la sécurité de l'accès à votre messagerie et de l'activité sur votre compte. Vous pouvez fermer votre compte à tout moment en écrivant à ${CONTACT_EMAIL}.
+
+## 5. Services payants
+
+Les offres payantes (par ex. surveillance, rapports) — lorsqu'elles sont proposées — sont décrites au moment de l'achat, y compris le prix et la période de facturation. Les paiements sont traités par notre prestataire de paiement ; ses conditions s'appliquent à la transaction. Les droits légaux de rétractation des consommateurs s'appliquent lorsque la loi l'exige ; les détails sont fournis au moment du paiement.
+
+## 6. Utilisation acceptable
+
+Vous vous engagez à ne pas : utiliser le Service de manière illicite ; extraire (scraping), télécharger en masse ou extraire systématiquement des données autrement que via les interfaces que nous fournissons ; perturber ou sonder la sécurité du Service ; présenter le NeoBase Score comme une notation officielle ; ou porter atteinte à nos droits ou à ceux de tiers.
+
+## 7. Propriété intellectuelle
+
+Le Service, son design, ses textes ainsi que la méthodologie et les résultats du NeoBase Score sont protégés par la loi. Les notes et marques tierces sous-jacentes appartiennent à leurs titulaires respectifs. Vous pouvez partager et créer des liens vers nos pages à des fins non commerciales avec attribution ; toute autre utilisation requiert notre consentement.
+
+## 8. Responsabilité
+
+Dans toute la mesure permise par la loi, nous ne sommes pas responsables des décisions prises en se fiant au Service, de l'exactitude des données de tiers, ni des dommages indirects ou consécutifs. Rien dans les présentes ne limite une responsabilité qui ne peut être limitée par la loi (y compris envers les consommateurs).
+
+## 9. Réclamations
+
+Vous pouvez déposer une réclamation à ${CONTACT_EMAIL}. Nous nous efforçons de répondre sous 14 jours.
+
+## 10. Modifications
+
+Nous pouvons mettre à jour ces Conditions ; la date de « dernière mise à jour » indique la version en vigueur. Les modifications substantielles concernant les utilisateurs enregistrés seront communiquées par e-mail ou dans le Service.
+
+## 11. Droit applicable
+
+Les présentes Conditions sont régies par le droit polonais et le droit applicable de l'UE, sans préjudice des règles impératives de protection des consommateurs de votre pays de résidence. Les litiges relèvent des tribunaux compétents, sous réserve des droits légaux des consommateurs.
+
+## 12. Contact
+
+${OPERATOR} — ${CONTACT_EMAIL}.
+`;
+
+const PRIVACY_FR = `# Politique de confidentialité
+
+_Dernière mise à jour : ${LEGAL_UPDATED}_
+
+Cette politique explique comment nous traitons les données personnelles au titre du RGPD (Règlement (UE) 2016/679).
+
+## 1. Responsable du traitement
+
+Le responsable du traitement de vos données personnelles est ${OPERATOR}, ${REG.fr}. Contact : ${CONTACT_EMAIL}.
+
+## 2. Ce que nous collectons
+
+- **Adresse e-mail** — lorsque vous vous connectez (lien magique sans mot de passe) ou demandez un rapport. C'est la seule donnée identifiante que nous vous demandons.
+- **Données techniques** — journaux de serveur standard (adresse IP, agent utilisateur, horodatages) générés lors de votre visite, utilisés pour la sécurité et la fiabilité.
+- **Cookie essentiel** — un cookie de session qui vous maintient connecté. Aucun cookie publicitaire ou d'analyse tiers n'est utilisé.
+
+Nous ne collectons **pas** de catégories particulières de données, et les données de marques/avis du Service concernent des entreprises, pas vous.
+
+## 3. Finalités et bases légales
+
+- Fourniture du Service et de votre compte — art. 6, §1, b (exécution d'un contrat).
+- Sécurité, prévention des abus et fiabilité du Service — art. 6, §1, f (intérêt légitime).
+- Envoi d'un rapport que vous avez demandé et suivi associé — art. 6, §1, b/a (contrat / consentement, que vous pouvez retirer à tout moment).
+
+## 4. Destinataires / sous-traitants
+
+Nous faisons appel à des sous-traitants vérifiés qui agissent sur nos instructions :
+
+- **Vercel Inc.** — hébergement et distribution du Service.
+- **Neon Inc.** — stockage de base de données géré.
+- **Resend** — envoi d'e-mails transactionnels (liens de connexion, rapports demandés).
+
+Les services fournissant des **données publiques sur les marques** (par ex. Apify, DataForSEO) ainsi que notre fournisseur d'IA traitent des informations sur les marques, pas vos données personnelles.
+
+## 5. Transferts hors de l'EEE
+
+Certains sous-traitants sont situés aux États-Unis. Ces transferts reposent sur des garanties appropriées au titre du RGPD (par ex. clauses contractuelles types et, le cas échéant, le cadre de protection des données UE–États-Unis).
+
+## 6. Conservation
+
+Nous conservons les données de compte tant que votre compte existe et les supprimons à sa fermeture. Les données de demande de rapport ne sont conservées que le temps nécessaire au traitement de la demande et pendant une période raisonnable de suivi. Les journaux de serveur sont conservés pour une durée limitée à des fins de sécurité.
+
+## 7. Vos droits
+
+Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité, ainsi que du droit de retirer votre consentement à tout moment. Pour les exercer, écrivez à ${CONTACT_EMAIL}. Vous avez également le droit d'introduire une réclamation auprès d'une autorité de contrôle — en Pologne, le Président de l'Office de protection des données personnelles (**PUODO**), ul. Stawki 2, 00-193 Varsovie.
+
+## 8. Cookies
+
+Nous utilisons uniquement un cookie de session **strictement nécessaire** à la connexion. Comme nous n'utilisons aucun cookie marketing ou d'analyse, aucun bandeau de consentement n'est requis pour celui-ci.
+
+## 9. Modifications
+
+Nous pouvons mettre à jour cette politique ; la date de « dernière mise à jour » indique la version en vigueur. Les modifications substantielles seront communiquées aux utilisateurs enregistrés.
+
+## 10. Contact
+
+Questions sur cette politique : ${CONTACT_EMAIL}.
+`;
+
+const TERMS: Record<string, string> = { en: TERMS_EN, pl: TERMS_PL, de: TERMS_DE, es: TERMS_ES, fr: TERMS_FR };
+const PRIVACY: Record<string, string> = { en: PRIVACY_EN, pl: PRIVACY_PL, de: PRIVACY_DE, es: PRIVACY_ES, fr: PRIVACY_FR };
 
 /**
  * Markdown body for a legal document in the requested locale. `localized` is
- * false when we fell back to English (de/es/fr until a reviewed translation
- * lands), so the page can flag it if it wants to.
+ * false when we fell back to English (should not happen for the five indexable
+ * locales, all of which are authored/translated above).
  */
 export function getLegal(kind: LegalKind, locale: string): { body: string; localized: boolean } {
   const map = kind === "terms" ? TERMS : PRIVACY;
