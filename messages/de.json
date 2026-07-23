@@ -531,5 +531,20 @@
     "termsDesc": "Bedingungen für die Nutzung von NeoBase — unserem Informationsdienst zu Neobanken und Krypto-Börsen.",
     "privacyTitle": "Datenschutzerklärung",
     "privacyDesc": "Wie NeoBase Ihre personenbezogenen Daten gemäß der DSGVO verarbeitet."
+  },
+  "login": {
+    "account": "Konto",
+    "title": "Bei NeoBase anmelden",
+    "lead": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Magic Link — kein Passwort nötig.",
+    "placeholder": "sie@firma.de",
+    "submit": "Magic Link senden",
+    "metaTitle": "Anmelden",
+    "metaDesc": "Melden Sie sich bei Ihrem NeoBase-Konto an.",
+    "consent": "Indem Sie fortfahren, stimmen Sie unseren <terms>Nutzungsbedingungen</terms> und der <privacy>Datenschutzerklärung</privacy> zu.",
+    "verifyTitle": "Prüfen Sie Ihre E-Mails",
+    "verifyLead": "Wir haben einen Magic Link an Ihr Postfach gesendet. Klicken Sie darauf, um die Anmeldung abzuschließen — der Link läuft nach 24 Stunden ab.",
+    "verifyRetry": "Nicht erhalten? Prüfen Sie den Spam-Ordner oder <retry>versuchen Sie es erneut</retry>.",
+    "verifyMetaTitle": "Prüfen Sie Ihre E-Mails",
+    "verifyMetaDesc": "Ein Anmeldelink ist unterwegs."
   }
 }

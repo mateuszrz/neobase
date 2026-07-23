@@ -531,5 +531,20 @@
     "termsDesc": "Terms governing your use of NeoBase — our information service on neobanks and crypto exchanges.",
     "privacyTitle": "Privacy Policy",
     "privacyDesc": "How NeoBase handles your personal data under the GDPR."
+  },
+  "login": {
+    "account": "Account",
+    "title": "Sign in to NeoBase",
+    "lead": "Enter your email and we'll send you a magic link — no password needed.",
+    "placeholder": "you@company.com",
+    "submit": "Send magic link",
+    "metaTitle": "Sign in",
+    "metaDesc": "Sign in to your NeoBase account.",
+    "consent": "By continuing you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "verifyTitle": "Check your email",
+    "verifyLead": "We sent a magic link to your inbox. Click it to finish signing in — the link expires in 24 hours.",
+    "verifyRetry": "Didn't get it? Check spam, or <retry>try again</retry>.",
+    "verifyMetaTitle": "Check your email",
+    "verifyMetaDesc": "A sign-in link is on its way."
   }
 }
