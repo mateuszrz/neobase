@@ -3,7 +3,9 @@
  *
  * A single 0–100 sentiment score per fintech per week, blending:
  *  - REVIEW sentiment: %positive from the rating histogram across Trustpilot /
- *    Google Play / App Store (global, ZZ), volume-weighted by review count.
+ *    Google Play / App Store (global, ZZ), volume-weighted by review count, then
+ *    CONFIDENCE-SHRUNK toward the population prior by volume (see REVIEW_PRIOR /
+ *    REVIEW_SMOOTH) so a thin-sample brand can't score like a huge one.
  *  - NEWS sentiment: article sentiment (Claude-derived) over a trailing window,
  *    mapped positive=100 / neutral=50 / negative=0.
  *
@@ -26,6 +28,20 @@ const MENTION_REF = 15; // substantive mention count that counts as full mention
 const NEWS_WINDOW_DAYS = 30;
 const MENTION_WINDOW_DAYS = 30;
 const REVIEW_KINDS = ["trustpilot", "google_play", "app_store"] as const;
+
+// Confidence shrinkage for the review score. Raw %positive is regressed toward a
+// population prior by review volume, so a brand with a handful of reviews cannot
+// score like one with hundreds of thousands: shrunk = (v·raw + m·μ) / (v + m).
+// At v ≫ m the score is ~raw (high-volume brands unaffected); at v ≪ m it's ~μ.
+// μ ≈ the measured population mean %positive (~81), set slightly conservative.
+const REVIEW_PRIOR = 78; // μ — where a brand with no review evidence sits
+const REVIEW_SMOOTH = 200; // m — reviews of prior-equivalent weight (half-shrink point)
+
+// A single positive article/mention must not swing the score. News and mentions
+// only contribute once there are at least this many in the window; below it the
+// sub-score is dropped (not enough signal to be worth anything).
+const NEWS_MIN = 3;
+const MENTION_MIN = 3;
 
 // Importance factors — scale each source's evidence BEFORE normalising, so reviews
 // (the anchor) dominate and news/mentions carry deliberately lower weight.
@@ -117,7 +133,14 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     reviewVolume += cnt > 0 ? cnt : 0;
   }
   const reviewDenom = (rev.rows as any[]).reduce((s, r) => s + (num(r.cnt) && num(r.cnt)! > 0 ? num(r.cnt)! : num(r.pos) != null ? 1 : 0), 0);
-  const reviewScore = reviewDenom > 0 ? rWeighted / reviewDenom : null;
+  const reviewScoreRaw = reviewDenom > 0 ? rWeighted / reviewDenom : null;
+  // Shrink the raw %positive toward the population prior by real review volume.
+  // A bare rating with no count (reviewVolume 0) lands at the prior — no volume,
+  // no confidence — while a 100k-review brand keeps essentially its raw score.
+  const reviewScore =
+    reviewScoreRaw == null
+      ? null
+      : (reviewVolume * reviewScoreRaw + REVIEW_SMOOTH * REVIEW_PRIOR) / (reviewVolume + REVIEW_SMOOTH);
 
   // News side: article sentiment over the trailing window.
   const start = new Date(asOf.getTime() - NEWS_WINDOW_DAYS * 86_400_000);
@@ -135,7 +158,8 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     newsWeighted += (NEWS_VALUE[r.sentiment] ?? 50) * n;
     newsVolume += n;
   }
-  const newsScore = newsVolume > 0 ? newsWeighted / newsVolume : null;
+  // Gate on an absolute minimum so one lucky article can't set the tone.
+  const newsScore = newsVolume >= NEWS_MIN ? newsWeighted / newsVolume : null;
 
   // Mention side: third-party mention sentiment (toward the brand) over the window.
   const mStart = new Date(asOf.getTime() - MENTION_WINDOW_DAYS * 86_400_000);
@@ -154,7 +178,7 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
     mentionWeighted += (NEWS_VALUE[r.sentiment] ?? 50) * n;
     mentionVolume += n;
   }
-  const mentionScore = mentionVolume > 0 ? mentionWeighted / mentionVolume : null;
+  const mentionScore = mentionVolume >= MENTION_MIN ? mentionWeighted / mentionVolume : null;
 
   // 1–2★ review-share TREND: week-over-week change in the share of 1–2★ reviews.
   // Anchored on the review score so NO movement is neutral (= reviewScore, no drag);
@@ -170,11 +194,17 @@ export async function computeComponents(fintechId: string, asOf: Date): Promise<
 
   // Evidence-based weights across the four sources, scaled by importance factors and
   // normalised to sum to 1. Reviews anchor; news/mentions are deliberately lighter.
-  const rE = (reviewScore != null ? Math.min(1, reviewVolume / REVIEW_REF || (reviewDenom > 0 ? 0.15 : 0)) : 0) * REVIEW_FACTOR;
+  // Review evidence uses the shrinkage pseudo-count (reviewVolume + m), so the
+  // review side always holds a solid anchor weight whenever any review data exists
+  // — a few articles can't outvote it — while still scaling up with real volume.
+  const rE = (reviewScore != null ? Math.min(1, (reviewVolume + REVIEW_SMOOTH) / REVIEW_REF) : 0) * REVIEW_FACTOR;
   const nE = (newsScore != null ? Math.min(1, newsVolume / NEWS_REF) : 0) * NEWS_FACTOR;
   const mE = (mentionScore != null ? Math.min(1, mentionVolume / MENTION_REF) : 0) * MENTION_FACTOR;
-  // Trend evidence rides on review volume (it's review-derived) and needs both weeks.
-  const tE = (trendScore != null ? Math.min(1, reviewVolume / REVIEW_REF || 0.5) : 0) * TREND_FACTOR;
+  // Trend evidence rides on real review volume (it's review-derived) and needs both
+  // weeks. No phantom floor: a brand with ~no reviews gets ~no trend weight — this
+  // was the `|| 0.5` bug that handed zero-review brands a full trend weight and let
+  // trendScore's reviewScore-anchor default push them to ~100.
+  const tE = (trendScore != null ? Math.min(1, reviewVolume / REVIEW_REF) : 0) * TREND_FACTOR;
   const total = rE + nE + mE + tE;
   if (total === 0) return null;
   const reviewWeight = rE / total;
