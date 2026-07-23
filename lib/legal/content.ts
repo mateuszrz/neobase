@@ -17,9 +17,12 @@ export type LegalKind = "terms" | "privacy";
 export const LEGAL_UPDATED = "2026-07-23"; // ISO date of the last substantive change
 
 // ── Fill these in one place; both documents reference them. ──────────────────
-// Operator / data controller identity. Replace the bracketed values.
-const OPERATOR = "[NAZWA PODMIOTU — np. NeoBase sp. z o.o.]";
-const OPERATOR_REG = "[FORMA PRAWNA I NUMERY — np. KRS 0000000000, NIP 000-00-00-000, REGON 000000000]";
+// Operator / data controller identity. The remaining bracketed values still
+// need filling. NeoBase is run by a Polish sole proprietorship (CEIDG), so the
+// registration descriptor is worded per language.
+const OPERATOR = "The Clarity Mateusz Rzetecki";
+const OPERATOR_REG_EN = "a sole proprietorship registered in the Polish Central Registration and Information on Business (CEIDG), NIP [NIP], REGON [REGON]";
+const OPERATOR_REG_PL = "prowadzącego jednoosobową działalność gospodarczą wpisaną do CEIDG, NIP [NIP], REGON [REGON]";
 const OPERATOR_ADDRESS = "[ADRES SIEDZIBY — ul. Przykładowa 1, 00-000 Miasto, Polska]";
 const CONTACT_EMAIL = "[kontakt@neobase.co]";
 
@@ -29,7 +32,7 @@ _Last updated: ${LEGAL_UPDATED}_
 
 ## 1. Who we are
 
-These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERATOR}${OPERATOR_REG ? `, ${OPERATOR_REG}` : ""}, with its registered office at ${OPERATOR_ADDRESS} (the "Operator", "we", "us"). By using the Service you agree to these Terms; if you do not agree, please do not use the Service.
+These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERATOR}, ${OPERATOR_REG_EN}, with its registered office at ${OPERATOR_ADDRESS} (the "Operator", "we", "us"). By using the Service you agree to these Terms; if you do not agree, please do not use the Service.
 
 ## 2. What the Service does
 
@@ -88,7 +91,7 @@ This policy explains how we handle personal data under the GDPR (Regulation (EU)
 
 ## 1. Controller
 
-The controller of your personal data is ${OPERATOR}${OPERATOR_REG ? `, ${OPERATOR_REG}` : ""}, ${OPERATOR_ADDRESS}. Contact: ${CONTACT_EMAIL}.
+The controller of your personal data is ${OPERATOR}, ${OPERATOR_REG_EN}, ${OPERATOR_ADDRESS}. Contact: ${CONTACT_EMAIL}.
 
 ## 2. What we collect
 
@@ -145,7 +148,7 @@ _Ostatnia aktualizacja: ${LEGAL_UPDATED}_
 
 ## 1. Kto świadczy usługę
 
-Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis"), prowadzonego przez ${OPERATOR}${OPERATOR_REG ? `, ${OPERATOR_REG}` : ""}, z siedzibą pod adresem ${OPERATOR_ADDRESS} ("Usługodawca", "my"). Korzystając z Serwisu, akceptujesz Regulamin; jeżeli się z nim nie zgadzasz, nie korzystaj z Serwisu.
+Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis"), prowadzonego przez ${OPERATOR}, ${OPERATOR_REG_PL}, z siedzibą pod adresem ${OPERATOR_ADDRESS} ("Usługodawca", "my"). Korzystając z Serwisu, akceptujesz Regulamin; jeżeli się z nim nie zgadzasz, nie korzystaj z Serwisu.
 
 ## 2. Czym jest Serwis
 
@@ -204,7 +207,7 @@ Niniejsza polityka wyjaśnia, jak przetwarzamy dane osobowe zgodnie z RODO (Rozp
 
 ## 1. Administrator
 
-Administratorem Twoich danych osobowych jest ${OPERATOR}${OPERATOR_REG ? `, ${OPERATOR_REG}` : ""}, ${OPERATOR_ADDRESS}. Kontakt: ${CONTACT_EMAIL}.
+Administratorem Twoich danych osobowych jest ${OPERATOR}, ${OPERATOR_REG_PL}, ${OPERATOR_ADDRESS}. Kontakt: ${CONTACT_EMAIL}.
 
 ## 2. Jakie dane zbieramy
 
