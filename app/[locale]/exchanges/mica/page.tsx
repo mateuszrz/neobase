@@ -5,6 +5,8 @@ import { routing } from "@/i18n/routing";
 import { alternates } from "@/lib/i18n/alternates";
 import { getMicaRegistry } from "@/lib/queries";
 import { MicaRegistry } from "@/components/MicaRegistry";
+import { MicaInsights } from "@/components/MicaInsights";
+import { MicaFaq } from "@/components/MicaFaq";
 
 export const revalidate = 3600;
 
@@ -32,6 +34,24 @@ export default async function MicaRegistryPage({ params }: { params: Promise<{ l
   const tradingPlatforms = rows.filter((r) => r.services.includes("Trading platform")).length;
   const tracked = rows.filter((r) => r.sentiment != null).length;
 
+  const svcCounts = new Map<string, number>();
+  const regCounts = new Map<string, { regulator: string; country: string; count: number }>();
+  for (const r of rows) {
+    for (const s of r.services) svcCounts.set(s, (svcCounts.get(s) ?? 0) + 1);
+    const key = `${r.regulator}|${r.country}`;
+    const cur = regCounts.get(key) ?? { regulator: r.regulator, country: r.country, count: 0 };
+    cur.count++;
+    regCounts.set(key, cur);
+  }
+  const insights = {
+    total: rows.length,
+    countries,
+    tradingPlatforms,
+    singleService: rows.filter((r) => r.services.length === 1).length,
+    services: [...svcCounts.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
+    regulators: [...regCounts.values()].sort((a, b) => b.count - a.count).slice(0, 8),
+  };
+
   return (
     <main className="section" style={{ paddingTop: 24 }}>
       <div className="wrap">
@@ -54,7 +74,11 @@ export default async function MicaRegistryPage({ params }: { params: Promise<{ l
 
         <MicaRegistry rows={rows} />
 
-        <p className="muted" style={{ fontSize: 11, marginTop: 20 }}>
+        <MicaInsights data={insights} />
+
+        <MicaFaq total={rows.length} countries={countries} tradingPlatforms={tradingPlatforms} />
+
+        <p className="muted" style={{ fontSize: 11, marginTop: 44 }}>
           {t("sourceNote")}
         </p>
       </div>
