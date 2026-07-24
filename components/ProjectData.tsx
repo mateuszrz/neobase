@@ -17,7 +17,7 @@ async function Cell({ m }: { m: ProjectSignals["brands"][number]["markets"][numb
           <span style={{ fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>{m.rating.toFixed(2)} ★</span>
           <Delta value={m.delta} />
           <span className="muted" style={{ fontSize: 13 }}>
-            {m.pos != null ? t("ui.percentPositive", { pct: m.pos.toFixed(0) }) : "—"}
+            {m.pos != null ? t("ui.percentPositive", { pct: m.pos.toFixed(0) }) : "-"}
             {m.count != null ? ` · ${t("ui.ratingsCount", { count: fmt(m.count) })}` : ""}
           </span>
         </>

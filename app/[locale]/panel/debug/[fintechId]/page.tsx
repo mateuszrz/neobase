@@ -116,7 +116,7 @@ export default async function DebugPage({ params }: { params: Promise<{ locale: 
       </Link>
       <h1 style={{ fontSize: "1.8rem", fontWeight: 800, marginBottom: 4 }}>{ft.name}</h1>
       <p style={{ color: "#64748b", fontSize: 14, marginTop: 0 }}>
-        {ft.type} · {ft.country ?? "—"} · {t("dbgSnapshots", { count: points.length })}
+        {ft.type} · {ft.country ?? "-"} · {t("dbgSnapshots", { count: points.length })}
       </p>
 
       <h2 style={{ fontSize: "1.1rem", marginTop: 28 }}>{t("dbgHistory")}</h2>
@@ -136,9 +136,9 @@ export default async function DebugPage({ params }: { params: Promise<{ locale: 
           {recent.map((p) => (
             <tr key={p.date} style={{ borderTop: "1px solid rgba(255,255,255,.08)" }}>
               <td style={{ padding: "6px 12px" }}>{p.date}</td>
-              <td style={{ padding: "6px 12px" }}>{p.rating ?? "—"}</td>
-              <td style={{ padding: "6px 12px" }}>{p.count?.toLocaleString() ?? "—"}</td>
-              <td style={{ padding: "6px 12px" }}>{p.pos ?? "—"}</td>
+              <td style={{ padding: "6px 12px" }}>{p.rating ?? "-"}</td>
+              <td style={{ padding: "6px 12px" }}>{p.count?.toLocaleString() ?? "-"}</td>
+              <td style={{ padding: "6px 12px" }}>{p.pos ?? "-"}</td>
             </tr>
           ))}
         </tbody>
@@ -159,7 +159,7 @@ export default async function DebugPage({ params }: { params: Promise<{ locale: 
                   fontSize: 13,
                 }}
               >
-                {c.country} · {String(c.date).slice(5)} · {t("dbgRev", { count: c.count ?? 0 })} · ⭐{c.rating ?? "—"}
+                {c.country} · {String(c.date).slice(5)} · {t("dbgRev", { count: c.count ?? 0 })} · ⭐{c.rating ?? "-"}
               </span>
             ))}
           </div>

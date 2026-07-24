@@ -93,7 +93,7 @@ function SecHead({ icon, title, aux }: { icon: keyof typeof ICO; title: string; 
 }
 /** Sidebar "at a glance" fact row — renders only when the value is present. */
 function SideFact({ k, v }: { k: string; v: ReactNode }) {
-  if (v == null || v === "" || v === "—") return null;
+  if (v == null || v === "" || v === "-") return null;
   return (
     <div className="p-fact">
       <span className="k">{k}</span>
@@ -440,7 +440,7 @@ export default async function Profile({ slug }: { slug: string; kind?: "neobank"
         )}
 
         <p className="muted" style={{ marginTop: 40, fontSize: 12 }}>
-          Ratings &amp; sentiment aggregated from Trustpilot, Google Play and App Store — anonymised store
+          Ratings &amp; sentiment aggregated from Trustpilot, Google Play and App Store - anonymised store
           metrics only, no individual reviews.
         </p>
       </div>
