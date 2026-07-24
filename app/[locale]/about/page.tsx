@@ -50,6 +50,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 500 }}>Mateusz Rzetecki</div>
               <div className="muted" style={{ fontSize: 13, marginBottom: 10 }}>{t("authorRole")}</div>
               <p style={{ fontSize: "0.95rem", lineHeight: 1.65, margin: 0 }}>{t("authorBio")}</p>
+              <a
+                href="https://linkedin.com/in/mateuszrzetecki"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: "inline-block", marginTop: 12, fontSize: 13, color: "var(--cyan-edge)" }}
+              >
+                LinkedIn ↗
+              </a>
             </div>
           </div>
         </section>
