@@ -49,6 +49,9 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
   const tt = await getTranslations("tags");
 
   const rows = await getBestForTag(tag.match, tag.group);
+  // Featured (editor's pick) rows are pinned first by the query; they render
+  // above rank 1 with no number, so the visible ranking counts non-featured only.
+  const featuredCount = rows.filter((r) => r.featured).length;
   const kind = tag.group === "exchange" ? "exchange" : "fintech";
   const backHref = tag.group === "exchange" ? "/exchanges/" : "/neobanks/";
 
@@ -96,7 +99,8 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
         ) : (
           <div className="stack-8" style={{ maxWidth: 880 }}>
             {rows.map((r, i) => {
-              const medal = i === 0 ? "#eab308" : i === 1 ? "#9ca3af" : i === 2 ? "#c2703d" : null;
+              const rank = r.featured ? null : i - featuredCount + 1;
+              const medal = rank === 1 ? "#eab308" : rank === 2 ? "#9ca3af" : rank === 3 ? "#c2703d" : null;
               return (
                 <Link
                   key={r.id}
@@ -109,15 +113,17 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
                       justifySelf: "center", width: 28, height: 28, borderRadius: "var(--r-full)",
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700,
-                      color: medal ? "#fff" : "var(--ash-gray)", background: medal ?? "transparent",
+                      color: r.featured ? "var(--cyan-edge)" : medal ? "#fff" : "var(--ash-gray)",
+                      background: medal ?? "transparent",
                     }}
                   >
-                    {i + 1}
+                    {r.featured ? "★" : rank}
                   </span>
                   <BrandLogo src={r.logoSvg} website={r.website} name={r.name} size={40} />
                   <div style={{ minWidth: 0 }}>
                     <div className="row" style={{ gap: 8, alignItems: "baseline" }}>
                       <span style={{ fontWeight: 600, fontSize: 15 }}>{r.name}</span>
+                      {r.featured && <span className="badge" style={{ borderColor: "var(--cyan-edge)", color: "var(--cyan-edge)" }}>★ {t("featured")}</span>}
                       {r.country && <span className="muted" style={{ fontSize: 12 }}>{flagEmoji(r.country)} {r.country}</span>}
                     </div>
                     <div className="muted" style={{ fontSize: 12, marginTop: 1, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>

@@ -50,7 +50,8 @@
     "project:demo": "tsx scripts/project-demo.ts",
     "sub:grant": "tsx scripts/grant-sub.ts",
     "apify:screenshots": "tsx scripts/collect-screenshots.ts",
-    "apify:appstore-screenshots": "tsx scripts/collect-appstore-screenshots.ts"
+    "apify:appstore-screenshots": "tsx scripts/collect-appstore-screenshots.ts",
+    "featured:set": "tsx scripts/set-featured.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",

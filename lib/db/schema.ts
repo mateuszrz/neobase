@@ -55,6 +55,9 @@ export const fintechs = pgTable(
     about: text("about"),
     tags: text("tags").array(),
     availableIn: char("available_in", { length: 2 }).array(),
+    // Editor's pick: renders above rank 1 (no number) with a "Featured" badge in
+    // the homepage sections and the /best/ rankings. Set manually per brand.
+    featured: boolean("featured").notNull().default(false),
     // Low-churn structured blobs kept as JSON for now.
     licenses: jsonb("licenses"),
     // Per-field trust gate: { <field>: "high" | "low" }. Facts are only rendered

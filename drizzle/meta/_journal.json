@@ -141,6 +141,13 @@
       "when": 1784745399456,
       "tag": "0019_empty_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1784898671466,
+      "tag": "0020_colorful_captain_midlands",
+      "breakpoints": true
     }
   ]
 }
