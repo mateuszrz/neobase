@@ -85,7 +85,7 @@ export function pairSlug(a: string, b: string): string {
  */
 /** A few popular same-type peers to offer as "compare with" suggestions on a
  *  profile, excluding the profile itself. Ranked by our sentiment/rating. */
-export async function comparePeers(id: string, type: Kind, limit = 4): Promise<FintechListItem[]> {
+export async function comparePeers(id: string, type: Kind, limit = 8): Promise<FintechListItem[]> {
   const list = type === "exchange" ? await getTopExchanges(limit + 4) : await getTopNeobanks(limit + 4);
   return list.filter((f) => f.id !== id).slice(0, limit);
 }
