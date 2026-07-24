@@ -71,13 +71,13 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
       </div>
 
       <p className="muted" style={{ fontSize: 12, margin: "0 0 12px" }}>
-        {filtered.length} providers{tracked > 0 ? ` · ${tracked} tracked by NeoBase` : ""}
+        {t("resultProviders", { count: filtered.length })}{tracked > 0 ? ` · ${t("trackedBy", { count: tracked })}` : ""}
         {(country || regulator || service || q) && (
           <button
             onClick={() => { setQ(""); setCountry(""); setRegulator(""); setService(""); }}
             style={{ marginLeft: 10, background: "none", border: "none", color: "var(--cyan-edge)", cursor: "pointer", fontSize: 12, padding: 0 }}
           >
-            clear
+            {t("clear")}
           </button>
         )}
       </p>

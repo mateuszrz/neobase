@@ -444,7 +444,11 @@
     "countryFilter": "Kraj",
     "regulatorFilter": "Regulator",
     "tradingPlatform": "Platforma handlowa",
-    "services": "{count, plural, one {# usługa} few {# usługi} many {# usług} other {# usług}}"
+    "services": "{count, plural, one {# usługa} few {# usługi} many {# usług} other {# usług}}",
+    "resultProviders": "{count, plural, one {# dostawca} few {# dostawcy} many {# dostawców} other {# dostawcy}}",
+    "trackedBy": "{count} śledzonych przez NeoBase",
+    "clear": "wyczyść",
+    "sourceNote": "Źródło: rejestr MiCA ESMA. NeoBase odwzorowuje dane publiczne i dodaje własny ranking sentymentu; kluczowe decyzje weryfikuj w oficjalnym rejestrze ESMA i u właściwego krajowego regulatora."
   },
   "test": {
     "metaTitle": "Przetestuj nasze raporty — darmowy tygodniowy przegląd konkurencji",
