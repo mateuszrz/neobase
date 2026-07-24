@@ -387,7 +387,10 @@
     "eyebrow": "About",
     "headline": "Independent <hl>fintech intelligence</hl>.",
     "p1": "NeoBase tracks the global neobank and crypto exchange ecosystem. We aggregate user reviews, app-store ratings and market signals to give an unbiased, always-current view of how each company is really performing.",
-    "p2": "The public directory is free. Underneath it sits a monitoring platform: pick a country and a few competitors, and get daily-updated data plus AI summaries of what changed — pricing, plans, media coverage and sentiment."
+    "p2": "The public directory is free. Underneath it sits a monitoring platform: pick a country and a few competitors, and get daily-updated data plus AI summaries of what changed — pricing, plans, media coverage and sentiment.",
+    "authorHeading": "Who's behind this",
+    "authorRole": "Project author",
+    "authorBio": "I run organic at zen.com — an international fintech operating across several dozen markets. I built NeoBase as a step in learning to vibe-code, and out of a wish to have always-current data on neobanks in such a sprawling fintech landscape."
   },
   "monitoring": {
     "metaTitle": "Market Monitoring",

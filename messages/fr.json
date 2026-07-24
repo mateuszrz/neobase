@@ -387,7 +387,10 @@
     "eyebrow": "À propos",
     "headline": "Des <hl>analyses fintech</hl> indépendantes.",
     "p1": "NeoBase suit l'écosystème mondial des néobanques et des plateformes crypto. Nous agrégeons les avis d'utilisateurs, les notes des stores d'applications et les signaux de marché pour offrir une vision impartiale et toujours à jour de la performance réelle de chaque acteur.",
-    "p2": "L'annuaire public est gratuit. En dessous se trouve une plateforme de monitoring : choisissez un pays et quelques concurrents, et recevez des données actualisées chaque jour ainsi que des synthèses IA de ce qui a changé — tarifs, offres, couverture médiatique et sentiment."
+    "p2": "L'annuaire public est gratuit. En dessous se trouve une plateforme de monitoring : choisissez un pays et quelques concurrents, et recevez des données actualisées chaque jour ainsi que des synthèses IA de ce qui a changé — tarifs, offres, couverture médiatique et sentiment.",
+    "authorHeading": "Qui est derrière",
+    "authorRole": "Auteur du projet",
+    "authorBio": "Je pilote l'organic chez zen.com, une fintech internationale présente sur plusieurs dizaines de marchés. J'ai créé NeoBase comme une étape d'apprentissage du vibe-coding et par envie de disposer de données toujours à jour sur les néobanques dans un univers fintech aussi vaste."
   },
   "monitoring": {
     "metaTitle": "Monitoring de marché",

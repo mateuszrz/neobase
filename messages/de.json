@@ -387,7 +387,10 @@
     "eyebrow": "Über uns",
     "headline": "Unabhängige <hl>Fintech-Analysen</hl>.",
     "p1": "NeoBase beobachtet den weltweiten Markt der Neobanken und Krypto-Börsen. Wir aggregieren Nutzerrezensionen, App-Store-Bewertungen und Marktsignale und schaffen so ein unvoreingenommenes, stets aktuelles Bild davon, wie jedes Unternehmen tatsächlich abschneidet.",
-    "p2": "Das öffentliche Verzeichnis ist kostenlos. Darunter liegt eine Monitoring-Plattform: Land und einige Wettbewerber auswählen — und täglich aktualisierte Daten sowie KI-Zusammenfassungen der Veränderungen erhalten: Preise, Tarife, Medienpräsenz und Stimmungsbild."
+    "p2": "Das öffentliche Verzeichnis ist kostenlos. Darunter liegt eine Monitoring-Plattform: Land und einige Wettbewerber auswählen — und täglich aktualisierte Daten sowie KI-Zusammenfassungen der Veränderungen erhalten: Preise, Tarife, Medienpräsenz und Stimmungsbild.",
+    "authorHeading": "Wer dahintersteht",
+    "authorRole": "Projektautor",
+    "authorBio": "Ich verantworte Organic bei zen.com — einem internationalen Fintech, das in mehreren Dutzend Märkten aktiv ist. NeoBase habe ich als Schritt beim Erlernen des Vibe-Codings aufgebaut und aus dem Wunsch heraus, stets aktuelle Daten zu Neobanken in einem so weitläufigen Fintech-Umfeld zu haben."
   },
   "monitoring": {
     "metaTitle": "Marktmonitoring",
