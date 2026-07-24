@@ -36,8 +36,8 @@ export default async function PanelPage({ params }: { params: Promise<{ locale: 
       name: projects.name,
       brands: sql<number>`(select count(*)::int from ${projectBrands} where ${projectBrands.projectId} = ${projects.id})`,
       markets: sql<number>`(select count(*)::int from ${projectMarkets} where ${projectMarkets.projectId} = ${projects.id})`,
-      lastReport: sql<string | null>`(select max(generated_for)::text from project_reports r where r.project_id = ${projects.id})`,
-      lastData: sql<string | null>`(select max(si.week)::text from sentiment_index si join project_brands pb on pb.fintech_id = si.fintech_id where pb.project_id = ${projects.id})`,
+      lastReport: sql<string | null>`(select max(generated_for)::text from project_reports r where r.project_id = "projects"."id")`,
+      lastData: sql<string | null>`(select max(si.week)::text from sentiment_index si join project_brands pb on pb.fintech_id = si.fintech_id where pb.project_id = "projects"."id")`,
     })
     .from(projects)
     .where(eq(projects.userId, userId))
