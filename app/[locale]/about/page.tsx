@@ -31,6 +31,28 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
           <p className="lead">{t("p1")}</p>
           <p className="lead">{t("p2")}</p>
         </div>
+
+        <section style={{ marginTop: 48 }}>
+          <h2 className="h-sm" style={{ fontSize: "1.3rem", marginBottom: 18 }}>{t("authorHeading")}</h2>
+          <div style={{ display: "flex", gap: 20, alignItems: "flex-start", padding: 24, border: "1px solid var(--stone-border)", borderRadius: 12 }}>
+            <div
+              aria-hidden
+              style={{
+                flex: "0 0 auto", width: 60, height: 60, borderRadius: "50%",
+                background: "var(--ink-black)", color: "var(--pure-white)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 500,
+              }}
+            >
+              MR
+            </div>
+            <div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 500 }}>Mateusz Rzetecki</div>
+              <div className="muted" style={{ fontSize: 13, marginBottom: 10 }}>{t("authorRole")}</div>
+              <p style={{ fontSize: "0.95rem", lineHeight: 1.65, margin: 0 }}>{t("authorBio")}</p>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
   );

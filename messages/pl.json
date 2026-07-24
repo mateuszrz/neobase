@@ -387,7 +387,10 @@
     "eyebrow": "O nas",
     "headline": "Niezależne <hl>analizy fintechu</hl>.",
     "p1": "NeoBase śledzi globalny rynek neobanków i giełd kryptowalut. Zbieramy opinie użytkowników, oceny ze sklepów z aplikacjami i sygnały rynkowe, żeby dać bezstronny i zawsze aktualny obraz tego, jak radzi sobie każda firma.",
-    "p2": "Publiczny katalog jest darmowy. Pod nim działa platforma monitoringu: wybierasz kraj i kilku konkurentów, a dostajesz codziennie aktualizowane dane oraz podsumowania AI tego, co się zmieniło — ceny, plany, obecność w mediach i sentyment."
+    "p2": "Publiczny katalog jest darmowy. Pod nim działa platforma monitoringu: wybierasz kraj i kilku konkurentów, a dostajesz codziennie aktualizowane dane oraz podsumowania AI tego, co się zmieniło — ceny, plany, obecność w mediach i sentyment.",
+    "authorHeading": "Kto za tym stoi",
+    "authorRole": "Autor projektu",
+    "authorBio": "Odpowiadam za organic w zen.com — międzynarodowym fintechu działającym na kilkudziesięciu rynkach. NeoBase postawiłem jako etap nauki vibe-codingu i z potrzeby posiadania zawsze aktualnych danych o neobankach w tak rozbudowanym środowisku fintechowym."
   },
   "monitoring": {
     "metaTitle": "Monitoring rynku",
