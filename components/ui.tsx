@@ -446,6 +446,24 @@ export function MiniStat({ label, value }: { label: string; value: string }) {
   );
 }
 
+/** Compact inline sparkline for a small numeric series (auto-scaled). */
+export function Sparkline({ values, width = 150, height = 34, color = "var(--cyan-signal)" }: { values: number[]; width?: number; height?: number; color?: string }) {
+  if (values.length < 2) return null;
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+  const range = hi - lo || 1;
+  const pad = 3;
+  const x = (i: number) => pad + (i / (values.length - 1)) * (width - 2 * pad);
+  const y = (v: number) => pad + (1 - (v - lo) / range) * (height - 2 * pad);
+  const d = values.map((v, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  return (
+    <svg viewBox={`0 0 ${width} ${height}`} width={width} height={height} role="img" aria-hidden style={{ flex: "0 0 auto" }}>
+      <path d={d} fill="none" stroke={color} strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={x(values.length - 1)} cy={y(values[values.length - 1])} r={2.4} fill={color} />
+    </svg>
+  );
+}
+
 /** Positive-sentiment share over time (0–100%). */
 export async function SentimentChart({ points }: { points: { date: string; pos: number | null }[] }) {
   const t = await getTranslations();

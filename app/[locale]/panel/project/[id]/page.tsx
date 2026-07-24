@@ -10,11 +10,12 @@ import { getAllFintechs } from "@/lib/queries";
 import { activePackage, setBrands, setMarkets, EntitlementError, LimitError } from "@/lib/projects/service";
 import type { Package } from "@/lib/packages";
 import { PROJECT_KINDS } from "@/lib/projects/reconcile";
-import { getProjectSignals } from "@/lib/projects/data";
+import { getProjectSignals, getProjectTrend } from "@/lib/projects/data";
 import { generateProjectReport, getProjectReport } from "@/lib/projects/report";
 import { CompetitorPicker } from "@/components/CompetitorPicker";
 import { MarketPicker, type MarketOption } from "@/components/MarketPicker";
 import { ProjectData } from "@/components/ProjectData";
+import { ProjectTrend } from "@/components/ProjectTrend";
 import { ProjectReportView } from "@/components/ProjectReport";
 
 export const metadata: Metadata = { title: "Project", robots: { index: false } };
@@ -66,11 +67,12 @@ export default async function ProjectPage({
     throw e;
   }
 
-  const [brandRows, marketRows, allFintechs, signals, storedReport] = await Promise.all([
+  const [brandRows, marketRows, allFintechs, signals, trends, storedReport] = await Promise.all([
     db.select({ fintechId: projectBrands.fintechId }).from(projectBrands).where(eq(projectBrands.projectId, id)),
     db.select({ country: projectMarkets.country }).from(projectMarkets).where(eq(projectMarkets.projectId, id)),
     getAllFintechs(),
     getProjectSignals(id),
+    getProjectTrend(id),
     getProjectReport(id),
   ]);
   const currentBrands = brandRows.map((r) => r.fintechId);
@@ -187,6 +189,9 @@ export default async function ProjectPage({
 
         {/* Intelligence — collected signals + recent changes */}
         <ProjectData signals={signals} />
+
+        {/* Sentiment trend — per-brand composite over the last weeks (sparklines) */}
+        <ProjectTrend trends={trends} />
 
         {/* Monthly report — Claude digest over the collected data */}
         <ProjectReportView
