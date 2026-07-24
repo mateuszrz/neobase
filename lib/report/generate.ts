@@ -203,19 +203,23 @@ export interface GenerateResult {
 }
 
 /**
- * Generate + persist a report for a brand and its competitors. Returns the row
- * id (the shareable teaser URL is /test/<id>).
+ * Core report builder — the same 8-section structured `Report` used by both the
+ * public "test our reports" teaser and the paid panel project reports. Given a
+ * brand candidate (section 2 focus) + competitor candidates (section 3), it
+ * gathers each one's real data, runs Claude (composer fallback) and assembles.
+ * No persistence — the caller stores it where it belongs.
  */
-export async function generateReport(brandInput: string, competitorInputs: string[], ip?: string | null, locale = "en"): Promise<GenerateResult> {
-  const [brandC] = await matchFintechs([brandInput]);
-  const compCs = (await matchFintechs(competitorInputs)).filter((c) => !brandC || c.fintechId !== brandC.fintechId);
-
-  const brandName = brandC?.name ?? brandInput.trim();
-  const grounded = Boolean(brandC?.fintechId);
+export async function buildReport(
+  brandC: Candidate,
+  competitors: Candidate[],
+  locale = "en",
+): Promise<{ report: Report; model: string; grounded: boolean }> {
+  const brandName = brandC.name;
+  const grounded = Boolean(brandC.fintechId);
 
   const brands: BrandData[] = await Promise.all([
-    brandData(brandC ?? { input: brandInput, fintechId: null, name: brandName }, true),
-    ...compCs.map((c) => brandData(c, false)),
+    brandData(brandC, true),
+    ...competitors.map((c) => brandData(c, false)),
   ]);
 
   let partial: Partial<Report>;
@@ -233,7 +237,23 @@ export async function generateReport(brandInput: string, competitorInputs: strin
     model = "composed";
   }
 
-  const report = assemble(brandName, brands, grounded, partial);
+  return { report: assemble(brandName, brands, grounded, partial), model, grounded };
+}
+
+/**
+ * Generate + persist a report for a brand and its competitors. Returns the row
+ * id (the shareable teaser URL is /test/<id>).
+ */
+export async function generateReport(brandInput: string, competitorInputs: string[], ip?: string | null, locale = "en"): Promise<GenerateResult> {
+  const [brandC] = await matchFintechs([brandInput]);
+  const compCs = (await matchFintechs(competitorInputs)).filter((c) => !brandC || c.fintechId !== brandC.fintechId);
+
+  const brandName = brandC?.name ?? brandInput.trim();
+  const { report, model } = await buildReport(
+    brandC ?? { input: brandInput, fintechId: null, name: brandName },
+    compCs,
+    locale,
+  );
 
   const matchedIds = [brandC?.fintechId, ...compCs.map((c) => c.fintechId)].filter((x): x is string => Boolean(x));
 
