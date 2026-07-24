@@ -100,7 +100,7 @@ export function Stat({ num, label }: { num: string; label: string }) {
 }
 
 export function fmt(n: number | null | undefined): string {
-  if (n == null) return "—";
+  if (n == null) return "-";
   const s = n < 0 ? "-" : "";
   const a = Math.abs(n);
   if (a >= 1_000_000) return `${s}${(a / 1_000_000).toFixed(1)}M`;
@@ -124,7 +124,7 @@ function pluralArgs(n: number): { count: number; formatted: string } {
 }
 
 export function fmtMoney(usd: number | null | undefined): string {
-  if (usd == null) return "—";
+  if (usd == null) return "-";
   if (usd >= 1e9) return `$${(usd / 1e9).toFixed(usd >= 1e10 ? 0 : 1)}B`;
   if (usd >= 1e6) return `$${(usd / 1e6).toFixed(0)}M`;
   return `$${usd.toLocaleString()}`;
@@ -135,7 +135,7 @@ export function fmtMoney(usd: number | null | undefined): string {
  * or a bare number of days; render sub-day spans in hours ("~18h") instead.
  */
 export function fmtReplyTime(v: string | number | null | undefined): string {
-  if (v == null || v === "") return "—";
+  if (v == null || v === "") return "-";
   const s = String(v).trim();
   const m = s.match(/^([\d.]+)\s*(minute|min|hour|hr|day|week|month)s?\b/i);
   const n = m ? parseFloat(m[1]) : typeof v === "number" ? v : NaN;
@@ -163,7 +163,7 @@ export function Delta({
   since?: string;
   good?: "up" | "down";
 }) {
-  if (value == null) return <span className="muted">—</span>;
+  if (value == null) return <span className="muted">-</span>;
   const up = value > 0;
   const flat = value === 0;
   const positive = flat ? null : (good === "up" ? up : !up);
@@ -261,7 +261,7 @@ export async function PlatformRatings({ items }: { items: PlatformRating[] }) {
               </div>
             )}
             <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
-              {p.count != null ? t("ui.ratingsCount", { count: fmt(p.count) }) : "—"}
+              {p.count != null ? t("ui.ratingsCount", { count: fmt(p.count) }) : "-"}
               {pos != null && ` · ${t("ui.percentPositive", { pct: pos.toFixed(0) })}`}
             </div>
             {p.installs && (
@@ -283,7 +283,7 @@ export async function SentimentMeter({ pos }: { pos: number | null }) {
     <div>
       <div className="spread" style={{ marginBottom: 6 }}>
         <span className="muted" style={{ fontSize: 13 }}>{t("ui.positiveSentiment")}</span>
-        <span style={{ fontWeight: 500 }}>{pos == null ? "—" : `${pos.toFixed(0)}%`}</span>
+        <span style={{ fontWeight: 500 }}>{pos == null ? "-" : `${pos.toFixed(0)}%`}</span>
       </div>
       <div className="meter">
         <span style={{ width: `${Math.max(0, Math.min(100, p))}%` }} />

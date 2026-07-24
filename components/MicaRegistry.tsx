@@ -114,7 +114,7 @@ export function MicaRegistry({ rows }: { rows: MicaRegistryRow[] }) {
                     {r.sentiment != null ? (
                       <strong style={{ color: scoreColor(r.sentiment), fontWeight: 600 }}>{r.sentiment.toFixed(1)}</strong>
                     ) : (
-                      <span className="muted">—</span>
+                      <span className="muted">-</span>
                     )}
                   </td>
                   <td style={{ padding: "10px", whiteSpace: "nowrap" }}>

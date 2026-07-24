@@ -84,7 +84,7 @@ export default async function PanelPage({ params }: { params: Promise<{ locale: 
           </div>
           {pkg ? (
             <p style={{ marginTop: 12 }} className="muted">
-              <strong style={{ color: "inherit" }}>{pkg.name}</strong> — {t("pkgLine", { brands: pkg.brandSlots, markets: pkg.marketSlots })}
+              <strong style={{ color: "inherit" }}>{pkg.name}</strong> - {t("pkgLine", { brands: pkg.brandSlots, markets: pkg.marketSlots })}
             </p>
           ) : (
             <p style={{ marginTop: 12 }} className="muted">

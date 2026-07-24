@@ -55,13 +55,13 @@ async function BrandFocus({ r }: { r: Report }) {
       <div className="row" style={{ gap: 20, marginBottom: 18, flexWrap: "wrap" }}>
         <div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: "1.6rem", fontWeight: 500 }}>
-            {f.rating != null ? `${f.rating.toFixed(1)}/5` : "—"}
+            {f.rating != null ? `${f.rating.toFixed(1)}/5` : "-"}
           </div>
           <div className="muted" style={{ fontSize: 12 }}>{t("crossPlatformRating")}</div>
         </div>
         <div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: "1.6rem", fontWeight: 500 }}>
-            {f.sentimentDir ? t(DIR_KEY[f.sentimentDir]) : "—"}
+            {f.sentimentDir ? t(DIR_KEY[f.sentimentDir]) : "-"}
           </div>
           <div className="muted" style={{ fontSize: 12 }}>{t("customerSentiment")}</div>
         </div>

@@ -39,7 +39,7 @@ export default async function Compare({ cmp, pair }: { cmp: Comparison; pair: st
   function display(m: CompareMetric, which: "a" | "b"): React.ReactNode {
     const v = which === "a" ? m.a : m.b;
     const side = which === "a" ? a : b;
-    if (v == null || v === "") return <span className="muted">—</span>;
+    if (v == null || v === "") return <span className="muted">-</span>;
     switch (m.kind) {
       case "score":
         return <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, color: scoreColor(Number(v)) }}>{Number(v).toFixed(0)}</span>;
@@ -101,7 +101,7 @@ export default async function Compare({ cmp, pair }: { cmp: Comparison; pair: st
     else if (a.mica.licensed || b.mica.licensed) {
       const w = a.mica.licensed ? a : b;
       const o = a.mica.licensed ? b : a;
-      paras.push(t("prose.micaOne", { name: w.name, other: o.name, regulator: w.mica.regulator ?? "—" }));
+      paras.push(t("prose.micaOne", { name: w.name, other: o.name, regulator: w.mica.regulator ?? "-" }));
     } else paras.push(t("prose.micaNone"));
   }
   const total = aWins + bWins;

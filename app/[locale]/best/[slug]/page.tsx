@@ -124,7 +124,7 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
                       {r.rating != null && <span><span style={{ color: "var(--cyan-signal)" }}>★</span> {r.rating.toFixed(1)}</span>}
                       {r.rating != null && r.reviewCount != null && <span aria-hidden>·</span>}
                       {r.reviewCount != null && <span>{t("reviewCount", { count: r.reviewCount })}</span>}
-                      {r.rating == null && r.reviewCount == null && <span>—</span>}
+                      {r.rating == null && r.reviewCount == null && <span>-</span>}
                     </div>
                     {r.sentiment != null && (
                       <div className="meter" style={{ marginTop: 9, height: 10 }}>
@@ -141,7 +141,7 @@ export default async function BestPage({ params }: { params: Promise<{ locale: s
                         <div className="muted" style={{ fontSize: 9.5, marginTop: 4, textTransform: "uppercase", letterSpacing: ".05em" }}>{t("scoreName")}</div>
                       </>
                     ) : (
-                      <span className="muted">—</span>
+                      <span className="muted">-</span>
                     )}
                   </div>
                 </Link>

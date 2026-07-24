@@ -44,7 +44,7 @@ function Component({ label, score }: { label: string; score: number | null }) {
     <div style={{ flex: 1, minWidth: 150 }}>
       <div className="spread" style={{ marginBottom: 5 }}>
         <span className="muted" style={{ fontSize: 12 }}>{label}</span>
-        <span style={{ fontSize: 12, fontVariantNumeric: "tabular-nums" }}>{score == null ? "—" : score.toFixed(0)}</span>
+        <span style={{ fontSize: 12, fontVariantNumeric: "tabular-nums" }}>{score == null ? "-" : score.toFixed(0)}</span>
       </div>
       <div className="meter">
         <span style={{ width: `${score == null ? 0 : Math.max(0, Math.min(100, score))}%` }} />
