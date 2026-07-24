@@ -16,10 +16,11 @@ export const maxDuration = 60;
  * One brief is one Claude call, so all fintechs can't regenerate inside a single
  * 60s function. Instead each run processes the oldest briefs (never-generated
  * first, then by `updated_at`) within a time budget and reports how many remain.
- * Scheduled to run daily (see vercel.json) so every brief is refreshed on a
- * rolling ~weekly cadence — it runs AFTER the drain-queue cron so briefs reflect
- * freshly-ingested ratings/news. Uses Claude when ANTHROPIC_API_KEY is set, else
- * the deterministic composer.
+ * Scheduled weekly on Mondays (see vercel.json `0 6 * * 1`) — one run covers the
+ * whole fleet (~121 briefs in ~46s) within the time budget; any tail is picked up
+ * on the next run. It fires AFTER that morning's drain-queue cron so briefs
+ * reflect freshly-ingested ratings/news. Uses Claude when ANTHROPIC_API_KEY is
+ * set, else the deterministic composer.
  */
 export async function GET(req: Request) {
   if (!isAuthorizedCron(req)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
