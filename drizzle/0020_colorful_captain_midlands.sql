@@ -1,0 +1,1 @@
+ALTER TABLE "fintechs" ADD COLUMN "featured" boolean DEFAULT false NOT NULL;

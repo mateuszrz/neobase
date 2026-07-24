@@ -35,6 +35,7 @@ export interface FintechListItem {
   rating: number | null;
   reviewCount: number | null;
   sentiment: number | null; // our composite sentiment score (only populated when ranked by it)
+  featured: boolean; // editor's pick — pinned above rank 1, no number, "Featured" badge
 }
 
 /**
@@ -49,10 +50,10 @@ async function listWithLatest(
 ): Promise<FintechListItem[]> {
   const order =
     rankBy === "sentiment"
-      ? sql`ORDER BY si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC`
-      : sql`ORDER BY m.rating DESC NULLS LAST, f.name ASC`;
+      ? sql`ORDER BY f.featured DESC, si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC`
+      : sql`ORDER BY f.featured DESC, m.rating DESC NULLS LAST, f.name ASC`;
   const rows = await db.execute(sql`
-    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
+    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags, f.featured,
            f.fact_confidence AS "factConfidence",
            m.rating, tot.total AS "reviewCount", si.composite AS sentiment
     FROM fintechs f
@@ -94,6 +95,7 @@ async function listWithLatest(
     rating: r.rating == null ? null : Number(r.rating),
     reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
     sentiment: rankBy === "sentiment" && r.sentiment != null ? Number(r.sentiment) : null,
+    featured: r.featured ?? false,
   }));
 }
 
@@ -594,12 +596,13 @@ export interface BestRow {
   rating: number | null;
   reviewCount: number | null;
   tags: string[] | null;
+  featured: boolean; // editor's pick — pinned above rank 1 in the ranking
 }
 
 /** Fintechs of a type whose tags overlap `match`, ranked by our sentiment score. */
 export async function getBestForTag(match: string[], group: "neobank" | "exchange", limit = 60): Promise<BestRow[]> {
   const rows = await db.execute(sql`
-    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags,
+    SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags, f.featured,
            f.fact_confidence AS "factConfidence",
            si.composite AS sentiment, m.rating, m.review_count AS "reviewCount"
     FROM fintechs f
@@ -610,7 +613,7 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
       ORDER BY snapshot_date DESC LIMIT 1
     ) m ON true
     WHERE f.type = ${group} AND f.tags && ARRAY[${sql.join(match.map((m) => sql`${m}`), sql`, `)}]::text[]
-    ORDER BY si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC
+    ORDER BY f.featured DESC, si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC
     LIMIT ${limit}
   `);
   return (rows.rows as any[]).map((r) => ({
@@ -619,6 +622,7 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
     rating: r.rating == null ? null : Number(r.rating),
     reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
     tags: r.tags ?? null,
+    featured: r.featured ?? false,
   }));
 }
 

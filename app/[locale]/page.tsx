@@ -33,8 +33,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const t = await getTranslations("home");
   const [stats, neobanks, exchanges] = await Promise.all([
     getPlatformStats(),
-    getTopNeobanks(9),
-    getTopExchanges(6),
+    getTopNeobanks(12),
+    getTopExchanges(9),
   ]);
 
   const features = [

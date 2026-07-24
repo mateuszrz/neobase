@@ -186,6 +186,11 @@ export async function FintechCard({ f, kind = "neobank" }: { f: FintechListItem;
       <BrandLogo src={f.logoSvg} website={f.website} name={f.name} size={44} />
       <div style={{ minWidth: 0, flex: 1 }}>
         <h3>{f.name}</h3>
+        {f.featured && (
+          <span className="badge" style={{ borderColor: "var(--cyan-edge)", color: "var(--cyan-edge)", margin: "2px 0 4px" }}>
+            ★ {t("rankings.featured")}
+          </span>
+        )}
         <p className="sub">
           {f.country ?? "Global"}
           {f.reviewCount != null && ` · ${t("ui.reviewCount", pluralArgs(f.reviewCount))}`}
