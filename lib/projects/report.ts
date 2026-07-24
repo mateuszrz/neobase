@@ -104,6 +104,9 @@ async function gatherContext(projectId: string, days: number): Promise<ReportCon
 
 // ─── Claude ──────────────────────────────────────────────────────────────────
 
+// Product decision (2026-07-24): project reports are ALWAYS written in English,
+// regardless of the user's UI locale — English is the working language of the
+// fintech audience. Do NOT add a locale param / "write in {language}" here.
 const SYSTEM =
   "You write a concise monthly competitive-intelligence brief for a fintech team, over the brands and markets THEY track. " +
   "Ground every statement in the supplied movement data (rating changes, sentiment, volume, competitor page changes) — never invent. " +
