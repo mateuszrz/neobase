@@ -408,7 +408,7 @@ export async function RatingDistribution({ dist }: { dist: { s1: number; s2: num
         const pct = ((v || 0) / total) * 100;
         const shown = Math.round(pct);
         return (
-          <div key={star} className="row" style={{ gap: 12 }} title={`${star}★ — ${fmt(v || 0)} ratings (${shown}%)`}>
+          <div key={star} className="row" style={{ gap: 12 }} title={`${star}★ - ${fmt(v || 0)} ratings (${shown}%)`}>
             <span style={{ width: 22, fontSize: 12, color: "var(--warm-gray)", fontVariantNumeric: "tabular-nums" }}>{star}★</span>
             <div style={{ flex: 1, height: 10, borderRadius: "var(--r-full)", background: "var(--stone-border)", overflow: "hidden" }}>
               <span
