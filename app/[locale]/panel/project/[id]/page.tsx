@@ -198,6 +198,7 @@ export default async function ProjectPage({
           report={storedReport?.report ?? null}
           updatedAt={storedReport?.updatedAt ?? null}
           model={storedReport?.model ?? null}
+          projectId={id}
           generate={genReport}
         />
 
