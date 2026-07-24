@@ -49,6 +49,44 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+export interface BrandTrend {
+  id: string;
+  name: string;
+  logoSvg: string | null;
+  points: { week: string; composite: number }[]; // weekly composite sentiment, oldest→newest
+}
+
+/**
+ * Per-brand weekly composite-sentiment trend for a project's tracked brands
+ * (last `weeks` points from sentiment_index). Powers the sparklines in the
+ * project view — a visual read of where each brand is heading, WoW.
+ */
+export async function getProjectTrend(projectId: string, weeks = 12): Promise<BrandTrend[]> {
+  const brandRows = await db
+    .select({ id: projectBrands.fintechId, name: fintechs.name, logoSvg: fintechs.logoSvg })
+    .from(projectBrands)
+    .innerJoin(fintechs, eq(fintechs.id, projectBrands.fintechId))
+    .where(eq(projectBrands.projectId, projectId));
+  const brandIds = brandRows.map((b) => b.id);
+  if (!brandIds.length) return [];
+
+  const rows = await db.execute(sql`
+    SELECT fintech_id AS "fintechId", week, composite
+    FROM sentiment_index
+    WHERE fintech_id IN ${brandIds}
+      AND week >= current_date - (${weeks * 7} * interval '1 day')
+    ORDER BY fintech_id, week ASC
+  `);
+  const byBrand = new Map<string, { week: string; composite: number }[]>();
+  for (const r of rows.rows as any[]) {
+    const arr = byBrand.get(r.fintechId) ?? [];
+    const c = num(r.composite);
+    if (c != null) arr.push({ week: String(r.week).slice(0, 10), composite: c });
+    byBrand.set(r.fintechId, arr);
+  }
+  return brandRows.map((b) => ({ ...b, points: byBrand.get(b.id) ?? [] }));
+}
+
 export async function getProjectSignals(projectId: string): Promise<ProjectSignals> {
   const [brandRows, marketRows] = await Promise.all([
     db

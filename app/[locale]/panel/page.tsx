@@ -36,10 +36,14 @@ export default async function PanelPage({ params }: { params: Promise<{ locale: 
       name: projects.name,
       brands: sql<number>`(select count(*)::int from ${projectBrands} where ${projectBrands.projectId} = ${projects.id})`,
       markets: sql<number>`(select count(*)::int from ${projectMarkets} where ${projectMarkets.projectId} = ${projects.id})`,
+      lastReport: sql<string | null>`(select max(generated_for)::text from project_reports r where r.project_id = ${projects.id})`,
+      lastData: sql<string | null>`(select max(si.week)::text from sentiment_index si join project_brands pb on pb.fintech_id = si.fintech_id where pb.project_id = ${projects.id})`,
     })
     .from(projects)
     .where(eq(projects.userId, userId))
     .orderBy(desc(projects.createdAt));
+
+  const shortDate = (d: string | null) => (d ? new Date(d).toLocaleDateString(locale, { day: "numeric", month: "short" }) : null);
 
   async function doSignOut() {
     "use server";
@@ -101,9 +105,15 @@ export default async function PanelPage({ params }: { params: Promise<{ locale: 
         {projs.length > 0 && (
           <div className="stack-8" style={{ marginTop: 12 }}>
             {projs.map((p) => (
-              <Link key={p.id} href={`/panel/project/${p.id}/`} className="card row spread" style={{ textDecoration: "none", color: "inherit" }}>
-                <strong>{p.name}</strong>
-                <span className="muted" style={{ fontSize: 14 }}>{t("projectMeta", { brands: p.brands, markets: p.markets })}</span>
+              <Link key={p.id} href={`/panel/project/${p.id}/`} className="card" style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                <div className="spread" style={{ alignItems: "baseline" }}>
+                  <strong>{p.name}</strong>
+                  <span className="muted" style={{ fontSize: 14 }}>{t("projectMeta", { brands: p.brands, markets: p.markets })}</span>
+                </div>
+                <div className="muted" style={{ fontSize: 12.5, marginTop: 6, display: "flex", gap: 14, flexWrap: "wrap" }}>
+                  <span>{p.lastReport ? t("dashReportOn", { date: shortDate(p.lastReport)! }) : t("dashNoReport")}</span>
+                  {p.lastData && <span>{t("dashDataOn", { date: shortDate(p.lastData)! })}</span>}
+                </div>
               </Link>
             ))}
           </div>
