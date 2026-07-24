@@ -604,7 +604,7 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
   const rows = await db.execute(sql`
     SELECT f.id, f.name, f.country, f.logo_svg AS "logoSvg", f.website, f.tags, f.featured,
            f.fact_confidence AS "factConfidence",
-           si.composite AS sentiment, m.rating, m.review_count AS "reviewCount"
+           si.composite AS sentiment, m.rating, tot.total AS "reviewCount"
     FROM fintechs f
     LEFT JOIN LATERAL (SELECT composite FROM sentiment_index s WHERE s.fintech_id = f.id ORDER BY week DESC LIMIT 1) si ON true
     LEFT JOIN LATERAL (
@@ -612,6 +612,18 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
       WHERE ms.fintech_id = f.id AND ms.kind = 'trustpilot' AND ms.country = 'ZZ'
       ORDER BY snapshot_date DESC LIMIT 1
     ) m ON true
+    -- Total review count = sum of the latest LIVE count per platform (matches
+    -- listWithLatest + the profile total). Trustpilot alone undercounts badly.
+    LEFT JOIN LATERAL (
+      SELECT coalesce(sum(cnt), 0)::bigint AS total FROM (
+        SELECT DISTINCT ON (kind) review_count AS cnt
+        FROM metric_snapshots ms3
+        WHERE ms3.fintech_id = f.id AND ms3.country = 'ZZ'
+          AND ms3.kind IN ('trustpilot','google_play','app_store')
+          AND ms3.review_count IS NOT NULL AND ms3.raw IS NOT NULL
+        ORDER BY kind, snapshot_date DESC
+      ) x
+    ) tot ON true
     WHERE f.type = ${group} AND f.tags && ARRAY[${sql.join(match.map((m) => sql`${m}`), sql`, `)}]::text[]
     ORDER BY f.featured DESC, si.composite DESC NULLS LAST, m.rating DESC NULLS LAST, f.name ASC
     LIMIT ${limit}
@@ -620,7 +632,8 @@ export async function getBestForTag(match: string[], group: "neobank" | "exchang
     id: r.id, name: r.name, country: confidentCountry(r.factConfidence) ? r.country : null, logoSvg: r.logoSvg, website: r.website ?? null,
     sentiment: r.sentiment == null ? null : Number(r.sentiment),
     rating: r.rating == null ? null : Number(r.rating),
-    reviewCount: r.reviewCount == null ? null : Number(r.reviewCount),
+    // tot.total is coalesce(...,0) so it's never null; treat 0 as "no reviews".
+    reviewCount: Number(r.reviewCount) > 0 ? Number(r.reviewCount) : null,
     tags: r.tags ?? null,
     featured: r.featured ?? false,
   }));
