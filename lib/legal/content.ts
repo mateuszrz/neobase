@@ -2,7 +2,7 @@
  * Terms of Service + Privacy Policy content, as Markdown per locale, rendered by
  * the /terms and /privacy pages through <Markdown>.
  *
- * ⚠️ DRAFT — legal review required before this is relied on. English + Polish are
+ * ⚠️ DRAFT - legal review required before this is relied on. English + Polish are
  * authored; German, Spanish and French are machine translations of the English
  * and must be reviewed before they can be relied on in those markets.
  *
@@ -18,7 +18,7 @@ import { routing } from "@/i18n/routing";
 
 export type LegalKind = "terms" | "privacy";
 
-export const LEGAL_UPDATED = "2026-07-23"; // ISO date of the last substantive change
+export const LEGAL_UPDATED = "2026-07-24"; // ISO date of the last substantive change
 
 const OPERATOR = "The Clarity Mateusz Rzetecki";
 const CONTACT_EMAIL = "contact@neobase.co";
@@ -43,9 +43,9 @@ These Terms govern your use of **NeoBase** (the "Service"), operated by ${OPERAT
 
 ## 2. What the Service does
 
-NeoBase aggregates **publicly available information** about neobanks and crypto-exchanges — ratings and review counts from third-party platforms (e.g. Trustpilot, Google Play, the App Store), public news, social and regulatory data — and combines it into our own composite indicators, including the **NeoBase Score**. We also offer optional accounts, competitive reports and paid monitoring.
+NeoBase aggregates **publicly available information** about neobanks and crypto-exchanges - ratings and review counts from third-party platforms (e.g. Trustpilot, Google Play, the App Store), public news, social and regulatory data - and combines it into our own composite indicators, including the **NeoBase Score**. We also offer optional accounts, competitive reports and paid monitoring.
 
-## 3. Nature of the information — no advice
+## 3. Nature of the information - no advice
 
 The Service is provided **for information purposes only**.
 
@@ -59,7 +59,7 @@ Some features require an account. We use passwordless sign-in: you enter your em
 
 ## 5. Paid services
 
-Paid plans (e.g. monitoring, reports) — where offered — are described at the point of purchase, including price and billing period. Payments are handled by our payment provider; their terms apply to the transaction. Statutory withdrawal rights for consumers apply where required by law; details are provided at checkout.
+Paid plans (e.g. monitoring, reports) - where offered - are described at the point of purchase, including price and billing period. Payments are handled by our payment provider; their terms apply to the transaction. Statutory withdrawal rights for consumers apply where required by law; details are provided at checkout.
 
 ## 6. Acceptable use
 
@@ -87,7 +87,7 @@ These Terms are governed by Polish law and applicable EU law, without prejudice 
 
 ## 12. Contact
 
-${OPERATOR} — ${CONTACT_EMAIL}.
+${OPERATOR} - ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_EN = `# Privacy Policy
@@ -102,31 +102,32 @@ The controller of your personal data is ${OPERATOR}, ${REG.en}. Contact: ${CONTA
 
 ## 2. What we collect
 
-- **Email address** — when you sign in (passwordless magic link) or request a report. This is the only identifying data we ask you for.
-- **Technical data** — standard server logs (IP address, user agent, timestamps) generated when you visit, used for security and reliability.
-- **Essential cookie** — a session cookie that keeps you signed in. No advertising or third-party analytics cookies are used.
+- **Email address** - when you sign in (passwordless magic link) or request a report. This is the only identifying data we ask you for.
+- **Technical data** - standard server logs (IP address, user agent, timestamps) generated when you visit, used for security and reliability.
+- **Cookies and analytics** - an essential session cookie keeps you signed in. With your consent, we also use Google Analytics 4, which sets cookies and collects aggregated usage data (such as pages viewed and approximate location) to help us improve the Service.
 
 We do **not** collect special-category data, and the brand/review data on the Service concerns companies, not you.
 
 ## 3. Purposes and legal bases
 
-- Providing the Service and your account — Art. 6(1)(b) (performance of a contract).
-- Security, abuse-prevention and reliability of the Service — Art. 6(1)(f) (legitimate interest).
-- Sending a report you requested and related follow-up — Art. 6(1)(b)/(a) (contract / consent, which you can withdraw at any time).
+- Providing the Service and your account - Art. 6(1)(b) (performance of a contract).
+- Security, abuse-prevention and reliability of the Service - Art. 6(1)(f) (legitimate interest).
+- Sending a report you requested and related follow-up - Art. 6(1)(b)/(a) (contract / consent, which you can withdraw at any time).
 
 ## 4. Recipients / processors
 
 We use vetted processors that act on our instructions:
 
-- **Vercel Inc.** — hosting and delivery of the Service.
-- **Neon Inc.** — managed database storage.
-- **Resend** — sending transactional email (sign-in links, requested reports).
+- **Cloud hosting and infrastructure providers** - hosting, content delivery and database storage of the Service, within the EU/EEA or under appropriate safeguards.
+- **Resend** - sending transactional email (sign-in links, requested reports).
+- **Google (Google Analytics 4)** - website usage analytics, loaded only with your consent.
+- **Cybot A/S (Cookiebot)** - cookie-consent management.
 
 Third-party services that provide **public brand data** (e.g. Apify, DataForSEO) and our AI provider process information about brands, not your personal data.
 
 ## 5. Transfers outside the EEA
 
-Some processors are located in the United States. Such transfers rely on appropriate safeguards under the GDPR (e.g. Standard Contractual Clauses and, where applicable, the EU–US Data Privacy Framework).
+Some processors are located in the United States. Such transfers rely on appropriate safeguards under the GDPR (e.g. Standard Contractual Clauses and, where applicable, the EU-US Data Privacy Framework).
 
 ## 6. Retention
 
@@ -134,11 +135,11 @@ We keep account data for as long as your account exists and delete it on closure
 
 ## 7. Your rights
 
-You have the right to access, rectification, erasure, restriction, objection and data portability, and to withdraw consent at any time. To exercise them, contact ${CONTACT_EMAIL}. You also have the right to lodge a complaint with a supervisory authority — in Poland, the President of the Personal Data Protection Office (**PUODO**), ul. Stawki 2, 00-193 Warszawa.
+You have the right to access, rectification, erasure, restriction, objection and data portability, and to withdraw consent at any time. To exercise them, contact ${CONTACT_EMAIL}. You also have the right to lodge a complaint with a supervisory authority - in Poland, the President of the Personal Data Protection Office (**PUODO**), ul. Stawki 2, 00-193 Warszawa.
 
 ## 8. Cookies
 
-We use only a **strictly necessary** session cookie for sign-in. Because we use no marketing or analytics cookies, no consent banner is required for it.
+A **strictly necessary** session cookie keeps you signed in and is always active. We also use **Google Analytics 4** to understand how the Service is used; its analytics cookies are set only after you consent. Consent for non-essential cookies is collected and managed through **Cookiebot**, and you can change or withdraw it at any time in the cookie settings.
 
 ## 9. Changes
 
@@ -160,9 +161,9 @@ Niniejszy Regulamin określa zasady korzystania z serwisu **NeoBase** ("Serwis")
 
 ## 2. Czym jest Serwis
 
-NeoBase agreguje **publicznie dostępne informacje** o neobankach i giełdach kryptowalut — oceny i liczby opinii z platform zewnętrznych (np. Trustpilot, Google Play, App Store), dane z mediów, mediów społecznościowych oraz dane regulacyjne — i łączy je we własne wskaźniki, w tym **NeoBase Score**. Oferujemy także opcjonalne konta, raporty porównawcze oraz płatny monitoring.
+NeoBase agreguje **publicznie dostępne informacje** o neobankach i giełdach kryptowalut - oceny i liczby opinii z platform zewnętrznych (np. Trustpilot, Google Play, App Store), dane z mediów, mediów społecznościowych oraz dane regulacyjne - i łączy je we własne wskaźniki, w tym **NeoBase Score**. Oferujemy także opcjonalne konta, raporty porównawcze oraz płatny monitoring.
 
-## 3. Charakter informacji — brak porady
+## 3. Charakter informacji - brak porady
 
 Serwis ma charakter **wyłącznie informacyjny**.
 
@@ -176,7 +177,7 @@ Niektóre funkcje wymagają konta. Stosujemy logowanie bez hasła: podajesz adre
 
 ## 5. Usługi płatne
 
-Plany płatne (np. monitoring, raporty) — jeśli oferowane — są opisywane w momencie zakupu, wraz z ceną i okresem rozliczeniowym. Płatności obsługuje nasz dostawca płatności; do transakcji stosuje się jego warunki. Konsumentom przysługują ustawowe prawa do odstąpienia w zakresie wymaganym prawem; szczegóły podawane są przy zakupie.
+Plany płatne (np. monitoring, raporty) - jeśli oferowane - są opisywane w momencie zakupu, wraz z ceną i okresem rozliczeniowym. Płatności obsługuje nasz dostawca płatności; do transakcji stosuje się jego warunki. Konsumentom przysługują ustawowe prawa do odstąpienia w zakresie wymaganym prawem; szczegóły podawane są przy zakupie.
 
 ## 6. Zasady korzystania
 
@@ -204,7 +205,7 @@ Regulamin podlega prawu polskiemu oraz właściwemu prawu UE, bez uszczerbku dla
 
 ## 12. Kontakt
 
-${OPERATOR} — ${CONTACT_EMAIL}.
+${OPERATOR} - ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_PL = `# Polityka prywatności
@@ -219,31 +220,32 @@ Administratorem Twoich danych osobowych jest ${OPERATOR}, ${REG.pl}. Kontakt: ${
 
 ## 2. Jakie dane zbieramy
 
-- **Adres e-mail** — gdy się logujesz (link magic-link bez hasła) lub zamawiasz raport. To jedyna dana identyfikująca, o którą prosimy.
-- **Dane techniczne** — standardowe logi serwera (adres IP, przeglądarka, znaczniki czasu) powstające podczas wizyty, wykorzystywane dla bezpieczeństwa i niezawodności.
-- **Niezbędny cookie** — sesyjny plik cookie utrzymujący zalogowanie. Nie stosujemy cookies reklamowych ani analitycznych podmiotów trzecich.
+- **Adres e-mail** - gdy się logujesz (link magic-link bez hasła) lub zamawiasz raport. To jedyna dana identyfikująca, o którą prosimy.
+- **Dane techniczne** - standardowe logi serwera (adres IP, przeglądarka, znaczniki czasu) powstające podczas wizyty, wykorzystywane dla bezpieczeństwa i niezawodności.
+- **Pliki cookie i analityka** - niezbędny sesyjny plik cookie utrzymuje zalogowanie. Za Twoją zgodą korzystamy też z Google Analytics 4, który zapisuje pliki cookie i zbiera zagregowane dane o użytkowaniu (np. odwiedzone strony, przybliżoną lokalizację), aby ulepszać Serwis.
 
 **Nie** zbieramy danych szczególnych kategorii, a dane o markach/opiniach w Serwisie dotyczą firm, a nie Ciebie.
 
 ## 3. Cele i podstawy prawne
 
-- Świadczenie usługi i prowadzenie konta — art. 6 ust. 1 lit. b (wykonanie umowy).
-- Bezpieczeństwo, przeciwdziałanie nadużyciom i niezawodność Serwisu — art. 6 ust. 1 lit. f (prawnie uzasadniony interes).
-- Wysłanie zamówionego raportu i związany z tym kontakt — art. 6 ust. 1 lit. b/a (umowa / zgoda, którą możesz w każdej chwili wycofać).
+- Świadczenie usługi i prowadzenie konta - art. 6 ust. 1 lit. b (wykonanie umowy).
+- Bezpieczeństwo, przeciwdziałanie nadużyciom i niezawodność Serwisu - art. 6 ust. 1 lit. f (prawnie uzasadniony interes).
+- Wysłanie zamówionego raportu i związany z tym kontakt - art. 6 ust. 1 lit. b/a (umowa / zgoda, którą możesz w każdej chwili wycofać).
 
 ## 4. Odbiorcy / podmioty przetwarzające
 
 Korzystamy ze sprawdzonych podmiotów przetwarzających, działających na nasze polecenie:
 
-- **Vercel Inc.** — hosting i dostarczanie Serwisu.
-- **Neon Inc.** — zarządzana baza danych.
-- **Resend** — wysyłka e-maili transakcyjnych (linki logujące, zamówione raporty).
+- **Dostawcy hostingu i infrastruktury chmurowej** - hosting, dostarczanie i przechowywanie bazy danych Serwisu, w UE/EOG lub z odpowiednimi zabezpieczeniami.
+- **Resend** - wysyłka e-maili transakcyjnych (linki logujące, zamówione raporty).
+- **Google (Google Analytics 4)** - analityka korzystania z serwisu, ładowana wyłącznie za Twoją zgodą.
+- **Cybot A/S (Cookiebot)** - zarządzanie zgodami na pliki cookie.
 
 Usługi dostarczające **publiczne dane o markach** (np. Apify, DataForSEO) oraz nasz dostawca AI przetwarzają informacje o markach, a nie Twoje dane osobowe.
 
 ## 5. Przekazywanie poza EOG
 
-Część podmiotów przetwarzających ma siedzibę w Stanach Zjednoczonych. Takie przekazywanie odbywa się w oparciu o odpowiednie zabezpieczenia zgodne z RODO (np. standardowe klauzule umowne oraz, w stosownych przypadkach, Ramy Ochrony Danych UE–USA).
+Część podmiotów przetwarzających ma siedzibę w Stanach Zjednoczonych. Takie przekazywanie odbywa się w oparciu o odpowiednie zabezpieczenia zgodne z RODO (np. standardowe klauzule umowne oraz, w stosownych przypadkach, Ramy Ochrony Danych UE-USA).
 
 ## 6. Okres przechowywania
 
@@ -251,11 +253,11 @@ Dane konta przechowujemy przez czas jego istnienia i usuwamy po zamknięciu. Dan
 
 ## 7. Twoje prawa
 
-Masz prawo do dostępu, sprostowania, usunięcia, ograniczenia, sprzeciwu i przenoszenia danych oraz do wycofania zgody w dowolnym momencie. Aby z nich skorzystać, napisz na ${CONTACT_EMAIL}. Masz też prawo wniesienia skargi do organu nadzorczego — w Polsce do Prezesa Urzędu Ochrony Danych Osobowych (**PUODO**), ul. Stawki 2, 00-193 Warszawa.
+Masz prawo do dostępu, sprostowania, usunięcia, ograniczenia, sprzeciwu i przenoszenia danych oraz do wycofania zgody w dowolnym momencie. Aby z nich skorzystać, napisz na ${CONTACT_EMAIL}. Masz też prawo wniesienia skargi do organu nadzorczego - w Polsce do Prezesa Urzędu Ochrony Danych Osobowych (**PUODO**), ul. Stawki 2, 00-193 Warszawa.
 
 ## 8. Pliki cookie
 
-Stosujemy wyłącznie **niezbędny** sesyjny plik cookie do logowania. Ponieważ nie używamy cookies marketingowych ani analitycznych, baner zgody nie jest dla niego wymagany.
+Niezbędny sesyjny plik cookie utrzymuje zalogowanie i jest zawsze aktywny. Korzystamy też z **Google Analytics 4**, aby rozumieć, jak używany jest Serwis; jego pliki cookie analityczne zapisywane są dopiero po wyrażeniu przez Ciebie zgody. Zgody na pliki cookie inne niż niezbędne zbieramy i zarządzamy przez **Cookiebot**; możesz je zmienić lub wycofać w dowolnym momencie w ustawieniach cookie.
 
 ## 9. Zmiany
 
@@ -266,7 +268,7 @@ Możemy aktualizować tę politykę; data "ostatniej aktualizacji" wskazuje obow
 Pytania dotyczące polityki: ${CONTACT_EMAIL}.
 `;
 
-// ── German (machine translation — review pending) ────────────────────────────
+// ── German (machine translation - review pending) ────────────────────────────
 const TERMS_DE = `# Nutzungsbedingungen
 
 _Zuletzt aktualisiert: ${LEGAL_UPDATED}_
@@ -277,9 +279,9 @@ Diese Nutzungsbedingungen regeln Ihre Nutzung von **NeoBase** (der „Dienst"), 
 
 ## 2. Was der Dienst tut
 
-NeoBase bündelt **öffentlich zugängliche Informationen** über Neobanken und Krypto-Börsen — Bewertungen und Bewertungszahlen von Drittplattformen (z. B. Trustpilot, Google Play, App Store), öffentliche Nachrichten, Social-Media- und Regulierungsdaten — und fasst sie zu eigenen zusammengesetzten Kennzahlen zusammen, einschließlich des **NeoBase Score**. Wir bieten außerdem optionale Konten, Wettbewerbsberichte und kostenpflichtiges Monitoring an.
+NeoBase bündelt **öffentlich zugängliche Informationen** über Neobanken und Krypto-Börsen - Bewertungen und Bewertungszahlen von Drittplattformen (z. B. Trustpilot, Google Play, App Store), öffentliche Nachrichten, Social-Media- und Regulierungsdaten - und fasst sie zu eigenen zusammengesetzten Kennzahlen zusammen, einschließlich des **NeoBase Score**. Wir bieten außerdem optionale Konten, Wettbewerbsberichte und kostenpflichtiges Monitoring an.
 
-## 3. Art der Informationen — keine Beratung
+## 3. Art der Informationen - keine Beratung
 
 Der Dienst wird **ausschließlich zu Informationszwecken** bereitgestellt.
 
@@ -293,7 +295,7 @@ Einige Funktionen erfordern ein Konto. Wir nutzen eine passwortlose Anmeldung: S
 
 ## 5. Kostenpflichtige Dienste
 
-Kostenpflichtige Pläne (z. B. Monitoring, Berichte) — sofern angeboten — werden zum Zeitpunkt des Kaufs beschrieben, einschließlich Preis und Abrechnungszeitraum. Zahlungen werden von unserem Zahlungsdienstleister abgewickelt; für die Transaktion gelten dessen Bedingungen. Gesetzliche Widerrufsrechte für Verbraucher gelten, soweit gesetzlich vorgeschrieben; Einzelheiten werden beim Bezahlvorgang mitgeteilt.
+Kostenpflichtige Pläne (z. B. Monitoring, Berichte) - sofern angeboten - werden zum Zeitpunkt des Kaufs beschrieben, einschließlich Preis und Abrechnungszeitraum. Zahlungen werden von unserem Zahlungsdienstleister abgewickelt; für die Transaktion gelten dessen Bedingungen. Gesetzliche Widerrufsrechte für Verbraucher gelten, soweit gesetzlich vorgeschrieben; Einzelheiten werden beim Bezahlvorgang mitgeteilt.
 
 ## 6. Zulässige Nutzung
 
@@ -321,7 +323,7 @@ Diese Bedingungen unterliegen polnischem Recht und dem anwendbaren EU-Recht, unb
 
 ## 12. Kontakt
 
-${OPERATOR} — ${CONTACT_EMAIL}.
+${OPERATOR} - ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_DE = `# Datenschutzerklärung
@@ -336,25 +338,26 @@ Verantwortlicher für Ihre personenbezogenen Daten ist ${OPERATOR}, ${REG.de}. K
 
 ## 2. Welche Daten wir erheben
 
-- **E-Mail-Adresse** — wenn Sie sich anmelden (passwortloser Magic Link) oder einen Bericht anfordern. Dies ist das einzige identifizierende Datum, um das wir Sie bitten.
-- **Technische Daten** — übliche Server-Logs (IP-Adresse, User-Agent, Zeitstempel), die bei Ihrem Besuch anfallen und der Sicherheit und Zuverlässigkeit dienen.
-- **Notwendiges Cookie** — ein Sitzungs-Cookie, das Sie angemeldet hält. Es werden keine Werbe- oder Drittanbieter-Analyse-Cookies verwendet.
+- **E-Mail-Adresse** - wenn Sie sich anmelden (passwortloser Magic Link) oder einen Bericht anfordern. Dies ist das einzige identifizierende Datum, um das wir Sie bitten.
+- **Technische Daten** - übliche Server-Logs (IP-Adresse, User-Agent, Zeitstempel), die bei Ihrem Besuch anfallen und der Sicherheit und Zuverlässigkeit dienen.
+- **Cookies und Analyse** - ein notwendiges Sitzungs-Cookie hält Sie angemeldet. Mit Ihrer Einwilligung nutzen wir zudem Google Analytics 4, das Cookies setzt und aggregierte Nutzungsdaten (z. B. aufgerufene Seiten, ungefährer Standort) erhebt, um den Dienst zu verbessern.
 
 Wir erheben **keine** besonderen Kategorien personenbezogener Daten; die Marken-/Bewertungsdaten im Dienst betreffen Unternehmen, nicht Sie.
 
 ## 3. Zwecke und Rechtsgrundlagen
 
-- Bereitstellung des Dienstes und Ihres Kontos — Art. 6 Abs. 1 lit. b (Vertragserfüllung).
-- Sicherheit, Missbrauchsprävention und Zuverlässigkeit des Dienstes — Art. 6 Abs. 1 lit. f (berechtigtes Interesse).
-- Versand eines von Ihnen angeforderten Berichts und damit verbundene Kontaktaufnahme — Art. 6 Abs. 1 lit. b/a (Vertrag / Einwilligung, die Sie jederzeit widerrufen können).
+- Bereitstellung des Dienstes und Ihres Kontos - Art. 6 Abs. 1 lit. b (Vertragserfüllung).
+- Sicherheit, Missbrauchsprävention und Zuverlässigkeit des Dienstes - Art. 6 Abs. 1 lit. f (berechtigtes Interesse).
+- Versand eines von Ihnen angeforderten Berichts und damit verbundene Kontaktaufnahme - Art. 6 Abs. 1 lit. b/a (Vertrag / Einwilligung, die Sie jederzeit widerrufen können).
 
 ## 4. Empfänger / Auftragsverarbeiter
 
 Wir setzen geprüfte Auftragsverarbeiter ein, die auf unsere Weisung handeln:
 
-- **Vercel Inc.** — Hosting und Bereitstellung des Dienstes.
-- **Neon Inc.** — verwaltete Datenbankspeicherung.
-- **Resend** — Versand von Transaktions-E-Mails (Anmeldelinks, angeforderte Berichte).
+- **Anbieter von Cloud-Hosting und -Infrastruktur** - Hosting, Bereitstellung und Datenbankspeicherung des Dienstes, in der EU/im EWR oder mit angemessenen Garantien.
+- **Google (Google Analytics 4)** - Nutzungsanalyse der Website, nur mit Ihrer Einwilligung geladen.
+- **Cybot A/S (Cookiebot)** - Verwaltung der Cookie-Einwilligung.
+- **Resend** - Versand von Transaktions-E-Mails (Anmeldelinks, angeforderte Berichte).
 
 Dienste, die **öffentliche Markendaten** liefern (z. B. Apify, DataForSEO), sowie unser KI-Anbieter verarbeiten Informationen über Marken, nicht Ihre personenbezogenen Daten.
 
@@ -368,11 +371,11 @@ Kontodaten speichern wir, solange Ihr Konto besteht, und löschen sie bei dessen
 
 ## 7. Ihre Rechte
 
-Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Datenübertragbarkeit sowie das Recht, eine Einwilligung jederzeit zu widerrufen. Zur Ausübung wenden Sie sich an ${CONTACT_EMAIL}. Sie haben zudem das Recht, sich bei einer Aufsichtsbehörde zu beschweren — in Polen beim Präsidenten des Amtes für den Schutz personenbezogener Daten (**PUODO**), ul. Stawki 2, 00-193 Warschau.
+Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Widerspruch und Datenübertragbarkeit sowie das Recht, eine Einwilligung jederzeit zu widerrufen. Zur Ausübung wenden Sie sich an ${CONTACT_EMAIL}. Sie haben zudem das Recht, sich bei einer Aufsichtsbehörde zu beschweren - in Polen beim Präsidenten des Amtes für den Schutz personenbezogener Daten (**PUODO**), ul. Stawki 2, 00-193 Warschau.
 
 ## 8. Cookies
 
-Wir verwenden ausschließlich ein **unbedingt erforderliches** Sitzungs-Cookie für die Anmeldung. Da wir keine Marketing- oder Analyse-Cookies einsetzen, ist dafür kein Einwilligungsbanner erforderlich.
+Ein **unbedingt erforderliches** Sitzungs-Cookie hält Sie angemeldet und ist immer aktiv. Wir nutzen außerdem **Google Analytics 4**, um zu verstehen, wie der Dienst genutzt wird; dessen Analyse-Cookies werden erst nach Ihrer Einwilligung gesetzt. Die Einwilligung für nicht notwendige Cookies wird über **Cookiebot** eingeholt und verwaltet; Sie können sie jederzeit in den Cookie-Einstellungen ändern oder widerrufen.
 
 ## 9. Änderungen
 
@@ -383,7 +386,7 @@ Wir können diese Erklärung aktualisieren; das Datum „zuletzt aktualisiert" z
 Fragen zu dieser Erklärung: ${CONTACT_EMAIL}.
 `;
 
-// ── Spanish (machine translation — review pending) ───────────────────────────
+// ── Spanish (machine translation - review pending) ───────────────────────────
 const TERMS_ES = `# Términos del servicio
 
 _Última actualización: ${LEGAL_UPDATED}_
@@ -394,9 +397,9 @@ Estos Términos rigen tu uso de **NeoBase** (el «Servicio»), operado por ${OPE
 
 ## 2. Qué hace el Servicio
 
-NeoBase agrega **información disponible públicamente** sobre neobancos y exchanges de criptomonedas — valoraciones y número de reseñas de plataformas de terceros (p. ej. Trustpilot, Google Play, App Store), noticias públicas, datos de redes sociales y regulatorios — y los combina en nuestros propios indicadores compuestos, incluido el **NeoBase Score**. También ofrecemos cuentas opcionales, informes competitivos y monitorización de pago.
+NeoBase agrega **información disponible públicamente** sobre neobancos y exchanges de criptomonedas - valoraciones y número de reseñas de plataformas de terceros (p. ej. Trustpilot, Google Play, App Store), noticias públicas, datos de redes sociales y regulatorios - y los combina en nuestros propios indicadores compuestos, incluido el **NeoBase Score**. También ofrecemos cuentas opcionales, informes competitivos y monitorización de pago.
 
-## 3. Naturaleza de la información — sin asesoramiento
+## 3. Naturaleza de la información - sin asesoramiento
 
 El Servicio se presta **únicamente con fines informativos**.
 
@@ -410,7 +413,7 @@ Algunas funciones requieren una cuenta. Usamos inicio de sesión sin contraseña
 
 ## 5. Servicios de pago
 
-Los planes de pago (p. ej. monitorización, informes) — cuando se ofrezcan — se describen en el momento de la compra, incluidos el precio y el periodo de facturación. Los pagos los gestiona nuestro proveedor de pagos; sus condiciones se aplican a la transacción. Los derechos legales de desistimiento para consumidores se aplican cuando lo exija la ley; los detalles se facilitan al finalizar la compra.
+Los planes de pago (p. ej. monitorización, informes) - cuando se ofrezcan - se describen en el momento de la compra, incluidos el precio y el periodo de facturación. Los pagos los gestiona nuestro proveedor de pagos; sus condiciones se aplican a la transacción. Los derechos legales de desistimiento para consumidores se aplican cuando lo exija la ley; los detalles se facilitan al finalizar la compra.
 
 ## 6. Uso aceptable
 
@@ -438,7 +441,7 @@ Estos Términos se rigen por la legislación polaca y el Derecho aplicable de la
 
 ## 12. Contacto
 
-${OPERATOR} — ${CONTACT_EMAIL}.
+${OPERATOR} - ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_ES = `# Política de privacidad
@@ -453,25 +456,26 @@ El responsable de tus datos personales es ${OPERATOR}, ${REG.es}. Contacto: ${CO
 
 ## 2. Qué recopilamos
 
-- **Dirección de correo electrónico** — cuando inicias sesión (enlace mágico sin contraseña) o solicitas un informe. Es el único dato identificativo que te pedimos.
-- **Datos técnicos** — registros estándar del servidor (dirección IP, agente de usuario, marcas de tiempo) generados durante tu visita, usados por seguridad y fiabilidad.
-- **Cookie esencial** — una cookie de sesión que te mantiene con la sesión iniciada. No se usan cookies publicitarias ni de analítica de terceros.
+- **Dirección de correo electrónico** - cuando inicias sesión (enlace mágico sin contraseña) o solicitas un informe. Es el único dato identificativo que te pedimos.
+- **Datos técnicos** - registros estándar del servidor (dirección IP, agente de usuario, marcas de tiempo) generados durante tu visita, usados por seguridad y fiabilidad.
+- **Cookies y analítica** - una cookie de sesión esencial te mantiene con la sesión iniciada. Con tu consentimiento, también usamos Google Analytics 4, que instala cookies y recopila datos agregados de uso (como páginas vistas y ubicación aproximada) para mejorar el Servicio.
 
 **No** recopilamos categorías especiales de datos, y los datos de marcas/reseñas del Servicio se refieren a empresas, no a ti.
 
 ## 3. Fines y bases jurídicas
 
-- Prestación del Servicio y de tu cuenta — art. 6.1.b (ejecución de un contrato).
-- Seguridad, prevención de abusos y fiabilidad del Servicio — art. 6.1.f (interés legítimo).
-- Envío de un informe que hayas solicitado y contacto relacionado — art. 6.1.b/a (contrato / consentimiento, que puedes retirar en cualquier momento).
+- Prestación del Servicio y de tu cuenta - art. 6.1.b (ejecución de un contrato).
+- Seguridad, prevención de abusos y fiabilidad del Servicio - art. 6.1.f (interés legítimo).
+- Envío de un informe que hayas solicitado y contacto relacionado - art. 6.1.b/a (contrato / consentimiento, que puedes retirar en cualquier momento).
 
 ## 4. Destinatarios / encargados
 
 Utilizamos encargados verificados que actúan según nuestras instrucciones:
 
-- **Vercel Inc.** — alojamiento y entrega del Servicio.
-- **Neon Inc.** — almacenamiento de base de datos gestionado.
-- **Resend** — envío de correos transaccionales (enlaces de acceso, informes solicitados).
+- **Proveedores de alojamiento e infraestructura en la nube** - alojamiento, entrega y almacenamiento de base de datos del Servicio, en la UE/EEE o con garantías adecuadas.
+- **Google (Google Analytics 4)** - analítica de uso del sitio, cargada solo con tu consentimiento.
+- **Cybot A/S (Cookiebot)** - gestión del consentimiento de cookies.
+- **Resend** - envío de correos transaccionales (enlaces de acceso, informes solicitados).
 
 Los servicios que aportan **datos públicos de marcas** (p. ej. Apify, DataForSEO) y nuestro proveedor de IA tratan información sobre marcas, no tus datos personales.
 
@@ -485,11 +489,11 @@ Conservamos los datos de la cuenta mientras exista tu cuenta y los eliminamos al
 
 ## 7. Tus derechos
 
-Tienes derecho de acceso, rectificación, supresión, limitación, oposición y portabilidad, y a retirar el consentimiento en cualquier momento. Para ejercerlos, escribe a ${CONTACT_EMAIL}. También tienes derecho a presentar una reclamación ante una autoridad de control — en Polonia, el Presidente de la Oficina de Protección de Datos Personales (**PUODO**), ul. Stawki 2, 00-193 Varsovia.
+Tienes derecho de acceso, rectificación, supresión, limitación, oposición y portabilidad, y a retirar el consentimiento en cualquier momento. Para ejercerlos, escribe a ${CONTACT_EMAIL}. También tienes derecho a presentar una reclamación ante una autoridad de control - en Polonia, el Presidente de la Oficina de Protección de Datos Personales (**PUODO**), ul. Stawki 2, 00-193 Varsovia.
 
 ## 8. Cookies
 
-Usamos únicamente una cookie de sesión **estrictamente necesaria** para el inicio de sesión. Como no usamos cookies de marketing ni de analítica, no se requiere banner de consentimiento para ella.
+Una cookie de sesión **estrictamente necesaria** te mantiene con la sesión iniciada y está siempre activa. También usamos **Google Analytics 4** para entender cómo se utiliza el Servicio; sus cookies de analítica se instalan solo después de tu consentimiento. El consentimiento para las cookies no esenciales se recoge y gestiona mediante **Cookiebot**, y puedes cambiarlo o retirarlo en cualquier momento en la configuración de cookies.
 
 ## 9. Cambios
 
@@ -500,7 +504,7 @@ Podemos actualizar esta política; la fecha de «última actualización» muestr
 Consultas sobre esta política: ${CONTACT_EMAIL}.
 `;
 
-// ── French (machine translation — review pending) ────────────────────────────
+// ── French (machine translation - review pending) ────────────────────────────
 const TERMS_FR = `# Conditions d'utilisation
 
 _Dernière mise à jour : ${LEGAL_UPDATED}_
@@ -511,9 +515,9 @@ Les présentes Conditions régissent votre utilisation de **NeoBase** (le « Ser
 
 ## 2. Ce que fait le Service
 
-NeoBase agrège des **informations accessibles au public** sur les néobanques et les plateformes d'échange de cryptomonnaies — notes et nombres d'avis provenant de plateformes tierces (par ex. Trustpilot, Google Play, App Store), actualités publiques, données de réseaux sociaux et données réglementaires — et les combine en nos propres indicateurs composites, dont le **NeoBase Score**. Nous proposons également des comptes optionnels, des rapports concurrentiels et une surveillance payante.
+NeoBase agrège des **informations accessibles au public** sur les néobanques et les plateformes d'échange de cryptomonnaies - notes et nombres d'avis provenant de plateformes tierces (par ex. Trustpilot, Google Play, App Store), actualités publiques, données de réseaux sociaux et données réglementaires - et les combine en nos propres indicateurs composites, dont le **NeoBase Score**. Nous proposons également des comptes optionnels, des rapports concurrentiels et une surveillance payante.
 
-## 3. Nature des informations — pas de conseil
+## 3. Nature des informations - pas de conseil
 
 Le Service est fourni **à titre purement informatif**.
 
@@ -527,7 +531,7 @@ Certaines fonctionnalités nécessitent un compte. Nous utilisons une connexion 
 
 ## 5. Services payants
 
-Les offres payantes (par ex. surveillance, rapports) — lorsqu'elles sont proposées — sont décrites au moment de l'achat, y compris le prix et la période de facturation. Les paiements sont traités par notre prestataire de paiement ; ses conditions s'appliquent à la transaction. Les droits légaux de rétractation des consommateurs s'appliquent lorsque la loi l'exige ; les détails sont fournis au moment du paiement.
+Les offres payantes (par ex. surveillance, rapports) - lorsqu'elles sont proposées - sont décrites au moment de l'achat, y compris le prix et la période de facturation. Les paiements sont traités par notre prestataire de paiement ; ses conditions s'appliquent à la transaction. Les droits légaux de rétractation des consommateurs s'appliquent lorsque la loi l'exige ; les détails sont fournis au moment du paiement.
 
 ## 6. Utilisation acceptable
 
@@ -555,7 +559,7 @@ Les présentes Conditions sont régies par le droit polonais et le droit applica
 
 ## 12. Contact
 
-${OPERATOR} — ${CONTACT_EMAIL}.
+${OPERATOR} - ${CONTACT_EMAIL}.
 `;
 
 const PRIVACY_FR = `# Politique de confidentialité
@@ -570,31 +574,32 @@ Le responsable du traitement de vos données personnelles est ${OPERATOR}, ${REG
 
 ## 2. Ce que nous collectons
 
-- **Adresse e-mail** — lorsque vous vous connectez (lien magique sans mot de passe) ou demandez un rapport. C'est la seule donnée identifiante que nous vous demandons.
-- **Données techniques** — journaux de serveur standard (adresse IP, agent utilisateur, horodatages) générés lors de votre visite, utilisés pour la sécurité et la fiabilité.
-- **Cookie essentiel** — un cookie de session qui vous maintient connecté. Aucun cookie publicitaire ou d'analyse tiers n'est utilisé.
+- **Adresse e-mail** - lorsque vous vous connectez (lien magique sans mot de passe) ou demandez un rapport. C'est la seule donnée identifiante que nous vous demandons.
+- **Données techniques** - journaux de serveur standard (adresse IP, agent utilisateur, horodatages) générés lors de votre visite, utilisés pour la sécurité et la fiabilité.
+- **Cookies et analyse** - un cookie de session essentiel vous maintient connecté. Avec votre consentement, nous utilisons aussi Google Analytics 4, qui dépose des cookies et collecte des données d'usage agrégées (pages vues, localisation approximative) afin d'améliorer le Service.
 
 Nous ne collectons **pas** de catégories particulières de données, et les données de marques/avis du Service concernent des entreprises, pas vous.
 
 ## 3. Finalités et bases légales
 
-- Fourniture du Service et de votre compte — art. 6, §1, b (exécution d'un contrat).
-- Sécurité, prévention des abus et fiabilité du Service — art. 6, §1, f (intérêt légitime).
-- Envoi d'un rapport que vous avez demandé et suivi associé — art. 6, §1, b/a (contrat / consentement, que vous pouvez retirer à tout moment).
+- Fourniture du Service et de votre compte - art. 6, §1, b (exécution d'un contrat).
+- Sécurité, prévention des abus et fiabilité du Service - art. 6, §1, f (intérêt légitime).
+- Envoi d'un rapport que vous avez demandé et suivi associé - art. 6, §1, b/a (contrat / consentement, que vous pouvez retirer à tout moment).
 
 ## 4. Destinataires / sous-traitants
 
 Nous faisons appel à des sous-traitants vérifiés qui agissent sur nos instructions :
 
-- **Vercel Inc.** — hébergement et distribution du Service.
-- **Neon Inc.** — stockage de base de données géré.
-- **Resend** — envoi d'e-mails transactionnels (liens de connexion, rapports demandés).
+- **Fournisseurs d'hébergement et d'infrastructure cloud** - hébergement, distribution et stockage de base de données du Service, dans l'UE/EEE ou avec des garanties appropriées.
+- **Google (Google Analytics 4)** - analyse d'audience du site, chargée uniquement avec votre consentement.
+- **Cybot A/S (Cookiebot)** - gestion du consentement aux cookies.
+- **Resend** - envoi d'e-mails transactionnels (liens de connexion, rapports demandés).
 
 Les services fournissant des **données publiques sur les marques** (par ex. Apify, DataForSEO) ainsi que notre fournisseur d'IA traitent des informations sur les marques, pas vos données personnelles.
 
 ## 5. Transferts hors de l'EEE
 
-Certains sous-traitants sont situés aux États-Unis. Ces transferts reposent sur des garanties appropriées au titre du RGPD (par ex. clauses contractuelles types et, le cas échéant, le cadre de protection des données UE–États-Unis).
+Certains sous-traitants sont situés aux États-Unis. Ces transferts reposent sur des garanties appropriées au titre du RGPD (par ex. clauses contractuelles types et, le cas échéant, le cadre de protection des données UE-États-Unis).
 
 ## 6. Conservation
 
@@ -602,11 +607,11 @@ Nous conservons les données de compte tant que votre compte existe et les suppr
 
 ## 7. Vos droits
 
-Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité, ainsi que du droit de retirer votre consentement à tout moment. Pour les exercer, écrivez à ${CONTACT_EMAIL}. Vous avez également le droit d'introduire une réclamation auprès d'une autorité de contrôle — en Pologne, le Président de l'Office de protection des données personnelles (**PUODO**), ul. Stawki 2, 00-193 Varsovie.
+Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité, ainsi que du droit de retirer votre consentement à tout moment. Pour les exercer, écrivez à ${CONTACT_EMAIL}. Vous avez également le droit d'introduire une réclamation auprès d'une autorité de contrôle - en Pologne, le Président de l'Office de protection des données personnelles (**PUODO**), ul. Stawki 2, 00-193 Varsovie.
 
 ## 8. Cookies
 
-Nous utilisons uniquement un cookie de session **strictement nécessaire** à la connexion. Comme nous n'utilisons aucun cookie marketing ou d'analyse, aucun bandeau de consentement n'est requis pour celui-ci.
+Un cookie de session **strictement nécessaire** vous maintient connecté et est toujours actif. Nous utilisons également **Google Analytics 4** pour comprendre comment le Service est utilisé ; ses cookies d'analyse ne sont déposés qu'après votre consentement. Le consentement pour les cookies non essentiels est recueilli et géré via **Cookiebot**, et vous pouvez le modifier ou le retirer à tout moment dans les paramètres des cookies.
 
 ## 9. Modifications
 
