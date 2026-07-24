@@ -41,9 +41,7 @@ export default async function MicaRegistryPage({ params }: { params: Promise<{ l
         <p className="eyebrow" style={{ marginBottom: 10 }}>{t("eyebrow")}</p>
         <h1 className="h-sm">{t("title")}</h1>
         <p className="lead" style={{ marginTop: 10, marginBottom: 20, maxWidth: 780 }}>
-          The EU register of crypto-asset service providers (CASPs) authorised under MiCA, mirrored from ESMA.
-          Search by name, country, regulator or service — and see the licensed exchanges we track ranked by our own
-          customer-sentiment score.
+          {t("lead")}
         </p>
 
         <div className="row" style={{ gap: 28, flexWrap: "wrap", marginBottom: 24 }}>
@@ -57,8 +55,7 @@ export default async function MicaRegistryPage({ params }: { params: Promise<{ l
         <MicaRegistry rows={rows} />
 
         <p className="muted" style={{ fontSize: 11, marginTop: 20 }}>
-          Source: ESMA MiCA register. NeoBase mirrors the public data and adds its own sentiment ranking; verify
-          critical decisions against the official ESMA register and the relevant national regulator.
+          {t("sourceNote")}
         </p>
       </div>
     </main>

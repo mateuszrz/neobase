@@ -444,7 +444,11 @@
     "countryFilter": "Land",
     "regulatorFilter": "Regulierungsbehörde",
     "tradingPlatform": "Handelsplattform",
-    "services": "{count, plural, one {# Dienst} other {# Dienste}}"
+    "services": "{count, plural, one {# Dienst} other {# Dienste}}",
+    "resultProviders": "{count, plural, one {# Anbieter} other {# Anbieter}}",
+    "trackedBy": "{count} von NeoBase beobachtet",
+    "clear": "zurücksetzen",
+    "sourceNote": "Quelle: ESMA-MiCA-Register. NeoBase spiegelt die öffentlichen Daten und ergänzt ein eigenes Sentiment-Ranking; überprüfe wichtige Entscheidungen anhand des offiziellen ESMA-Registers und der zuständigen nationalen Aufsichtsbehörde."
   },
   "test": {
     "metaTitle": "Reports testen — kostenloser wöchentlicher Wettbewerbsreport",

@@ -444,7 +444,11 @@
     "countryFilter": "Country",
     "regulatorFilter": "Regulator",
     "tradingPlatform": "Trading platform",
-    "services": "{count, plural, one {# service} other {# services}}"
+    "services": "{count, plural, one {# service} other {# services}}",
+    "resultProviders": "{count, plural, one {# provider} other {# providers}}",
+    "trackedBy": "{count} tracked by NeoBase",
+    "clear": "clear",
+    "sourceNote": "Source: ESMA MiCA register. NeoBase mirrors the public data and adds its own sentiment ranking; verify critical decisions against the official ESMA register and the relevant national regulator."
   },
   "test": {
     "metaTitle": "Test our reports — free weekly competitive brief",

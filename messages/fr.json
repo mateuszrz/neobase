@@ -444,7 +444,11 @@
     "countryFilter": "Pays",
     "regulatorFilter": "Régulateur",
     "tradingPlatform": "Plateforme de trading",
-    "services": "{count, plural, one {# service} other {# services}}"
+    "services": "{count, plural, one {# service} other {# services}}",
+    "resultProviders": "{count, plural, one {# prestataire} other {# prestataires}}",
+    "trackedBy": "{count} suivis par NeoBase",
+    "clear": "effacer",
+    "sourceNote": "Source : registre MiCA de l'ESMA. NeoBase reproduit les données publiques et ajoute son propre classement de sentiment ; vérifiez les décisions importantes dans le registre officiel de l'ESMA et auprès du régulateur national compétent."
   },
   "test": {
     "metaTitle": "Testez nos rapports — briefing concurrentiel hebdomadaire gratuit",
